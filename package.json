@@ -1,0 +1,17 @@
+{
+	"name": "yazzy",
+	"module": "src/index.ts",
+	"type": "module",
+	"scripts": {
+		"check": "biome check --write ./src ./package.json ./tsconfig.json",
+		"start": "bun --define:process.env.NODE_ENV=\"'production'\" ./src/index.ts",
+		"dev": "bun --watch ./src/index.ts"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.8.2",
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	}
+}
