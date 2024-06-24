@@ -1,7 +1,6 @@
-import { Elysia } from "elysia";
+import { Elysia, t } from "elysia";
 import TurndownService from "turndown";
 import read from "node-readability";
-import type { } from "elysia";
 const port = process.env.PORT || 3000;
 
 function isUrl(potentialUrl: string): boolean {
@@ -54,7 +53,13 @@ async function urlToMarkdown(url: URL): Promise<string> {
 }
 
 const elysia = new Elysia()
-  .get("/", () => Bun.file("./src/pages/index.html"))
+  .get("/", ({ query, redirect }) => {
+    if (query.url && isUrl(query.url)) {
+      const url = new URL(query.url);
+      return redirect(`/${url.toString()}`);
+    }
+    return Bun.file("./src/pages/index.html")
+  }, { query: t.Object({ url: t.Optional(t.String()) }) })
   .get("/*", async ({ path }) => {
     const pathWithoutSlash = path.startsWith("/") ? path.slice(1) : path;
     if (isUrl(pathWithoutSlash)) {
