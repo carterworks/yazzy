@@ -16,6 +16,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@elysiajs/html": "^1.0.2",
     "elysia": "^1.0.25",
     "node-readability": "^3.0.0",
     "turndown": "^7.2.0"
