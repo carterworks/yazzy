@@ -48,6 +48,47 @@ export default function ClippedPage({ article }: { article: ReadablePage }) {
 				<meta charset="UTF-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 				<title>{article.title} | yazzy</title>
+				<style>
+					{`
+#controls:has(#view-html:checked) ~ main {
+	> *:not(#html-content) {
+		display: none;
+	}
+	> #html-content {
+		display: block;
+	}
+}
+
+#controls:has(#view-plaintext:checked) ~ main {
+	> *:not(#plaintext-content) {
+		display: none;
+	}
+	> #plaintext-content {
+		display: block;
+	}
+}
+
+#controls:has(#view-markdown:checked) ~ main {
+	> *:not(#markdown-content) {
+		display: none;
+	}
+	> #markdown-content {
+		display: block;
+	}
+}
+#controls {
+	display: flex;
+	gap: 1rem;
+}
+label {
+	cursor: pointer;
+}
+pre {
+	word-wrap: break-word;
+	white-space: pre-wrap;
+}
+`}
+				</style>
 			</head>
 
 			<body>
@@ -62,13 +103,32 @@ export default function ClippedPage({ article }: { article: ReadablePage }) {
 					</h2>
 					{article.author && <p>{article.author}</p>}
 				</header>
+				<div id="controls">
+					<div>
+						<a href={generateObsidianUri(article)}>Save to Obsidian</a>
+					</div>
+					<span>View…</span>
+					<div>
+						
+						<label for="view-html"><input type="radio" name="viewtype" id="view-html" checked />HTML</label>
+					</div>
+					<div>
+						<label for="view-plaintext">
+						<input type="radio" name="viewtype" id="view-plaintext" />Text</label>
+					</div>
+					<div>
+						<label for="view-markdown">
+						<input type="radio" name="viewtype" id="view-markdown" />Markdown</label>
+					</div>
+				</div>
 				<main>
-					<a href={generateObsidianUri(article)}>
-						Save to Obsidian
-					</a>
-					<textarea readonly style={{ fieldSizing: "content", maxHeight: "50vh" }}>
-						{article.markdownContent}
-					</textarea>
+					<section id="html-content">{article.htmlContent}</section>
+					<section id="plaintext-content">
+						<pre>{article.textContent}</pre>
+					</section>
+					<section id="markdown-content">
+						<pre>{article.markdownContent}</pre>
+					</section>
 				</main>
 			</body>
 		</html>
