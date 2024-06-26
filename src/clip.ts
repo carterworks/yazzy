@@ -4,7 +4,11 @@ import Turndown from "turndown";
 import type { ReadablePage } from "./types";
 
 async function fetchPage(url: URL): Promise<JSDOM> {
-	const response = await fetch(url.toString());
+	const response = await fetch(url.toString(), {
+		headers: {
+			"User-Agent": "YazzyWebClipper/0.0.1",
+		},
+	});
 	if (!response.ok) {
 		throw new Error(`Failed to fetch ${url.toString()}`);
 	}

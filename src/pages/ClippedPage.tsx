@@ -42,8 +42,6 @@ ${article.markdownContent}`;
 }
 
 export default function ClippedPage({ article }: { article: ReadablePage }) {
-	const obsidianUri = generateObsidianUri(article);
-
 	return (
 		<html lang="en">
 			<head>
