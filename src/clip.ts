@@ -12,7 +12,9 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 	if (!response.ok) {
 		throw new Error(`Failed to fetch ${url.toString()}`);
 	}
-	return new JSDOM(await response.text());
+	const page = new JSDOM(await response.text(), { url: url.toString() });
+
+	return page;
 }
 
 // Utility function to get meta content by name or property

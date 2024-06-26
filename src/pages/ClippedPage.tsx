@@ -109,16 +109,22 @@ pre {
 					</div>
 					<span>View…</span>
 					<div>
-						
-						<label for="view-html"><input type="radio" name="viewtype" id="view-html" checked />HTML</label>
+						<label for="view-html">
+							<input type="radio" name="viewtype" id="view-html" checked />
+							HTML
+						</label>
 					</div>
 					<div>
 						<label for="view-plaintext">
-						<input type="radio" name="viewtype" id="view-plaintext" />Text</label>
+							<input type="radio" name="viewtype" id="view-plaintext" />
+							Text
+						</label>
 					</div>
 					<div>
 						<label for="view-markdown">
-						<input type="radio" name="viewtype" id="view-markdown" />Markdown</label>
+							<input type="radio" name="viewtype" id="view-markdown" />
+							Markdown
+						</label>
 					</div>
 				</div>
 				<main>
