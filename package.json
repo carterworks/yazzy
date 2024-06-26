@@ -1,24 +1,26 @@
 {
-  "name": "yazzy",
-  "module": "src/index.ts",
-  "type": "module",
-  "scripts": {
-    "check": "biome check --write ./src ./package.json ./tsconfig.json",
-    "start": "bun --define:process.env.NODE_ENV=\"'production'\" ./src/index.ts",
-    "dev": "bun --watch ./src/index.ts"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.8.2",
-    "@types/bun": "latest",
-    "@types/turndown": "^5.0.4"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@elysiajs/html": "^1.0.2",
-    "elysia": "^1.0.25",
-    "node-readability": "^3.0.0",
-    "turndown": "^7.2.0"
-  }
+	"name": "yazzy",
+	"module": "src/index.ts",
+	"type": "module",
+	"scripts": {
+		"check": "biome check --write ./src ./package.json ./tsconfig.json",
+		"start": "bun --define:process.env.NODE_ENV=\"'production'\" ./src/index.ts",
+		"dev": "bun --watch ./src/index.ts"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.8.2",
+		"@types/bun": "latest",
+		"@types/jsdom": "^21.1.7",
+		"@types/turndown": "^5.0.4"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"dependencies": {
+		"@elysiajs/html": "^1.0.2",
+		"@mozilla/readability": "^0.5.0",
+		"elysia": "^1.0.25",
+		"jsdom": "^24.1.0",
+		"turndown": "^7.2.0"
+	}
 }
