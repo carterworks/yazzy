@@ -14,16 +14,21 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 	}
 	const page = new JSDOM(await response.text(), { url: url.toString() });
 	// force lazy-loaded images to load
-	const LAZY_DATA_ATTRS = ['data-src', 'data-lazy-src', 'data-srcset', 'data-td-src-property'];
-  for (const dataAttr of LAZY_DATA_ATTRS) {
-    const images = page.window.document.querySelectorAll(`img[${dataAttr}]`);
-    for (const img of images) {
-      const src = img.getAttribute(dataAttr);
-      if (src) {
-        img.setAttribute('src', src);
-      }
-    };
-  };
+	const LAZY_DATA_ATTRS = [
+		"data-src",
+		"data-lazy-src",
+		"data-srcset",
+		"data-td-src-property",
+	];
+	for (const dataAttr of LAZY_DATA_ATTRS) {
+		const images = page.window.document.querySelectorAll(`img[${dataAttr}]`);
+		for (const img of images) {
+			const src = img.getAttribute(dataAttr);
+			if (src) {
+				img.setAttribute("src", src);
+			}
+		}
+	}
 	return page;
 }
 
