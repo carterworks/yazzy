@@ -48,47 +48,7 @@ export default function ClippedPage({ article }: { article: ReadablePage }) {
 				<meta charset="UTF-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 				<title>{article.title} | yazzy</title>
-				<style>
-					{`
-#controls:has(#view-html:checked) ~ main {
-	> *:not(#html-content) {
-		display: none;
-	}
-	> #html-content {
-		display: block;
-	}
-}
-
-#controls:has(#view-plaintext:checked) ~ main {
-	> *:not(#plaintext-content) {
-		display: none;
-	}
-	> #plaintext-content {
-		display: block;
-	}
-}
-
-#controls:has(#view-markdown:checked) ~ main {
-	> *:not(#markdown-content) {
-		display: none;
-	}
-	> #markdown-content {
-		display: block;
-	}
-}
-#controls {
-	display: flex;
-	gap: 1rem;
-}
-label {
-	cursor: pointer;
-}
-pre {
-	word-wrap: break-word;
-	white-space: pre-wrap;
-}
-`}
-				</style>
+				<link rel="stylesheet" href="/global.css" />
 			</head>
 
 			<body>
@@ -103,37 +63,39 @@ pre {
 					</h2>
 					{article.author && <p>{article.author}</p>}
 				</header>
-				<div id="controls">
+				<div id="controls" class="flex gap-3">
 					<div>
 						<a href={generateObsidianUri(article)}>Save to Obsidian</a>
 					</div>
 					<span>View…</span>
 					<div>
-						<label for="view-html">
+						<label for="view-html" class="cursor-pointer">
 							<input type="radio" name="viewtype" id="view-html" checked />
-							HTML
+							&nbsp;HTML
 						</label>
 					</div>
 					<div>
-						<label for="view-plaintext">
+						<label for="view-plaintext" class="cursor-pointer">
 							<input type="radio" name="viewtype" id="view-plaintext" />
-							Text
+							&nbsp;Text
 						</label>
 					</div>
 					<div>
-						<label for="view-markdown">
+						<label for="view-markdown" class="cursor-pointer">
 							<input type="radio" name="viewtype" id="view-markdown" />
-							Markdown
+							&nbsp;Markdown
 						</label>
 					</div>
 				</div>
 				<main>
-					<section id="html-content">{article.htmlContent}</section>
+					<section id="html-content">
+						<article class="prose lg:prose-xl">{article.htmlContent}</article>
+					</section>
 					<section id="plaintext-content">
-						<pre>{article.textContent}</pre>
+						<pre class="whitespace-pre-wrap">{article.textContent}</pre>
 					</section>
 					<section id="markdown-content">
-						<pre>{article.markdownContent}</pre>
+						<pre class="whitespace-pre-wrap">{article.markdownContent}</pre>
 					</section>
 				</main>
 			</body>

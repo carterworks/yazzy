@@ -4,7 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"check": "biome check --write ./src ./package.json ./tsconfig.json",
-		"start": "bun --define:process.env.NODE_ENV=\"'production'\" ./src/index.ts",
+		"start": "NODE_ENV=production bun ./src/index.ts",
 		"dev": "bun --watch ./src/index.ts"
 	},
 	"devDependencies": {
@@ -19,8 +19,10 @@
 	"dependencies": {
 		"@elysiajs/html": "^1.0.2",
 		"@mozilla/readability": "^0.5.0",
+		"@tailwindcss/typography": "^0.5.13",
 		"elysia": "^1.0.25",
 		"jsdom": "^24.1.0",
+		"tailwindcss": "^3.4.4",
 		"turndown": "^7.2.0"
 	}
 }

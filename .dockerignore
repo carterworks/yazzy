@@ -6,3 +6,4 @@ README.md
 .vscode
 LICENSE
 Dockerfile
+src/pages/global.css
