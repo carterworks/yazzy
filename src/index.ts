@@ -1,4 +1,3 @@
-import pathLib from "node:path";
 import zlib from "node:zlib";
 import { html, isHtml } from "@elysiajs/html";
 import { $ } from "bun";
@@ -74,7 +73,22 @@ const elysia = new Elysia()
 		},
 		{ query: t.Object({ url: t.Optional(t.String()) }) },
 	)
-	.get("/global.css", () => Bun.file("./src/pages/global.css"))
+	.get("/global.css", () => Bun.file("./src/pages/global.css").arrayBuffer())
+	.get("/manifest.json", ({ set }) => {
+		set.headers["Content-Type"] = "application/json";
+		return {
+			name: "yazzy",
+			short_name: "yazzy",
+			start_url: ".",
+			display: "standalone",
+			description: "Plain ol' reading",
+			share_target: {
+				action: "/",
+				method: "GET",
+				params: { url: "url" },
+			},
+		};
+	})
 	.get("/*", async ({ path, set, error, headers }) => {
 		const pathWithoutSlash = path.startsWith("/") ? path.slice(1) : path;
 		if (!isUrl(pathWithoutSlash)) {
