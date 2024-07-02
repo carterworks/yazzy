@@ -1,4 +1,5 @@
 import type { ReadablePage } from "../types";
+import PageWrapper from "./PageWrapper";
 
 function formatDate(date: Date | undefined): string {
 	if (!date) {
@@ -43,62 +44,72 @@ ${article.markdownContent}`;
 
 export default function ClippedPage({ article }: { article: ReadablePage }) {
 	return (
-		<html lang="en">
-			<head>
-				<meta charset="UTF-8" />
-				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-				<title>{article.title} | yazzy</title>
-				<link rel="stylesheet" href="/global.css" />
-			</head>
-
-			<body>
-				<nav>
-					<h1>
-						<a href="/">yazzy</a>
-					</h1>
-				</nav>
-				<header>
-					<h2>
-						<a href={article.url}>{article.title}</a>
-					</h2>
-					{article.author && <p>{article.author}</p>}
-				</header>
-				<div id="controls" class="flex gap-3">
-					<div>
-						<a href={generateObsidianUri(article)}>Save to Obsidian</a>
-					</div>
-					<span>View…</span>
-					<div>
-						<label for="view-html" class="cursor-pointer">
-							<input type="radio" name="viewtype" id="view-html" checked />
-							&nbsp;HTML
-						</label>
-					</div>
-					<div>
-						<label for="view-plaintext" class="cursor-pointer">
-							<input type="radio" name="viewtype" id="view-plaintext" />
-							&nbsp;Text
-						</label>
-					</div>
-					<div>
-						<label for="view-markdown" class="cursor-pointer">
-							<input type="radio" name="viewtype" id="view-markdown" />
-							&nbsp;Markdown
-						</label>
-					</div>
+		<PageWrapper pageTitle={`yazzy | ${article.title}`}>
+			<div id="controls" class="flex gap-3 mb-4 items-center">
+				<div class="border border-arc-focus py-1 px-2 rounded-lg hover:bg-arc-hover active:bg-arc-focus transition bg-transparent">
+					<a href={generateObsidianUri(article)} class="">
+						Save to Obsidian
+					</a>
 				</div>
-				<main>
-					<section id="html-content">
-						<article class="prose lg:prose-xl">{article.htmlContent}</article>
-					</section>
-					<section id="plaintext-content">
-						<pre class="whitespace-pre-wrap">{article.textContent}</pre>
-					</section>
-					<section id="markdown-content">
-						<pre class="whitespace-pre-wrap">{article.markdownContent}</pre>
-					</section>
-				</main>
-			</body>
-		</html>
+				<div class="flex">
+					<label
+						for="view-html"
+						class="cursor-pointer border border-arc-focus first:border-r-0 last:border-l-0 px-2 py-1 active:bg-arc-focus first:rounded-l-lg last:rounded-r-lg hover:bg-arc-hover bg-transparent transition has-[:checked]:bg-arc-focus"
+					>
+						<input
+							type="radio"
+							name="viewtype"
+							id="view-html"
+							checked
+							class="sr-only"
+						/>
+						&nbsp;HTML
+					</label>
+					<label
+						for="view-plaintext"
+						class="cursor-pointer border border-arc-focus first:border-r-0 last:border-l-0 px-2 py-1 active:bg-arc-focus first:rounded-l-lg last:rounded-r-lg hover:bg-arc-hover bg-transparent transition has-[:checked]:bg-arc-focus"
+					>
+						<input
+							type="radio"
+							name="viewtype"
+							id="view-plaintext"
+							class="sr-only"
+						/>
+						&nbsp;Text
+					</label>
+					<label
+						for="view-markdown"
+						class="cursor-pointer border border-arc-focus first:border-r-0 last:border-l-0 px-2 py-1 active:bg-arc-focus first:rounded-l-lg last:rounded-r-lg hover:bg-arc-hover bg-transparent transition has-[:checked]:bg-arc-focus"
+					>
+						<input
+							type="radio"
+							name="viewtype"
+							id="view-markdown"
+							class="sr-only"
+						/>
+						&nbsp;Markdown
+					</label>
+				</div>
+			</div>
+			<header class="max-w-prose">
+				<h2 class="text-3xl">
+					<a href={article.url}>{article.title}</a>
+				</h2>
+				{article.author && <p class="text-2xl">{article.author}</p>}
+			</header>
+			<main>
+				<section id="html-content">
+					<article class="prose lg:prose-xl font-humanist">
+						{article.htmlContent}
+					</article>
+				</section>
+				<section id="plaintext-content" class="mt-6">
+					<pre class="whitespace-pre-wrap">{article.textContent}</pre>
+				</section>
+				<section id="markdown-content" class="mt-6">
+					<pre class="whitespace-pre-wrap">{article.markdownContent}</pre>
+				</section>
+			</main>
+		</PageWrapper>
 	);
 }

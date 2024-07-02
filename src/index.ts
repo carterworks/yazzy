@@ -1,3 +1,4 @@
+import pathLib from "node:path";
 import zlib from "node:zlib";
 import { html, isHtml } from "@elysiajs/html";
 import { $ } from "bun";
@@ -16,12 +17,6 @@ function isUrl(potentialUrl: string): boolean {
 	}
 }
 
-if (process.env.NODE_ENV === "production") {
-	await $`bun x tailwindcss -i ./src/pages/global.input.css -o ./src/pages/global.css --minify`;
-} else {
-	await $`bun x tailwindcss -i ./src/pages/global.input.css -o ./src/pages/global.css`;
-}
-
 function isCompressable(
 	response: unknown,
 ): response is string | Uint8Array | ArrayBuffer {
@@ -32,8 +27,19 @@ function isCompressable(
 	);
 }
 
+if (process.env.NODE_ENV === "production") {
+	await $`bun x tailwindcss -i ./src/pages/global.input.css -o ./src/pages/global.css --minify`.quiet();
+} else {
+	await $`bun x tailwindcss -i ./src/pages/global.input.css -o ./src/pages/global.css`.quiet();
+}
+
 const elysia = new Elysia()
 	.use(html())
+	.derive(() => {
+		return {
+			requestId: crypto.randomUUID(),
+		};
+	})
 	.onAfterHandle(({ response, set, headers, path }) => {
 		if (isHtml(response)) {
 			set.headers["Content-Type"] = "text/html; charset=utf8";
@@ -81,7 +87,6 @@ const elysia = new Elysia()
 			}
 			return ClippedPage({ article });
 		} catch (err) {
-			console.error(err);
 			return error(
 				500,
 				`Internal server error; could not clip '${pathWithoutSlash}'`,
