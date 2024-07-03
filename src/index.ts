@@ -49,7 +49,9 @@ class Logger {
 	}
 
 	#addTimestamp(message: string): string {
-		return this.#addStructuredData(message, { t: Date.now() });
+		return this.#addStructuredData(message, {
+			t: performance.timeOrigin + performance.now(),
+		});
 	}
 
 	log(
@@ -199,7 +201,7 @@ const elysia = new Elysia()
 			},
 		});
 	})
-	.get("/*", async ({ path, error }) => {
+	.get("/*", async ({ path, error, logger, requestId }) => {
 		const pathWithoutSlash = path.startsWith("/") ? path.slice(1) : path;
 		if (!isUrl(pathWithoutSlash)) {
 			return error(400, "Invalid URL");
@@ -210,6 +212,10 @@ const elysia = new Elysia()
 				articleURL.toString(),
 			)) as Record<keyof ReadablePage, string> | undefined;
 			if (existingArticle) {
+				logger.log("Served from cache", {
+					requestId,
+					articleURL: articleURL.toString(),
+				});
 				return ClippedPage({
 					article: {
 						...existingArticle,
@@ -232,6 +238,11 @@ const elysia = new Elysia()
 				createdAt: Date.now(),
 				topics: article.topics.join(","),
 				tags: article.tags.join(","),
+			});
+
+			logger.log("Parsed from website", {
+				requestId,
+				articleURL: articleURL.toString(),
 			});
 			return ClippedPage({ article });
 		} catch (err) {
