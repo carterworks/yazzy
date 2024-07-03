@@ -34,6 +34,50 @@ if (process.env.NODE_ENV === "production") {
 	await $`bun x tailwindcss -i ./src/pages/global.input.css -o ./src/pages/global.css`.quiet();
 }
 
+class Logger {
+	#addStructuredData(
+		message: string,
+		data: Record<string, string | number | boolean>,
+	): string {
+		const dataMessage = Object.entries(data)
+			.map(([key, value]) => `[${key}=${value}]`)
+			.join(" ");
+		if (!dataMessage) {
+			return message;
+		}
+		return `${dataMessage} ${message}`;
+	}
+
+	#addTimestamp(message: string): string {
+		return this.#addStructuredData(message, { t: Date.now() });
+	}
+
+	log(
+		message: string,
+		params?: Record<string, string | number | boolean>,
+	): void {
+		let msg = message;
+		if (params) {
+			msg = this.#addStructuredData(message, params);
+		}
+		msg = this.#addTimestamp(msg);
+		console.log(msg);
+	}
+
+	error(
+		message: string,
+		params: Record<string, string | number | boolean>,
+	): void {
+		let msg = message;
+		if (params) {
+			msg = this.#addStructuredData(message, params);
+		}
+		msg = this.#addTimestamp(msg);
+		console.error(msg);
+	}
+}
+
+const logger = new Logger();
 function initializeSqliteDB(location: string): Database {
 	const db = new Database(location, { create: true, strict: true });
 	db.exec("PRAGMA journal_mode = WAL;");
@@ -56,7 +100,7 @@ function initializeSqliteDB(location: string): Database {
 		"SELECT COUNT(*) FROM articles",
 	);
 	const articleCount = articleCountQuery.get(null);
-	console.log(
+	logger.log(
 		`Initialized database ${dbLocation}; has ${articleCount?.["COUNT(*)"] ?? 0} article(s)`,
 	);
 	articleCountQuery.finalize();
@@ -96,12 +140,13 @@ const insertArticleQuery = db.query<
 
 const elysia = new Elysia()
 	.use(html())
+	.decorate("logger", logger)
 	.derive(() => {
 		return {
 			requestId: crypto.randomUUID(),
 		};
 	})
-	.onAfterHandle(({ response, set, headers, path }) => {
+	.onAfterHandle(({ response, set, headers }) => {
 		if (isHtml(response)) {
 			set.headers["Content-Type"] = "text/html; charset=utf8";
 		}
@@ -123,6 +168,9 @@ const elysia = new Elysia()
 			set.headers["Content-Encoding"] = "deflate";
 			return Bun.deflateSync(response);
 		}
+	})
+	.onBeforeHandle(({ request: { method, url }, requestId, logger }) => {
+		logger.log("Received", { method, url, requestId });
 	})
 	.get(
 		"/",
@@ -196,4 +244,4 @@ const elysia = new Elysia()
 	})
 	.listen(port);
 
-console.log(`Started server on port ${port}`);
+logger.log(`Started server on port ${port}`);
