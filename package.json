@@ -9,6 +9,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.8.2",
+		"@flydotio/dockerfile": "^0.5.7",
 		"@types/bun": "latest",
 		"@types/jsdom": "^21.1.7",
 		"@types/turndown": "^5.0.4"
