@@ -8,4 +8,5 @@ export interface ReadablePage {
 	markdownContent: string;
 	textContent: string;
 	htmlContent: string;
+	createdAt?: Date;
 }

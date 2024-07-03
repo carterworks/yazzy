@@ -177,3 +177,6 @@ dist
 
 # tailwind output
 src/pages/global.css
+
+# database files
+*.sqlite3*
