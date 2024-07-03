@@ -22,7 +22,7 @@ export default function PageWrapper({
 							<p class="text-xs ">Plain ol' reading</p>
 						</div>
 						<a
-							href="github.com/carterworks"
+							href="https://github.com/carterworks"
 							target="_blank"
 							rel="noreferrer"
 							class="underline"
