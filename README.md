@@ -19,6 +19,9 @@ Named after [Jasnah Kholin](https://coppermind.net/wiki/Jasnah_Kholin), famous h
 - [ ] Caching headers to static resources
 - [ ] Bring-your-own OpenAI key for summaries
 - [x] Deployed on [Fly.io](https://fly.io/).
+- [ ] Dark mode
+- [ ] Remember which mode (html/markdown/text) was used
+- [ ] recognize the language from codeblocks
 
 ## Setup
 To install dependencies:
