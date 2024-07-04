@@ -174,6 +174,10 @@ const elysia = new Elysia()
 	.onBeforeHandle(({ request: { method, url }, requestId, logger }) => {
 		logger.log("Received", { method, url, requestId });
 	})
+	.onAfterHandle(({ response, requestId, logger }) => {
+		logger.log("Responded", { requestId });
+		return response;
+	})
 	.get(
 		"/",
 		({ query, redirect }) => {
@@ -229,21 +233,30 @@ const elysia = new Elysia()
 					},
 				});
 			}
-			const article = await clip(articleURL);
-			// insert into database
-			insertArticleQuery.run({
-				...article,
-				url: article.url.toString(),
-				published: article.published?.getTime() || null,
-				createdAt: Date.now(),
-				topics: article.topics.join(","),
-				tags: article.tags.join(","),
-			});
-
-			logger.log("Parsed from website", {
+			logger.log("Not found in cache", {
 				requestId,
 				articleURL: articleURL.toString(),
 			});
+			const article = await clip(articleURL);
+			logger.log("Clipped from website", {
+				requestId,
+				articleURL: articleURL.toString(),
+				htmlLength: article.htmlContent.length,
+			});
+			// insert into database
+			// insertArticleQuery.run({
+			// 	...article,
+			// 	url: article.url.toString(),
+			// 	published: article.published?.getTime() || null,
+			// 	createdAt: Date.now(),
+			// 	topics: article.topics.join(","),
+			// 	tags: article.tags.join(","),
+			// });
+
+			// logger.log("Inserted into database", {
+			// 	requestId,
+			// 	articleURL: articleURL.toString(),
+			// });
 			return ClippedPage({ article });
 		} catch (err) {
 			console.error(err);

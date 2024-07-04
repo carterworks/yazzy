@@ -2,7 +2,7 @@
 
 # Adjust BUN_VERSION as desired
 ARG BUN_VERSION=1.1.17
-FROM oven/bun:${BUN_VERSION}-slim as base
+FROM oven/bun:${BUN_VERSION} AS base
 
 LABEL fly_launch_runtime="Bun"
 
@@ -14,7 +14,7 @@ ENV NODE_ENV="production"
 
 
 # Throw-away build stage to reduce size of final image
-FROM base as build
+FROM base AS build
 
 # Install packages needed to build node modules
 RUN apt-get update -qq && \
@@ -22,7 +22,7 @@ RUN apt-get update -qq && \
 
 # Install node modules
 COPY --link bun.lockb package.json ./
-RUN bun install --ci
+RUN bun install --ci --verbose
 
 # Copy application code
 COPY --link . .

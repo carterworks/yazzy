@@ -7,3 +7,6 @@ README.md
 LICENSE
 Dockerfile
 src/pages/global.css
+*.sqlite3*
+biome.json
+fly.toml
