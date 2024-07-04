@@ -149,7 +149,6 @@ const elysia = new Elysia()
 		};
 	})
 	.onAfterHandle(({ response, set, headers, path }) => {
-		console.log("AFTER HANDLE: ", headers);
 		if (isHtml(response) && !path.includes(".svg")) {
 			set.headers["Content-Type"] = "text/html; charset=utf8";
 		}
