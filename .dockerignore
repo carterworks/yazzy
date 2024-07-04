@@ -3,6 +3,7 @@
 node_modules
 .dockerignore
 README.md
+LICENSE
 .vscode
 LICENSE
 Dockerfile
