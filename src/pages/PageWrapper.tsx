@@ -10,6 +10,7 @@ export default function PageWrapper({
 				<title>{pageTitle}</title>
 				<link rel="stylesheet" href="/global.css" />
 				<link rel="manifest" href="/manifest.json" />
+				<link rel="icon" href="/icon.svg" type="image/svg+xml" />
 			</head>
 
 			<body class="bg-arc-background text-base px-4 lg:px-0">
@@ -22,7 +23,7 @@ export default function PageWrapper({
 							<p class="text-xs ">Plain ol' reading</p>
 						</div>
 						<a
-							href="https://github.com/carterworks"
+							href="https://github.com/carterworks/yazzy"
 							target="_blank"
 							rel="noreferrer"
 							class="underline"
