@@ -11,6 +11,7 @@ export default function PageWrapper({
 				<link rel="stylesheet" href="/global.css" />
 				<link rel="manifest" href="/manifest.json" />
 				<link rel="icon" href="/icon.svg" type="image/svg+xml" />
+				<script type="module" src="/index.js" />
 			</head>
 
 			<body class="bg-arc-background text-base px-4 lg:px-0">
