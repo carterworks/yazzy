@@ -1,8 +1,9 @@
 import { Database } from "bun:sqlite";
 import zlib from "node:zlib";
 import { html, isHtml } from "@elysiajs/html";
-import { $ } from "bun";
+import { $, type BuildArtifact, type BuildOutput } from "bun";
 import { Elysia, t } from "elysia";
+import type { ContentType } from "elysia/types";
 import { clip } from "./clip";
 import ClippedPage from "./pages/ClippedPage";
 import LandingPage from "./pages/LandingPage";
@@ -28,10 +29,35 @@ function isCompressable(
 	);
 }
 
-if (process.env.NODE_ENV === "production") {
-	await $`bun x tailwindcss -i ./src/pages/global.input.css -o ./src/pages/global.css --minify`.quiet();
-} else {
-	await $`bun x tailwindcss -i ./src/pages/global.input.css -o ./src/pages/global.css`.quiet();
+type Loader =
+	| "js"
+	| "jsx"
+	| "ts"
+	| "tsx"
+	| "json"
+	| "toml"
+	| "file"
+	| "napi"
+	| "wasm"
+	| "text";
+function getContentTypeFromLoader(loader: Loader): string {
+	switch (loader) {
+		case "js":
+		case "jsx":
+		case "ts":
+		case "tsx":
+			return "text/javascript";
+		case "json":
+		case "toml":
+			return "application/json";
+		case "wasm":
+			return "application/wasm";
+		case "sqlite":
+		case "sh":
+			throw new Error(`Cannot return type ${loader}`);
+		default:
+			return "text/plain";
+	}
 }
 
 class Logger {
@@ -68,7 +94,7 @@ class Logger {
 
 	error(
 		message: string,
-		params: Record<string, string | number | boolean>,
+		params?: Record<string, string | number | boolean>,
 	): void {
 		let msg = message;
 		if (params) {
@@ -78,8 +104,40 @@ class Logger {
 		console.error(msg);
 	}
 }
-
 const logger = new Logger();
+
+if (process.env.NODE_ENV === "production") {
+	await $`bun x tailwindcss -i ./src/pages/global.input.css -o ./src/pages/global.css --minify`.quiet();
+} else {
+	await $`bun x tailwindcss -i ./src/pages/global.input.css -o ./src/pages/global.css`.quiet();
+}
+logger.log("Built tailwind");
+
+const buildOutput = await Bun.build({
+	entrypoints: ["./src/on-page/index.ts"],
+	sourcemap: process.env.NODE_ENV === "production" ? "none" : "inline",
+	minify: process.env.NODE_ENV === "production",
+});
+if (!buildOutput.success) {
+	logger.error("Building on-page script failed");
+	for (const message of buildOutput.logs) {
+		console.error(message);
+	}
+	process.exit(1);
+}
+const outputs = buildOutput.outputs.reduce<Record<string, BuildArtifact>>(
+	(o, res) => {
+		const key = res.path.replace("./", "/");
+		o[key] = res;
+		return o;
+	},
+	{},
+);
+
+logger.log("Build on-page scripts", {
+	artifacts: Object.keys(outputs).join(", "),
+});
+
 function initializeSqliteDB(location: string): Database {
 	const db = new Database(location, { create: true, strict: true });
 	db.exec("PRAGMA journal_mode = WAL;");
@@ -149,7 +207,6 @@ const elysia = new Elysia()
 		};
 	})
 	.onAfterHandle(({ response, set, headers, path }) => {
-		console.log("AFTER HANDLE: ", headers);
 		if (isHtml(response) && !path.includes(".svg")) {
 			set.headers["Content-Type"] = "text/html; charset=utf8";
 		}
@@ -227,7 +284,15 @@ l-283 742q-21 54 -31 87.5t-10 56.5q0 44 43 65l437 -697zM1264 618l139 -114l55 59l
 q0 -52 -29 -86.5t-71 -34.5q-51 0 -89.5 46.5t-38.5 109.5q0 51 28 85.5t68 34.5q55 0 93.5 -45.5t38.5 -109.5z" /></svg>
 `;
 	})
-	.get("/*", async ({ path, error, logger, requestId }) => {
+	.get("/*", async ({ path, error, logger, requestId, set }) => {
+		if (path in outputs) {
+			logger.log(`Retrieving ${path} resource?`);
+			set.headers["Content-Type"] = getContentTypeFromLoader(
+				outputs[path].loader,
+			);
+			return outputs[path].arrayBuffer();
+		}
+
 		const pathWithoutSlash = path.startsWith("/") ? path.slice(1) : path;
 		if (!isUrl(pathWithoutSlash)) {
 			return error(400, "Invalid URL");
