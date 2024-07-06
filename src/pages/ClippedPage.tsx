@@ -53,7 +53,7 @@ export default function ClippedPage({ article }: { article: ReadablePage }) {
 	return (
 		<PageWrapper pageTitle={`yazzy | ${article.title}`}>
 			<div id="controls" class="flex gap-3 mb-4 items-center">
-				<div class="border border-arc-focus py-1 px-2 rounded-lg hover:bg-arc-hover active:bg-arc-focus transition bg-transparent">
+				<div class="border border-arc-focus py-1 px-2 rounded-lg hover:bg-arc-hover active:bg-arc-focus transition bg-transparent text-center">
 					<a href={generateObsidianUri(article)} class="">
 						Save to Obsidian
 					</a>
