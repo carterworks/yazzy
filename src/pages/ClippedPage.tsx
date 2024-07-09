@@ -13,14 +13,16 @@ function formatDate(date: Date | undefined): string {
 }
 
 function getFilename(title: string): string {
-	return title
-		// make title windows-friendly
-		.replace(":", "")
-		.replace(/[/\\?%*|"<>]/g, "-")
-		// get rid of spaces
-		.replace(/\s+/g, "-")
-		// lowercase is bestcase
-		.toLocaleLowerCase();
+	return (
+		title
+			// make title windows-friendly
+			.replace(":", "")
+			.replace(/[/\\?%*|"<>]/g, "-")
+			// get rid of spaces
+			.replace(/\s+/g, "-")
+			// lowercase is bestcase
+			.toLocaleLowerCase()
+	);
 }
 
 function generateObsidianUri(
@@ -110,10 +112,10 @@ export default function ClippedPage({ article }: { article: ReadablePage }) {
 						{article.htmlContent}
 					</article>
 				</section>
-				<section id="plaintext-content" class="mt-6">
+				<section id="plaintext-content" class="mt-6" aria-hidden="true">
 					<pre class="whitespace-pre-wrap">{article.textContent}</pre>
 				</section>
-				<section id="markdown-content" class="mt-6">
+				<section id="markdown-content" class="mt-6" aria-hidden="true">
 					<pre class="whitespace-pre-wrap">{article.markdownContent}</pre>
 				</section>
 			</main>

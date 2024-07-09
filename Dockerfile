@@ -1,7 +1,7 @@
 # syntax = docker/dockerfile:1
 
 # Adjust BUN_VERSION as desired
-ARG BUN_VERSION=1.1.17
+ARG BUN_VERSION=1.1.18
 FROM oven/bun:${BUN_VERSION} AS base
 
 LABEL fly_launch_runtime="Bun"

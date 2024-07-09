@@ -184,7 +184,8 @@ const insertArticleQuery = db.query<
 			tags,
 			textContent,
 			htmlContent,
-			markdownContent
+			markdownContent,
+			createdAt
 		) VALUES (
 			$url,
 			$title,
@@ -194,7 +195,8 @@ const insertArticleQuery = db.query<
 			$tags,
 			$textContent,
 			$htmlContent,
-			$markdownContent
+			$markdownContent,
+			$createdAt
 		)`,
 );
 
@@ -331,13 +333,33 @@ q0 -52 -29 -86.5t-71 -34.5q-51 0 -89.5 46.5t-38.5 109.5q0 51 28 85.5t68 34.5q55 
 				htmlLength: article.htmlContent.length,
 			});
 			// insert into database
+			/**
+			 * TODO: Try again in bun 1.1.20
+			 * On bun 1.1.19, the following code crashes inside a Docker container.
+			 * I can't reproduce it locally or make a proof-of-concept, but it's a consistent crash.
+			 * Bun v1.1.18 (5a0b9352) Linux arm64
+			 * Linux Kernel v6.5.0 | glibc v2.31
+			 * Args: "bun" "./src/index.ts"
+			 * Features: jsc fetch http_server shell(2) spawn tsconfig
+			 * Builtins: "bun:main" "bun:sqlite" "node:assert" "node:buffer" "node:child_process" "node:crypto" "node:events" "node:fs" "node:http" "node:https" "node:net" "node:os" "node:path" "node:stream" "node:string_decoder" "node:timers/promises" "node:tls" "node:tty" "node:url" "node:util" "node:util/types" "node:vm" "node:zlib" "node:punycode" "ws"
+			 * Elapsed: 23365ms | User: 775ms | Sys: 61ms
+			 * RSS: 1.04GB | Peak: 0.22GB | Commit: 1.04GB | Faults: 54
+			 *
+			 * panic(main thread): Segmentation fault at address 0x80
+			 * oh no: Bun has crashed. This indicates a bug in Bun, not your code.
+			 *
+			 * To send a redacted crash report to Bun's team,
+			 * please file a GitHub issue using the link below:
+			 *
+			 *  https://bun.report/1.1.18/La15a0b935AigihsEm43pjEuvEus69gE_+nxm6Dm+mm6D___m7785DA2AgI
+			 */
 			// insertArticleQuery.run({
 			// 	...article,
 			// 	url: article.url.toString(),
 			// 	published: article.published?.getTime() || null,
-			// 	createdAt: Date.now(),
 			// 	topics: article.topics.join(","),
 			// 	tags: article.tags.join(","),
+			// 	createdAt: Date.now(),
 			// });
 
 			// logger.log("Inserted into database", {

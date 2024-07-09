@@ -1,7 +1,9 @@
 import { Readability } from "@mozilla/readability";
+import createDomPurify from "dompurify";
 import { JSDOM } from "jsdom";
 import Turndown from "turndown";
 import type { ReadablePage } from "./types";
+const DOMPurify = createDomPurify(new JSDOM("<!DOCTYPE html>").window);
 
 async function fetchPage(url: URL): Promise<JSDOM> {
 	const response = await fetch(url.toString(), {
@@ -62,10 +64,14 @@ export async function clip(url: URL): Promise<ReadablePage> {
 		).map((keyword) => keyword.split(" ").join("")),
 	];
 
-	const article = new Readability(page.window.document).parse();
+	const article = new Readability(page.window.document, {
+		keepClasses: true,
+	}).parse();
 	if (!article) {
 		throw new Error("Failed to parse article");
 	}
+
+	article.content = DOMPurify.sanitize(article.content);
 
 	const markdownBody = new Turndown({
 		headingStyle: "atx",
