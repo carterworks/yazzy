@@ -62,7 +62,9 @@ export async function clip(url: URL): Promise<ReadablePage> {
 		).map((keyword) => keyword.split(" ").join("")),
 	];
 
-	const article = new Readability(page.window.document).parse();
+	const article = new Readability(page.window.document, {
+		keepClasses: true,
+	}).parse();
 	if (!article) {
 		throw new Error("Failed to parse article");
 	}
