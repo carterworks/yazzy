@@ -13,14 +13,16 @@ function formatDate(date: Date | undefined): string {
 }
 
 function getFilename(title: string): string {
-	return title
-		// make title windows-friendly
-		.replace(":", "")
-		.replace(/[/\\?%*|"<>]/g, "-")
-		// get rid of spaces
-		.replace(/\s+/g, "-")
-		// lowercase is bestcase
-		.toLocaleLowerCase();
+	return (
+		title
+			// make title windows-friendly
+			.replace(":", "")
+			.replace(/[/\\?%*|"<>]/g, "-")
+			// get rid of spaces
+			.replace(/\s+/g, "-")
+			// lowercase is bestcase
+			.toLocaleLowerCase()
+	);
 }
 
 function generateObsidianUri(
