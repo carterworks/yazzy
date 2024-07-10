@@ -51,9 +51,15 @@ ${article.markdownContent}`;
 	return `obsidian://new?file=${encodeURIComponent(folder + fileName)}&content=${encodeURIComponent(fileContent)}${vaultName}`;
 }
 
-export default function ClippedPage({ article }: { article: ReadablePage }) {
+export default function ClippedPage({
+	article,
+	cssFilename,
+}: { article: ReadablePage; cssFilename: string }) {
 	return (
-		<PageWrapper pageTitle={`yazzy | ${article.title}`}>
+		<PageWrapper
+			pageTitle={`yazzy | ${article.title}`}
+			cssFilename={cssFilename}
+		>
 			<div id="controls" class="flex gap-3 mb-4 items-center">
 				<div class="border border-arc-focus py-1 px-2 rounded-lg hover:bg-arc-hover active:bg-arc-focus transition bg-transparent text-center">
 					<a href={generateObsidianUri(article)} class="">

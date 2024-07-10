@@ -176,7 +176,8 @@ dist
 .vscode/settings.json
 
 # tailwind output
-src/pages/global.css
+src/pages/global.*
+!src/pages/global.input.css
 
 # database files
 *.sqlite3*

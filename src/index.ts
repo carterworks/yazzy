@@ -39,7 +39,9 @@ type Loader =
 	| "file"
 	| "napi"
 	| "wasm"
-	| "text";
+	| "text"
+	| "sqlite"
+	| "sh";
 function getContentTypeFromLoader(loader: Loader): string {
 	switch (loader) {
 		case "js":
@@ -106,12 +108,28 @@ class Logger {
 }
 const logger = new Logger();
 
-if (process.env.NODE_ENV === "production") {
-	await $`bun x tailwindcss -i ./src/pages/global.input.css -o ./src/pages/global.css --minify`.quiet();
-} else {
-	await $`bun x tailwindcss -i ./src/pages/global.input.css -o ./src/pages/global.css`.quiet();
-}
-logger.log("Built tailwind");
+const buildCss = async (productionMode: boolean) => {
+	const output =
+		await $`bun x tailwindcss -i ./src/pages/global.input.css ${productionMode ? "--minify" : ""}`.quiet();
+	if (output.exitCode !== 0) {
+		logger.error("Building tailwind failed");
+		console.error(new TextDecoder().decode(output.stderr));
+		process.exit(1);
+	}
+	return new TextDecoder().decode(output.stdout);
+};
+const writeCss = async (productionMode: boolean) => {
+	const css = await buildCss(productionMode);
+	const cssHash = Bun.hash(css);
+	const cssFilename = `global.${cssHash}.css`;
+	const cssFilepath = `./src/pages/${cssFilename}`;
+	Bun.write(cssFilepath, css);
+	logger.log(`Built Tailwind CSS to path ${cssFilepath}`);
+	return { cssFilename, cssFilepath, cssHash };
+};
+const { cssHash, cssFilename, cssFilepath } = await writeCss(
+	process.env.NODE_ENV === "production",
+);
 
 const buildOutput = await Bun.build({
 	entrypoints: ["./src/on-page/index.ts"],
@@ -134,9 +152,7 @@ const outputs = buildOutput.outputs.reduce<Record<string, BuildArtifact>>(
 	{},
 );
 
-logger.log("Build on-page scripts", {
-	artifacts: Object.keys(outputs).join(", "),
-});
+logger.log("Build on-page scripts");
 
 function initializeSqliteDB(location: string): Database {
 	const db = new Database(location, { create: true, strict: true });
@@ -211,6 +227,7 @@ const elysia = new Elysia()
 	.onAfterHandle(({ response, set, headers, path }) => {
 		if (isHtml(response) && !path.includes(".svg")) {
 			set.headers["Content-Type"] = "text/html; charset=utf8";
+			set.headers["Cache-Control"] = "max-age:300, private";
 		}
 		if (!isCompressable(response)) {
 			return response;
@@ -245,14 +262,18 @@ const elysia = new Elysia()
 				const url = new URL(query.url);
 				return redirect(`/${url.toString()}`);
 			}
-			return LandingPage();
+			return LandingPage({ cssFilename });
 		},
 		{ query: t.Object({ url: t.Optional(t.String()) }) },
 	)
-	.get("/global.css", () => Bun.file("./src/pages/global.css").arrayBuffer())
+	.get(`/${cssFilename}`, ({ set }) => {
+		set.headers["Content-Type"] = "text/css";
+		set.headers["Cache-Control"] = "max-age=31536000, immutable";
+		return Bun.file(cssFilepath).arrayBuffer();
+	})
 	.get("/manifest.json", ({ set }) => {
 		set.headers["Content-Type"] = "application/json";
-		return JSON.stringify({
+		const manifest = JSON.stringify({
 			name: "yazzy",
 			short_name: "yazzy",
 			start_url: ".",
@@ -273,10 +294,14 @@ const elysia = new Elysia()
 				},
 			],
 		});
+		set.headers["Cache-Control"] =
+			"max-age=604800, stale-while-revalidate=86400";
+		set.headers.ETag = `${Bun.hash(manifest)}`;
+		return manifest;
 	})
 	.get("/icon.svg", ({ set }) => {
 		set.headers["Content-Type"] = "image/svg+xml";
-		return `<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" ><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="-10 0 2610 2048"><path fill="currentColor"
+		const svg = `<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" ><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="-10 0 2610 2048"><path fill="currentColor"
 d="M526 304q0 -83 50 -139t123 -56q55 0 100.5 31.5t73 83.5t27.5 115q0 82 -49 138t-120 56q-85 0 -145 -67t-60 -162zM599 304q0 64 38.5 109.5t93.5 45.5q40 0 68 -34.5t28 -85.5q0 -63 -38.5 -109.5t-89.5 -46.5q-42 0 -71 34.5t-29 86.5zM1369 870q0 -28 -20 -48
 t-50 -20q-28 0 -48 19.5t-20 48.5q0 28 19.5 48.5t49.5 20.5q28 0 48.5 -20t20.5 -49zM758 666q90 0 147.5 8t93.5 28l96 -180q-72 -71 -72 -164q0 -107 -43.5 -193t-118 -136.5t-168.5 -50.5q-85 0 -151.5 40.5t-104 112.5t-37.5 167q0 98 50 182t132 135t176 51zM758 746
 q-117 0 -216.5 -62t-160.5 -164t-61 -222q0 -117 48 -207t132.5 -141.5t192.5 -51.5q116 0 208.5 61.5t147 165.5t54.5 233q0 42 21.5 73t72.5 73l-184 342q-43 -64 -97.5 -82t-157.5 -18zM970 779l68 -43l719 1143q43 -21 43 -65q0 -23 -10 -56.5t-31 -87.5l-334 -873
@@ -285,6 +310,10 @@ q-103 0 -157.5 18t-97.5 82l-184 -342q51 -42 72.5 -73t21.5 -73q0 -129 54.5 -233t1
 l-283 742q-21 54 -31 87.5t-10 56.5q0 44 43 65l437 -697zM1264 618l139 -114l55 59l-129 106zM1485 858l77 -120l67 43l-109 169zM2074 304q0 95 -59.5 162t-145.5 67q-71 0 -120 -56t-49 -138q0 -63 27.5 -115t73.5 -83.5t100 -31.5q73 0 123 56t50 139zM2001 304
 q0 -52 -29 -86.5t-71 -34.5q-51 0 -89.5 46.5t-38.5 109.5q0 51 28 85.5t68 34.5q55 0 93.5 -45.5t38.5 -109.5z" /></svg>
 `;
+		set.headers.ETag = `${Bun.hash(svg)}`;
+		set.headers["Cache-Control"] =
+			"max-age=604800, stale-while-revalidate=86400";
+		return svg;
 	})
 	.get("/*", async ({ path, error, logger, requestId, set }) => {
 		if (path in outputs) {
@@ -320,6 +349,7 @@ q0 -52 -29 -86.5t-71 -34.5q-51 0 -89.5 46.5t-38.5 109.5q0 51 28 85.5t68 34.5q55 
 						tags: existingArticle.tags.split(","),
 						createdAt: new Date(existingArticle.createdAt),
 					},
+					cssFilename,
 				});
 			}
 			logger.log("Not found in cache", {
@@ -366,7 +396,7 @@ q0 -52 -29 -86.5t-71 -34.5q-51 0 -89.5 46.5t-38.5 109.5q0 51 28 85.5t68 34.5q55 
 			// 	requestId,
 			// 	articleURL: articleURL.toString(),
 			// });
-			return ClippedPage({ article });
+			return ClippedPage({ article, cssFilename });
 		} catch (err) {
 			console.error(err);
 			return error(
