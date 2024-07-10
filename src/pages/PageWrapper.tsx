@@ -1,14 +1,15 @@
 export default function PageWrapper({
 	pageTitle,
+	cssFilename,
 	children,
-}: { pageTitle: string; children: unknown | unknown[] }) {
+}: { pageTitle: string; children: unknown | unknown[]; cssFilename: string }) {
 	return (
 		<html lang="en">
 			<head>
 				<meta charset="UTF-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 				<title>{pageTitle}</title>
-				<link rel="stylesheet" href="/global.css" />
+				<link rel="stylesheet" href={`/${cssFilename}`} />
 				<link rel="manifest" href="/manifest.json" />
 				<link rel="icon" href="/icon.svg" type="image/svg+xml" />
 				<script type="module" src="/index.js" />

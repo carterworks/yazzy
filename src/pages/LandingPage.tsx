@@ -1,8 +1,8 @@
 import PageWrapper from "./PageWrapper";
 
-export default function Index() {
+export default function Index({ cssFilename }: { cssFilename: string }) {
 	return (
-		<PageWrapper pageTitle="yazzy">
+		<PageWrapper pageTitle="yazzy" cssFilename={cssFilename}>
 			<header class="mb-4">
 				<p class="">
 					Tired of popups, ads, and other distractions on your page? Just put
