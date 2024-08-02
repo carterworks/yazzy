@@ -5,10 +5,8 @@ node_modules
 README.md
 LICENSE
 .vscode
-LICENSE
 Dockerfile
-src/pages/global.*
-!src/pages/global.input.css
+dist/
 *.sqlite3*
 biome.json
 fly.toml

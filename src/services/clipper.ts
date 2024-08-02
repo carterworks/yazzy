@@ -2,7 +2,20 @@ import { Readability } from "@mozilla/readability";
 import createDomPurify from "dompurify";
 import { JSDOM } from "jsdom";
 import Turndown from "turndown";
-import type { ReadablePage } from "./types";
+
+export interface ReadablePage {
+	title: string;
+	url: string;
+	published?: Date;
+	author: string;
+	topics: string[];
+	tags: string[];
+	markdownContent: string;
+	textContent: string;
+	htmlContent: string;
+	createdAt?: Date;
+}
+
 const DOMPurify = createDomPurify(new JSDOM("<!DOCTYPE html>").window);
 
 async function fetchPage(url: URL): Promise<JSDOM> {
@@ -51,7 +64,7 @@ function getMetaContent(
 export async function clip(url: URL): Promise<ReadablePage> {
 	const page = await fetchPage(url);
 	if (!page || !page.window.document) {
-		throw new Error("Failed to fetch page");
+		throw new Error(`Failed to fetch page "${url.toString()}"`);
 	}
 
 	const tags = [
@@ -68,7 +81,7 @@ export async function clip(url: URL): Promise<ReadablePage> {
 		keepClasses: true,
 	}).parse();
 	if (!article) {
-		throw new Error("Failed to parse article");
+		throw new Error(`Failed to parse article contents of "${url.toString()}"`);
 	}
 
 	article.content = DOMPurify.sanitize(article.content);
