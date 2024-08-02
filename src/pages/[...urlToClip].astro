@@ -52,16 +52,16 @@ function generateObsidianUri(
 		tags: article.tags.join(" "),
 	};
 	let fileContent = "---";
-	for (const [key, value] of Object.entries(params)) {
-		fileContent += `\n${key}: ${value}`;
-	}
+	fileContent += Object.entries(params)
+		.map(([key, value]) => `${key}: ${value}`)
+		.join("\n");
 	fileContent += `\n---\n\n${article.markdownContent}`;
 
 	return `obsidian://new?file=${encodeURIComponent(folder + fileName)}&content=${encodeURIComponent(fileContent)}${vaultName}`;
 }
 
 if (!urlToClip || !isUrl(urlToClip)) {
-	return Astro.redirect("404");
+	return Astro.redirect(`/404?url=${encodeURIComponent(urlToClip)}`);
 }
 
 const article = await clip(new URL(urlToClip));

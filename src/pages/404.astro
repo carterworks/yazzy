@@ -1,0 +1,30 @@
+---
+import BasePage from "../layouts/BasePage.astro";
+---
+
+<BasePage title="Are you lost? | yazzy">
+	<script type="module">
+		function renderBadUrlMessage(badUrl) {
+			if (!badUrl) {
+				return;
+			}
+			const $q = document.createElement("q");
+			const $code = document.createElement("code");
+			$code.textContent = attemptedClipUrl;
+			$q.appendChild($code);
+			const $errorMessage = document.getElementById("errorMessage");
+			$errorMessage.appendChild(
+				document.createTextNode("I tried to clip and snip and readerize "),
+			);
+			$errorMessage.appendChild($q);
+			$errorMessage.appendChild(
+				document.createTextNode(", but I couldn't find it."),
+			);
+		}
+		const searchParams = new URLSearchParams(location.search);
+		const attemptedClipUrl = decodeURIComponent(searchParams.get("url") ?? "");
+		renderBadUrlMessage(attemptedClipUrl);
+	</script>
+	<h1 class="text-3xl">404: I don't know where that is.</h1>
+	<p id="errorMessage"></p>
+</BasePage>
