@@ -3,8 +3,8 @@ import BasePage from "../layouts/BasePage.astro";
 ---
 
 <BasePage title="Are you lost? | yazzy">
-	<script type="module">
-		function renderBadUrlMessage(badUrl) {
+	<script>
+		function renderBadUrlMessage(badUrl: string) {
 			if (!badUrl) {
 				return;
 			}
@@ -13,6 +13,9 @@ import BasePage from "../layouts/BasePage.astro";
 			$code.textContent = attemptedClipUrl;
 			$q.appendChild($code);
 			const $errorMessage = document.getElementById("errorMessage");
+			if (!$errorMessage) {
+				return;
+			}
 			$errorMessage.appendChild(
 				document.createTextNode("I tried to clip and snip and readerize "),
 			);
