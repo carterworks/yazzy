@@ -42,7 +42,7 @@ function generateObsidianUri(
 	// Check if there's an author and add brackets
 	const authorBrackets = article.author ? `"[[${article.author}]]"` : "";
 	const params = {
-		category: "[[Clippings]]",
+		category: '"[[Clippings]]"',
 		author: authorBrackets,
 		title: article.title,
 		url: article.url,
