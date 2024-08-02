@@ -1,4 +1,6 @@
 ---
+import { ViewTransitions } from "astro:transitions";
+import Settings from "../components/Settings.astro";
 const { title } = Astro.props;
 ---
 
@@ -9,17 +11,26 @@ const { title } = Astro.props;
 		<title>{title}</title>
 		<link rel="manifest" href="/manifest.webmanifest" />
 		<link rel="icon" href="/scissors.svg" type="image/svg+xml" />
+		<ViewTransitions />
 	</head>
 
 	<body class="text-base px-4 lg:px-0">
 		<div class="m-auto max-w-prose my-4">
-			<nav class="flex items-center mb-4 gap-4">
+			<nav class="flex items-center mb-4 gap-4" transition:animate="slide">
 				<div class="mr-auto">
 					<h1 class="text-2xl">
 						<a href="/">yazzy</a>
 					</h1>
 					<p class="text-xs">Plain ol' reading</p>
 				</div>
+				<details>
+					<summary>Settings</summary>
+					<div
+						class="absolute border-black border-2 p-2 bg-inherit rounded-lg bg-white"
+					>
+						<Settings />
+					</div>
+				</details>
 				<a
 					href="https://github.com/carterworks/yazzy"
 					target="_blank"
