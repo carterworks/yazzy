@@ -70,7 +70,7 @@ const article = await clip(new URL(urlToClip));
 <BasePage title={`${article.title} | yazzy`}>
 	<div id="controls" class="flex gap-3 mb-4 items-center">
 		<div
-			class="border border-arc-focus py-1 px-2 rounded-lg hover:bg-arc-hover active:bg-arc-focus transition bg-transparent text-center"
+			class="border py-1 px-2 rounded-lg transition bg-transparent text-center"
 		>
 			<a href={generateObsidianUri(article)} class=""> Save to Obsidian </a>
 		</div>
