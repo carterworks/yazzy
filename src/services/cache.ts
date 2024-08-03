@@ -30,6 +30,10 @@ class CacheService {
 		url: string;
 		summary: string;
 	}>;
+	#getArticleCountStatement: BetterSqlite3.Statement<
+		unknown[],
+		{ "COUNT(*)": number }
+	>;
 	constructor(loc = ":memory:") {
 		const db = new Database(loc, {});
 		db.pragma("journal_mode = WAL");
@@ -81,6 +85,15 @@ class CacheService {
 		this.#addSummaryStatement = this.#db.prepare(
 			"UPDATE articles SET summary = :summary WHERE url = :url",
 		);
+		this.#getArticleCountStatement = this.#db.prepare(
+			"SELECT COUNT(*) FROM articles",
+		);
+
+		console.log(
+			"CacheService initialized [path: %s][article count: %d]",
+			loc,
+			this.getArticleCount(),
+		);
 	}
 
 	insertArticle(article: ReadablePage): void {
@@ -110,6 +123,13 @@ class CacheService {
 
 	addSummary(url: string, summary: string): void {
 		this.#addSummaryStatement.run({ url, summary });
+	}
+
+	getArticleCount(): number {
+		const result = this.#getArticleCountStatement.get();
+		if (!result || !result["COUNT(*)"]) return 0;
+		const count = result["COUNT(*)"];
+		return count;
 	}
 }
 
