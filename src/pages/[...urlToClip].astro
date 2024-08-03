@@ -2,6 +2,7 @@
 import createDomPurify from "dompurify";
 import { JSDOM } from "jsdom";
 import BasePage from "../layouts/BasePage.astro";
+import { cache } from "../services/cache";
 import { clip } from "../services/clipper";
 import { summarize } from "../services/summarizer";
 import type { ReadablePage } from "../types";
@@ -69,7 +70,12 @@ if (!urlToClip || !isUrl(urlToClip)) {
 	return Astro.redirect(`/404?url=${encodeURIComponent(urlToClip)}`);
 }
 
-const article = await clip(new URL(urlToClip));
+let article = cache.getArticle(urlToClip);
+if (!article) {
+	article = await clip(new URL(urlToClip));
+	cache.insertArticle(article);
+}
+
 const authCookie = Astro.cookies.get("Authorization");
 if (!article.summary && authCookie) {
 	const [model, apiKey] = (atob(authCookie.value) || "=").split("=");
@@ -77,7 +83,10 @@ if (!article.summary && authCookie) {
 		return;
 	}
 	article.summary = await summarize(article.textContent, model, apiKey);
-	article.summary = DOMPurify.sanitize(article.summary);
+	if (article.summary) {
+		article.summary = DOMPurify.sanitize(article.summary);
+		cache.addSummary(urlToClip, article.summary as string);
+	}
 }
 ---
 
