@@ -20,3 +20,7 @@ primary_region = 'sjc'
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
+
+[mounts]
+  source="article_cache"
+  destination="/mnt/article_cache"
