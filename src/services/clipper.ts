@@ -2,19 +2,7 @@ import { Readability } from "@mozilla/readability";
 import createDomPurify from "dompurify";
 import { JSDOM } from "jsdom";
 import Turndown from "turndown";
-
-export interface ReadablePage {
-	title: string;
-	url: string;
-	published?: Date;
-	author: string;
-	topics: string[];
-	tags: string[];
-	markdownContent: string;
-	textContent: string;
-	htmlContent: string;
-	createdAt?: Date;
-}
+import type { ReadablePage } from "../types";
 
 const DOMPurify = createDomPurify(new JSDOM("<!DOCTYPE html>").window);
 

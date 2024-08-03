@@ -1,8 +1,13 @@
 ---
+import createDomPurify from "dompurify";
+import { JSDOM } from "jsdom";
 import BasePage from "../layouts/BasePage.astro";
-import { type ReadablePage, clip } from "../services/clipper";
+import { clip } from "../services/clipper";
+import { summarize } from "../services/summarizer";
+import type { ReadablePage } from "../types";
 import { isUrl } from "../utils";
 export const prerender = false;
+const DOMPurify = createDomPurify(new JSDOM("<!DOCTYPE html>").window);
 
 const { urlToClip } = Astro.params;
 
@@ -65,6 +70,15 @@ if (!urlToClip || !isUrl(urlToClip)) {
 }
 
 const article = await clip(new URL(urlToClip));
+const authCookie = Astro.cookies.get("Authorization");
+if (!article.summary && authCookie) {
+	const [model, apiKey] = (atob(authCookie.value) || "=").split("=");
+	if (!model || !apiKey) {
+		return;
+	}
+	article.summary = await summarize(article.textContent, model, apiKey);
+	article.summary = DOMPurify.sanitize(article.summary);
+}
 ---
 
 <BasePage title={`${article.title} | yazzy`}>
@@ -82,6 +96,14 @@ const article = await clip(new URL(urlToClip));
 		{article.author && <p class="text-2xl">{article.author}</p>}
 	</header>
 	<main>
+		{
+			article.summary && (
+				<aside class="prose font-humanist mt-4">
+					<h3>Summary</h3>
+					<div set:html={article.summary} />
+				</aside>
+			)
+		}
 		<article
 			class="prose lg:prose-xl font-humanist"
 			set:html={article.htmlContent}
