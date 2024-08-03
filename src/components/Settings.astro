@@ -1,0 +1,77 @@
+---
+// A few settings:
+// * a checkbox to "enable AI summaries",
+// * a selector for the "AI model" to use,
+// * a text input for the API key.
+
+// when the component loads, it will read the Authorization cookie. If there is a value,
+// then that means that "AI summaries" are enabled, and the model and API key will be
+// read from the cookie.
+// on save, the form will not submit anywhere, but javascript will save the settings into the Authorization cookie
+// The authorization cookie is a base64 encoded value of "model=API_KEY", so it will look like "gpt-4o-mini=1234567890"
+// (but base64 encoded)
+---
+
+<script>
+	const form = document.querySelector("form");
+	if (!form) {
+		throw new Error("Form not found");
+	}
+	const enableSummaries: HTMLInputElement | null = form.querySelector(
+		"input[name=enableSummaries]",
+	);
+	const model: HTMLSelectElement | null =
+		form.querySelector("select[name=model]");
+	const apiKey: HTMLInputElement | null =
+		form.querySelector("input[name=apiKey]");
+	if (!enableSummaries || !model || !apiKey) {
+		throw new Error("Form elements not found");
+	}
+
+	const cookie = document.cookie
+		.split(";")
+		.find((c) => c.startsWith("Authorization="));
+	if (cookie) {
+		const [modelValue, apiKeyValue] = atob(cookie.split("=")[1]).split("=");
+		enableSummaries.checked = true;
+		model.value = modelValue;
+		apiKey.value = apiKeyValue;
+	}
+
+	form.addEventListener("submit", (event) => {
+		event.preventDefault();
+		if (!enableSummaries.checked) {
+			// delete the cookie
+			document.cookie = `Authorization=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Secure; Path=/; Domain=${window.location.hostname};`;
+			model.value = "";
+			apiKey.value = "";
+			return;
+		}
+		const value = btoa(`${model.value}=${apiKey.value}`);
+		document.cookie = `Authorization=${value}; max-age=31536000; SameSite=Strict; Secure; Path=/; Domain=${window.location.hostname};`;
+	});
+</script>
+<form class="flex flex-col gap-4 items-start">
+	<label class="flex flex-col items-start">
+		<span>Enable AI summaries</span>
+		<input type="checkbox" name="enableSummaries" />
+	</label>
+	<label class="flex flex-col items-start">
+		<span>AI model</span>
+		<select name="model" class="border rounded-md py-1 px-4">
+			<option value="gpt-4o-mini">GPT-4o mini</option>
+		</select>
+	</label>
+	<label class="flex flex-col items-start">
+		<span>API key</span>
+		<input
+			type="text"
+			name="apiKey"
+			class="border focus:border-transparent block w-full rounded-md focus:ring-0 py-1 px-4 transition"
+		/>
+	</label>
+	<button
+		type="submit"
+		class="border py-1 px-6 rounded-lg transition bg-transparent">Save</button
+	>
+</form>

@@ -12,7 +12,7 @@ import BasePage from "../layouts/BasePage.astro";
 	</header>
 	<form action="/api/clip" method="GET" class="flex gap-1 items-center">
 		<input
-			class="border border-arc-focus focus:bg-arc-backgroundExtra focus:border-transparent block w-full rounded-md bg-arc-cutout focus:ring-0 py-1 px-4 transition"
+			class="border focus:border-transparent block w-full rounded-md focus:ring-0 py-1 px-4 transition"
 			type="url"
 			id="url"
 			name="url"
@@ -21,7 +21,7 @@ import BasePage from "../layouts/BasePage.astro";
 		/>
 		<button
 			type="submit"
-			class="mx-auto border border-arc-focus py-1 px-6 rounded-lg hover:bg-arc-hover active:bg-arc-focus transition bg-transparent"
+			class="mx-auto border py-1 px-6 rounded-lg transition bg-transparent"
 		>
 			Clip
 		</button>
