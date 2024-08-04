@@ -57,7 +57,7 @@ function generateObsidianUri(
 		topics: "",
 		tags: article.tags.join(" "),
 	};
-	let fileContent = "---";
+	let fileContent = "---\n";
 	fileContent += Object.entries(params)
 		.map(([key, value]) => `${key}: ${value}`)
 		.join("\n");
