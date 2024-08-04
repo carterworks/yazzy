@@ -1,4 +1,8 @@
 const validModels = "gpt-4o-mini";
+import createDomPurify from "dompurify";
+import { JSDOM } from "jsdom";
+
+const DOMPurify = createDomPurify(new JSDOM("<!DOCTYPE html>").window);
 
 export async function summarize(
 	text: string,
@@ -48,5 +52,5 @@ Example in HTML
 	}
 	const data = await response.json();
 	const completion = data.choices[0].message.content;
-	return completion;
+	return DOMPurify.sanitize(completion);
 }
