@@ -1,5 +1,6 @@
 ---
 import { ViewTransitions } from "astro:transitions";
+import Footer from "../components/Footer.astro";
 import Settings from "../components/Settings.astro";
 import { cache } from "../services/cache";
 const { title } = Astro.props;
@@ -43,11 +44,7 @@ const articleCount = cache.getArticleCount();
 				</a>
 			</nav>
 			<slot />
-			<footer class="text-xs mt-4">
-				<p>
-					{articleCount} articles cached
-				</p>
-			</footer>
+			<Footer />
 		</div>
 	</body>
 </html>
