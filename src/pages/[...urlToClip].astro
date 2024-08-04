@@ -3,7 +3,7 @@ import createDomPurify from "dompurify";
 import { JSDOM } from "jsdom";
 import BasePage from "../layouts/BasePage.astro";
 import { cache } from "../services/cache";
-import { clip } from "../services/clipper";
+import { clip, convertHtmlToMarkdown } from "../services/clipper";
 import { summarize } from "../services/summarizer";
 import type { ReadablePage } from "../types";
 import { isUrl } from "../utils";
@@ -57,11 +57,15 @@ function generateObsidianUri(
 		topics: "",
 		tags: article.tags.join(" "),
 	};
-	let fileContent = "---";
+	let fileContent = "---\n";
 	fileContent += Object.entries(params)
 		.map(([key, value]) => `${key}: ${value}`)
 		.join("\n");
-	fileContent += `\n---\n\n${article.markdownContent}`;
+	fileContent += "\n---\n";
+	if (article.summary) {
+		fileContent += `\n${convertHtmlToMarkdown(article.summary)}\n`;
+	}
+	fileContent += `\n${article.markdownContent}\n`;
 
 	return `obsidian://new?file=${encodeURIComponent(folder + fileName)}&content=${encodeURIComponent(fileContent)}${vaultName}`;
 }
@@ -110,6 +114,7 @@ if (!article.summary && authCookie) {
 				<aside class="prose font-humanist mt-4">
 					<h3>Summary</h3>
 					<div set:html={article.summary} />
+					<hr />
 				</aside>
 			)
 		}

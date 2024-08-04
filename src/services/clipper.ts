@@ -49,6 +49,17 @@ function getMetaContent(
 	return content.trim();
 }
 
+export function convertHtmlToMarkdown(html: string): string {
+	const turndown = new Turndown({
+		headingStyle: "atx",
+		hr: "---",
+		bulletListMarker: "-",
+		codeBlockStyle: "fenced",
+		emDelimiter: "*",
+	});
+	return turndown.turndown(html);
+}
+
 export async function clip(url: URL): Promise<ReadablePage> {
 	const page = await fetchPage(url);
 	if (!page || !page.window.document) {
@@ -74,14 +85,7 @@ export async function clip(url: URL): Promise<ReadablePage> {
 
 	article.content = DOMPurify.sanitize(article.content);
 
-	const markdownBody = new Turndown({
-		headingStyle: "atx",
-		hr: "---",
-		bulletListMarker: "-",
-		codeBlockStyle: "fenced",
-		emDelimiter: "*",
-	}).turndown(article.content);
-
+	const markdownBody = convertHtmlToMarkdown(article.content);
 	// Fetch byline, meta author, property author, or site name
 	const author =
 		article.byline ||

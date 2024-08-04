@@ -1,4 +1,8 @@
 const validModels = "gpt-4o-mini";
+import createDomPurify from "dompurify";
+import { JSDOM } from "jsdom";
+
+const DOMPurify = createDomPurify(new JSDOM("<!DOCTYPE html>").window);
 
 export async function summarize(
 	text: string,
@@ -32,9 +36,9 @@ Brief: Aim for a summary within 30 words, with 5-10 words per point and 3-5 poin
 Example in HTML
 <p>China's exports to Russia are decreasing due to U.S. secondary sanctions and export controls.</p>
 <ul>
-<li>📊 China's exports to Russia Exports of ball bearings and Tier 1 items have decreased significantly.</li>
-<li>🔨 U.S. economic tools Secondary sanctions and export controls are influencing China's trade with Russia.</li>
-<li>👥 China's role China is slowly shifting to the coalition side in the economic war against Russia.</li>
+<li>📊 China's exports: to Russia Exports of ball bearings and Tier 1 items have decreased significantly.</li>
+<li>🔨 U.S. economic: tools Secondary sanctions and export controls are influencing China's trade with Russia.</li>
+<li>👥 China's role: China is slowly shifting to the coalition side in the economic war against Russia.</li>
 </ul>
 `,
 				},
@@ -48,5 +52,5 @@ Example in HTML
 	}
 	const data = await response.json();
 	const completion = data.choices[0].message.content;
-	return completion;
+	return DOMPurify.sanitize(completion);
 }

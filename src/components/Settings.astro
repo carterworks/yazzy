@@ -13,7 +13,7 @@
 ---
 
 <script>
-	const form = document.querySelector("form");
+	const form = document.getElementById("settings-form");
 	if (!form) {
 		throw new Error("Form not found");
 	}
@@ -38,6 +38,7 @@
 		apiKey.value = apiKeyValue;
 	}
 
+	const statusText = form.querySelector("#status");
 	form.addEventListener("submit", (event) => {
 		event.preventDefault();
 		if (!enableSummaries.checked) {
@@ -49,9 +50,13 @@
 		}
 		const value = btoa(`${model.value}=${apiKey.value}`);
 		document.cookie = `Authorization=${value}; max-age=31536000; SameSite=Strict; Secure; Path=/; Domain=${window.location.hostname};`;
+		statusText && (statusText.textContent = "✔︎ Saved!");
+		setTimeout(() => {
+			statusText && (statusText.textContent = "");
+		}, 3000);
 	});
 </script>
-<form class="flex flex-col gap-4 items-start">
+<form class="flex flex-col gap-4 items-start" id="settings-form">
 	<label class="flex flex-col items-start">
 		<span>Enable AI summaries</span>
 		<input type="checkbox" name="enableSummaries" />
@@ -70,8 +75,11 @@
 			class="border focus:border-transparent block w-full rounded-md focus:ring-0 py-1 px-4 transition"
 		/>
 	</label>
-	<button
-		type="submit"
-		class="border py-1 px-6 rounded-lg transition bg-transparent">Save</button
-	>
+	<div class="flex items-center">
+		<button
+			type="submit"
+			class="border py-1 px-6 rounded-lg transition bg-transparent">Save</button
+		>
+		<div class="ml-2" id="status"></div>
+	</div>
 </form>
