@@ -2,9 +2,7 @@
 import { ViewTransitions } from "astro:transitions";
 import Footer from "../components/Footer.astro";
 import Settings from "../components/Settings.astro";
-import { cache } from "../services/cache";
 const { title } = Astro.props;
-const articleCount = cache.getArticleCount();
 ---
 
 <html lang="en">
