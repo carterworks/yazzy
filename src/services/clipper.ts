@@ -94,9 +94,9 @@ export async function clip(url: URL): Promise<ReadablePage> {
 		getMetaContent(page.window.document, "property", "og:site_name");
 
 	/* Try to get published date */
-	const publishedDate = page.window.document
-		.querySelector("time")
-		?.getAttribute("datetime");
+	const publishedDate =
+		article.publishedTime ??
+		page.window.document.querySelector("time")?.getAttribute("datetime");
 	const published = publishedDate ? new Date(publishedDate) : undefined;
 
 	return {
