@@ -54,7 +54,6 @@ function generateObsidianUri(
 		url: article.url,
 		clipped: `"${today}"`,
 		published: `"${formatDate(article.published)}"`,
-		topics: article.topics.map((t) => `"${t}"`).join(" "),
 		tags: article.tags.map((t) => `"${t}"`).join(" "),
 	};
 	let fileContent = "---\n";

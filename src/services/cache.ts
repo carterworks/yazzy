@@ -8,7 +8,6 @@ interface SerializedReadablePage {
 	url: string;
 	published?: number;
 	author: string;
-	topics: string;
 	tags: string;
 	markdownContent: string;
 	textContent: string;
@@ -44,7 +43,6 @@ class CacheService {
 	title TEXT,
 	author TEXT,
 	published INTEGER,
-	topics TEXT,
 	tags TEXT,
 	markdownContent TEXT,
 	textContent TEXT,
@@ -59,7 +57,6 @@ class CacheService {
 		title,
 		author,
 		published,
-		topics,
 		tags,
 		markdownContent,
 		textContent,
@@ -71,7 +68,6 @@ class CacheService {
 		:title,
 		:author,
 		:published,
-		:topics,
 		:tags,
 		:markdownContent,
 		:textContent,
@@ -102,7 +98,6 @@ class CacheService {
 			...article,
 			published: article.published?.getTime(),
 			createdAt: article.createdAt?.getTime(),
-			topics: article.topics.join(LIST_DELIMITER),
 			tags: article.tags.join(LIST_DELIMITER),
 			summary: article.summary ?? "",
 		});
@@ -115,7 +110,6 @@ class CacheService {
 			...result,
 			published: result.published ? new Date(result.published) : undefined,
 			createdAt: result.createdAt ? new Date(result.createdAt) : undefined,
-			topics: result.topics.split(LIST_DELIMITER),
 			tags: result.tags.split(LIST_DELIMITER),
 		};
 		return article;
