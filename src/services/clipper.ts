@@ -57,6 +57,16 @@ export function convertHtmlToMarkdown(html: string): string {
 		codeBlockStyle: "fenced",
 		emDelimiter: "*",
 	});
+	turndown.keep([
+		"iframe",
+		"sub",
+		"sup",
+		"u",
+		"ins",
+		"del",
+		"small",
+		"big" as keyof HTMLElementTagNameMap,
+	]);
 	return turndown.turndown(html);
 }
 
