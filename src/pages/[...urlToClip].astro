@@ -90,7 +90,6 @@ if (!article.summary && authCookie) {
 	}
 	article.summary = await summarize(article.textContent, model, apiKey);
 	if (article.summary) {
-		article.summary = DOMPurify.sanitize(article.summary);
 		cache.addSummary(urlToClip, article.summary as string);
 	}
 }
