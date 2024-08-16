@@ -64,6 +64,8 @@ function generateObsidianUri(
 	fileContent += "\n---\n";
 	if (article.summary) {
 		fileContent += `\n${convertHtmlToMarkdown(article.summary)}\n`;
+		fileContent += "\n---\n";
+		fileContent += `\n# ${article.title}\n`;
 	}
 	fileContent += `\n${article.markdownContent}\n`;
 
