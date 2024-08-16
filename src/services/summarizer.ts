@@ -1,29 +1,10 @@
-const validModels = "gpt-4o-mini";
+import { createOpenAI } from "@ai-sdk/openai";
+import { generateText } from "ai";
 import createDomPurify from "dompurify";
 import { JSDOM } from "jsdom";
-
-const DOMPurify = createDomPurify(new JSDOM("<!DOCTYPE html>").window);
-
-export async function summarize(
-	text: string,
-	model: string,
-	apiKey: string,
-): Promise<string> {
-	if (!text || !model || !apiKey || !validModels.includes(model)) {
-		return "";
-	}
-	const response = await fetch("https://api.openai.com/v1/chat/completions", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${apiKey}`,
-		},
-		body: JSON.stringify({
-			model,
-			messages: [
-				{
-					role: "system",
-					content: `You will receive an article. Summarize it. 
+type ValidModelName = "gpt-4o-mini";
+const validModels: ValidModelName[] = ["gpt-4o-mini"];
+const systemPrompt = `You will receive an article. Summarize it. 
 Tone and Style
 Concise and direct: Use clear and straightforward language.
 Neutral and professional: Avoid subjective or emotive language.
@@ -40,17 +21,27 @@ Example in HTML
 <li>🔨 U.S. economic: tools Secondary sanctions and export controls are influencing China's trade with Russia.</li>
 <li>👥 China's role: China is slowly shifting to the coalition side in the economic war against Russia.</li>
 </ul>
-`,
-				},
-				{ role: "user", content: text },
-			],
-			temperature: 0.7,
-		}),
-	});
-	if (!response.ok) {
+`;
+
+const DOMPurify = createDomPurify(new JSDOM("<!DOCTYPE html>").window);
+
+export function isValidModelName(model: string): model is ValidModelName {
+	return validModels.includes(model as ValidModelName);
+}
+
+export async function summarize(
+	text: string,
+	model: string,
+	apiKey: string,
+): Promise<string> {
+	if (!text || !model || !apiKey || !isValidModelName(model)) {
 		return "";
 	}
-	const data = await response.json();
-	const completion = data.choices[0].message.content;
+	const openai = createOpenAI({ apiKey });
+	const { text: completion } = await generateText({
+		model: openai(model),
+		system: systemPrompt,
+		prompt: text,
+	});
 	return DOMPurify.sanitize(completion);
 }
