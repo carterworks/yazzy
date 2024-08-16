@@ -49,13 +49,13 @@ function generateObsidianUri(
 	const authorBrackets = article.author ? `"[[${article.author}]]"` : "";
 	const params = {
 		category: '"[[Clippings]]"',
-		author: authorBrackets,
-		title: article.title,
+		author: `"${authorBrackets}"`,
+		title: `"${article.title}"`,
 		url: article.url,
-		clipped: today,
-		published: formatDate(article.published),
-		topics: "",
-		tags: article.tags.join(" "),
+		clipped: `"${today}"`,
+		published: `"${formatDate(article.published)}"`,
+		topics: article.topics.map((t) => `"${t}"`).join(" "),
+		tags: article.tags.map((t) => `"${t}"`).join(" "),
 	};
 	let fileContent = "---\n";
 	fileContent += Object.entries(params)
