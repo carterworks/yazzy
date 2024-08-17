@@ -93,6 +93,11 @@ if (!article.summary && authCookie) {
 const plainTextSummary = article.summary
 	? article.summary.replace(/<[^>]*>/g, "")
 	: "";
+const metadata = [
+	article.author,
+	article.published && formatDate(article.published),
+	new URL(article.url).hostname,
+].filter(Boolean);
 ---
 
 <BasePage title={`${article.title} | yazzy`}>
@@ -128,9 +133,11 @@ const plainTextSummary = article.summary
 	</div>
 	<header class="max-w-prose">
 		<h2 class="text-3xl">
-			<a href={article.url}>{article.title}</a>
+			<a href={article.url} class="hover:underline">{article.title}</a>
 		</h2>
-		{article.author && <p class="text-2xl">{article.author}</p>}
+		<p class="text-sm mt-4">
+			{metadata.join(" ・ ")}
+		</p>
 	</header>
 	<main>
 		{
