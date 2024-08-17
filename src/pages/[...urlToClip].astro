@@ -90,9 +90,21 @@ if (!article.summary && authCookie) {
 		cache.addSummary(urlToClip, article.summary as string);
 	}
 }
+const plainTextSummary = article.summary
+	? article.summary.replace(/<[^>]*>/g, "")
+	: "";
 ---
 
 <BasePage title={`${article.title} | yazzy`}>
+	<Fragment slot="head">
+		{plainTextSummary && <meta name="description" content={plainTextSummary} />}
+		<meta property="og:title" content={article.title} />
+		{plainTextSummary && <meta property="og:description" content={plainTextSummary} />}
+		<meta property="og:url" content={article.url} />
+		<meta property="og:type" content="article" />
+		{article.published && <meta property="og:article:published_time" content={formatDate(article.published)} />}
+		{article.author && <meta property="og:article:author" content={article.author} />}
+	</Fragment>
 	<div id="controls" class="flex flex-wrap gap-3 mb-4 items-center">
 		<div
 			class="border py-1 px-2 rounded-lg transition bg-transparent text-center hover:bg-slate-200 active:bg-slate-400"
