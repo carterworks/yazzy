@@ -57,6 +57,16 @@ export function convertHtmlToMarkdown(html: string): string {
 		codeBlockStyle: "fenced",
 		emDelimiter: "*",
 	});
+	turndown.keep([
+		"iframe",
+		"sub",
+		"sup",
+		"u",
+		"ins",
+		"del",
+		"small",
+		"big" as keyof HTMLElementTagNameMap,
+	]);
 	return turndown.turndown(html);
 }
 
@@ -94,9 +104,9 @@ export async function clip(url: URL): Promise<ReadablePage> {
 		getMetaContent(page.window.document, "property", "og:site_name");
 
 	/* Try to get published date */
-	const publishedDate = page.window.document
-		.querySelector("time")
-		?.getAttribute("datetime");
+	const publishedDate =
+		article.publishedTime ??
+		page.window.document.querySelector("time")?.getAttribute("datetime");
 	const published = publishedDate ? new Date(publishedDate) : undefined;
 
 	return {
@@ -104,8 +114,7 @@ export async function clip(url: URL): Promise<ReadablePage> {
 		url: url.toString(),
 		published,
 		author,
-		topics: [],
-		tags: tags,
+		tags,
 		markdownContent: markdownBody,
 		textContent: article.textContent,
 		htmlContent: article.content,

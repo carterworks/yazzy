@@ -1,0 +1,13 @@
+---
+interface Props {
+	contents: string;
+	filename: string;
+	class?: string;
+}
+const { contents, filename, class: classes = "" } = Astro.props;
+const type = `text/${filename.endsWith(".md") ? "markdown" : "plain"};charset=utf-8`;
+const url = `data:${type};base64,${btoa(encodeURIComponent(contents))}`;
+---
+<a href={url} class:list={[...classes.split(/\s+/g)]} download={filename}>
+	<slot/>
+</a>
