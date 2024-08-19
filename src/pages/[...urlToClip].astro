@@ -100,20 +100,21 @@ if (!article.summary && authCookie) {
 const plainTextSummary = article.summary
 	? article.summary.replace(/<[^>]*>/g, "")
 	: "";
+const articleHostname = new URL(article.url).hostname;
 const metadata = [
 	article.author,
 	article.published && formatDate(article.published),
-	new URL(article.url).hostname,
+	articleHostname,
 ].filter(Boolean);
 const markdownContent = generateObsidianContents(article);
 const obsidianUri = generateObsidianUri(markdownContent, article.title);
 const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\n---\n${article.textContent}`;
 ---
 
-<BasePage title={`${article.title} | yazzy`}>
+<BasePage title={`${article.title} | ${articleHostname} | yazzy`}>
 	<Fragment slot="head">
 		{plainTextSummary && <meta name="description" content={plainTextSummary} />}
-		<meta property="og:title" content={`${article.title} | yazzy`} />
+		<meta property="og:title" content={`${article.title} | ${articleHostname} | yazzy`} />
 		{plainTextSummary && <meta property="og:description" content={plainTextSummary} />}
 		<meta property="og:url" content={article.url} />
 		<meta property="og:type" content="article" />
