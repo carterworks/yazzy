@@ -34,14 +34,8 @@ function getFilename(title: string): string {
 	);
 }
 
-function generateObsidianUri(
-	article: ReadablePage,
-	folder = "Clippings/",
-	vault = "",
-): string {
+function generateObsidianContents(article: ReadablePage): string {
 	const today = formatDate(new Date());
-	const fileName = getFilename(article.title);
-	const vaultName = vault ? `&vault=${encodeURIComponent(vault)}` : "";
 
 	// Check if there's an author and add brackets
 	const authorBrackets = article.author ? `"[[${article.author}]]"` : "";
@@ -59,13 +53,26 @@ function generateObsidianUri(
 		.map(([key, value]) => `${key}: ${value}`)
 		.join("\n");
 	fileContent += "\n---\n";
+	fileContent += `\n# ${article.title}\n`;
 	if (article.summary) {
+		fileContent += "\n---\n";
+		fileContent += "\n## Summary\n";
 		fileContent += `\n${convertHtmlToMarkdown(article.summary)}\n`;
 		fileContent += "\n---\n";
-		fileContent += `\n# ${article.title}\n`;
 	}
 	fileContent += `\n${article.markdownContent}\n`;
 
+	return fileContent;
+}
+
+function generateObsidianUri(
+	fileContent: string,
+	title: string,
+	folder = "Clippings/",
+	vault = "",
+): string {
+	const fileName = getFilename(title);
+	const vaultName = vault ? `&vault=${encodeURIComponent(vault)}` : "";
 	return `obsidian://new?file=${encodeURIComponent(folder + fileName)}&content=${encodeURIComponent(fileContent)}${vaultName}`;
 }
 
@@ -98,12 +105,15 @@ const metadata = [
 	article.published && formatDate(article.published),
 	new URL(article.url).hostname,
 ].filter(Boolean);
+const markdownContent = generateObsidianContents(article);
+const obsidianUri = generateObsidianUri(markdownContent, article.title);
+const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\n---\n${article.textContent}`;
 ---
 
 <BasePage title={`${article.title} | yazzy`}>
 	<Fragment slot="head">
 		{plainTextSummary && <meta name="description" content={plainTextSummary} />}
-		<meta property="og:title" content={article.title} />
+		<meta property="og:title" content={`${article.title} | yazzy`} />
 		{plainTextSummary && <meta property="og:description" content={plainTextSummary} />}
 		<meta property="og:url" content={article.url} />
 		<meta property="og:type" content="article" />
@@ -114,18 +124,18 @@ const metadata = [
 		<div
 			class="border py-1 px-2 rounded-lg transition bg-transparent text-center hover:bg-slate-200 active:bg-slate-400"
 		>
-			<a href={generateObsidianUri(article)}> Save to Obsidian </a>
+			<a href={obsidianUri}> Save to Obsidian </a>
 		</div>
 		<DownloadAs 
 			class="border py-1 px-2 rounded-lg transition bg-transparent text-center hover:bg-slate-200 active:bg-slate-400"
-			contents={article.markdownContent}
+			contents={markdownContent}
 			filename={`${getFilename(article.title)}.md`}
 		>
 			Download as .md
 		</button>
 		<DownloadAs 
 			class="border py-1 px-2 rounded-lg transition bg-transparent text-center hover:bg-slate-200 active:bg-slate-400"
-			contents={article.textContent}
+			contents={plainTextContent}
 			filename={`${getFilename(article.title)}.txt`}
 		>
 			Download as .txt
