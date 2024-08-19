@@ -103,7 +103,7 @@ const metadata = [
 <BasePage title={`${article.title} | yazzy`}>
 	<Fragment slot="head">
 		{plainTextSummary && <meta name="description" content={plainTextSummary} />}
-		<meta property="og:title" content={article.title} />
+		<meta property="og:title" content={`${article.title} | yazzy`} />
 		{plainTextSummary && <meta property="og:description" content={plainTextSummary} />}
 		<meta property="og:url" content={article.url} />
 		<meta property="og:type" content="article" />
