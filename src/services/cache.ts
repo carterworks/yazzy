@@ -1,7 +1,7 @@
-// A sqlite database is used to cache articles
-import Database from "better-sqlite3";
-import type BetterSqlite3 from "better-sqlite3";
 import type { ReadablePage } from "../types";
+// A sqlite database is used to cache articles
+import db from "./db";
+import type { YazzyDB, YazzyDBStatement } from "./db";
 
 interface SerializedReadablePage {
 	title: string;
@@ -19,40 +19,21 @@ interface SerializedReadablePage {
 const LIST_DELIMITER = "|";
 
 class CacheService {
-	#db: BetterSqlite3.Database;
-	#addArticleStatement: BetterSqlite3.Statement<SerializedReadablePage>;
-	#getArticleStatement: BetterSqlite3.Statement<
+	#addArticleStatement: YazzyDBStatement<SerializedReadablePage>;
+	#getArticleStatement: YazzyDBStatement<
 		{ url: string },
 		SerializedReadablePage
 	>;
-	#addSummaryStatement: BetterSqlite3.Statement<{
+	#addSummaryStatement: YazzyDBStatement<{
 		url: string;
 		summary: string;
 	}>;
-	#getArticleCountStatement: BetterSqlite3.Statement<
+	#getArticleCountStatement: YazzyDBStatement<
 		unknown[],
 		{ "COUNT(*)": number }
 	>;
-	constructor(loc = ":memory:") {
-		const db = new Database(loc, {});
-		db.pragma("journal_mode = WAL");
-
-		// create the table
-		db.prepare(`CREATE TABLE IF NOT EXISTS articles (
-	url TEXT PRIMARY KEY,
-	title TEXT,
-	author TEXT,
-	published INTEGER,
-	tags TEXT,
-	markdownContent TEXT,
-	textContent TEXT,
-	htmlContent TEXT,
-	createdAt INTEGER,
-	summary TEXT
-)`).run();
-
-		this.#db = db;
-		this.#addArticleStatement = this.#db.prepare(`INSERT INTO articles (
+	constructor(db: YazzyDB) {
+		this.#addArticleStatement = db.prepare(`INSERT INTO articles (
 		url,
 		title,
 		author,
@@ -75,19 +56,18 @@ class CacheService {
 		:createdAt,
 		:summary
 	)`);
-		this.#getArticleStatement = this.#db.prepare(
+		this.#getArticleStatement = db.prepare(
 			"SELECT * FROM articles WHERE url = :url",
 		);
-		this.#addSummaryStatement = this.#db.prepare(
+		this.#addSummaryStatement = db.prepare(
 			"UPDATE articles SET summary = :summary WHERE url = :url",
 		);
-		this.#getArticleCountStatement = this.#db.prepare(
+		this.#getArticleCountStatement = db.prepare(
 			"SELECT COUNT(*) FROM articles",
 		);
 
 		console.log(
-			"CacheService initialized [path: %s][article count: %d]",
-			loc,
+			"CacheService initialized [article count: %d]",
 			this.getArticleCount(),
 		);
 	}
@@ -127,4 +107,4 @@ class CacheService {
 	}
 }
 
-export const cache = new CacheService(process.env.DB_PATH);
+export const cache = new CacheService(db);
