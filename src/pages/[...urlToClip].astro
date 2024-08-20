@@ -99,7 +99,7 @@ if (!article.summary && authCookie) {
 }
 const plainTextSummary = article.summary
 	? article.summary.replace(/<[^>]*>/g, "")
-	: article.textContent.substring(0, 200);
+	: `${article.textContent.substring(0, 300)}…`;
 const articleHostname = new URL(article.url).hostname;
 const metadata = [
 	article.author,
