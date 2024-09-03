@@ -14,11 +14,7 @@ function formatDate(date: Date | undefined): string {
 	if (!date) {
 		return "";
 	}
-	return Intl.DateTimeFormat("en-US", {
-		year: "numeric",
-		month: "2-digit",
-		day: "2-digit",
-	}).format(date);
+	return date.toISOString().split("T")[0];
 }
 
 function getFilename(title: string): string {
@@ -41,7 +37,7 @@ function generateObsidianContents(article: ReadablePage): string {
 	const authorBrackets = article.author ? `"[[${article.author}]]"` : "";
 	const params = {
 		category: '"[[Clippings]]"',
-		author: `"${authorBrackets}"`,
+		author: `${authorBrackets}`,
 		title: `"${article.title}"`,
 		url: article.url,
 		clipped: `"${today}"`,
@@ -114,12 +110,26 @@ const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\
 <BasePage title={`${article.title} | ${articleHostname} | yazzy`}>
 	<Fragment slot="head">
 		<meta name="description" content={plainTextSummary} />
-		<meta property="og:title" content={`${article.title} | ${articleHostname} | yazzy`} />
+		<meta
+			property="og:title"
+			content={`${article.title} | ${articleHostname} | yazzy`}
+		/>
 		<meta property="og:description" content={plainTextSummary} />
 		<meta property="og:url" content={article.url} />
 		<meta property="og:type" content="article" />
-		{article.published && <meta property="og:article:published_time" content={formatDate(article.published)} />}
-		{article.author && <meta property="og:article:author" content={article.author} />}
+		{
+			article.published && (
+				<meta
+					property="og:article:published_time"
+					content={formatDate(article.published)}
+				/>
+			)
+		}
+		{
+			article.author && (
+				<meta property="og:article:author" content={article.author} />
+			)
+		}
 	</Fragment>
 	<div id="controls" class="flex flex-wrap gap-3 mb-4 items-center">
 		<div
@@ -127,20 +137,20 @@ const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\
 		>
 			<a href={obsidianUri}> Save to Obsidian </a>
 		</div>
-		<DownloadAs 
+		<DownloadAs
 			class="border py-1 px-2 rounded-lg transition bg-transparent text-center hover:bg-slate-200 active:bg-slate-400"
 			contents={markdownContent}
 			filename={`${getFilename(article.title)}.md`}
 		>
 			Download as .md
-		</button>
-		<DownloadAs 
+		</DownloadAs>
+		<DownloadAs
 			class="border py-1 px-2 rounded-lg transition bg-transparent text-center hover:bg-slate-200 active:bg-slate-400"
 			contents={plainTextContent}
 			filename={`${getFilename(article.title)}.txt`}
 		>
 			Download as .txt
-		</button>
+		</DownloadAs>
 	</div>
 	<header class="max-w-prose">
 		<h2 class="text-3xl">
