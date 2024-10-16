@@ -1,4 +1,6 @@
 ---
+import Button from "./Button.astro";
+
 interface Props {
 	contents: string;
 	filename: string;
@@ -15,6 +17,6 @@ const { contents, filename, class: classes = "" } = Astro.props;
 const type = `text/${filename.endsWith(".md") ? "markdown" : "plain"};charset=utf-8`;
 const url = `data:${type};base64,${stringToBase64(contents)}`;
 ---
-<a href={url} class:list={[...classes.split(/\s+/g)]} download={filename}>
+<Button href={url} class:list={[...classes.split(/\s+/g)]} download={filename}>
 	<slot/>
-</a>
+</Button>
