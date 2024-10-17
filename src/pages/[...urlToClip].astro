@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import Button from "../components/Button.astro";
 import DownloadAs from "../components/DownloadAs.astro";
 import BasePage from "../layouts/BasePage.astro";
@@ -108,7 +109,10 @@ const obsidianUri = generateObsidianUri(markdownContent, article.title);
 const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\n---\n${article.textContent}`;
 ---
 
-<BasePage title={`${article.title} | ${articleHostname} | yazzy`}>
+<BasePage
+	title={`${article.title} | ${articleHostname} | yazzy`}
+	class="grid grid-cols-1 lg:grid-cols-[auto,1fr] gap-2 lg:gap-4"
+>
 	<Fragment slot="head">
 		<meta name="description" content={plainTextSummary} />
 		<meta
@@ -132,42 +136,56 @@ const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\
 			)
 		}
 	</Fragment>
-	<div id="controls" class="flex flex-wrap gap-3 mb-4 items-center">
-		<Button href={obsidianUri}>Save to Obsidian</>
+	<aside
+		class="flex lg:flex-col gap-3 items-center lg:col-start-1 lg:row-span-2"
+	>
+		<Button
+			href={obsidianUri}
+			title="Save to Obsidian"
+			class="opacity-50 hover:opacity-80 active:opacity-100"
+		>
+			<Icon class="h-4" name="attach" />
+		</Button>
 		<DownloadAs
 			contents={markdownContent}
 			filename={`${getFilename(article.title)}.md`}
+			title="Download as Markdown"
+			class="opacity-50 hover:opacity-80 active:opacity-100"
 		>
-			Download as .md
+			<Icon name="book-closed" />
 		</DownloadAs>
 		<DownloadAs
 			contents={plainTextContent}
 			filename={`${getFilename(article.title)}.txt`}
+			title="Download as plain text"
+			class="opacity-50 hover:opacity-80 active:opacity-100"
 		>
-			Download as .txt
+			<Icon name="inbox-download" />
 		</DownloadAs>
+	</aside>
+	<div class="lg:col-start-2">
+		<header class="max-w-prose">
+			<h2 class="text-3xl font-transitional">
+				<a href={article.url} class="hover:underline">{article.title}</a>
+			</h2>
+			<p class="text-sm mt-2">
+				{metadata.join(" ・ ")}
+			</p>
+		</header>
+		<main>
+			{
+				article.summary && (
+					<aside class="prose font-humanist mt-4">
+						<h3>Summary</h3>
+						<div set:html={article.summary} />
+						<hr />
+					</aside>
+				)
+			}
+			<article
+				class="prose lg:prose-xl font-humanist"
+				set:html={article.htmlContent}
+			/>
+		</main>
 	</div>
-	<header class="max-w-prose">
-		<h2 class="text-3xl font-transitional">
-			<a href={article.url} class="hover:underline">{article.title}</a>
-		</h2>
-		<p class="text-sm mt-2">
-			{metadata.join(" ・ ")}
-		</p>
-	</header>
-	<main>
-		{
-			article.summary && (
-				<aside class="prose font-humanist mt-4">
-					<h3>Summary</h3>
-					<div set:html={article.summary} />
-					<hr />
-				</aside>
-			)
-		}
-		<article
-			class="prose lg:prose-xl font-humanist"
-			set:html={article.htmlContent}
-		/>
-	</main>
 </BasePage>

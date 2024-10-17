@@ -17,6 +17,14 @@ const { title, class: classes } = Astro.props;
 		<link rel="icon" href="/scissors.svg" type="image/svg+xml" />
 		<ViewTransitions />
 		<slot name="head" />
+		<style is:global>
+			.primary {
+				@apply fill-slate-400;
+			}
+			.secondary {
+				@apply fill-slate-900;
+			}
+		</style>
 	</head>
 
 	<body class="text-base px-4 lg:px-0">
