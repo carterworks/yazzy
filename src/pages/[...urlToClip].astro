@@ -8,6 +8,7 @@ import { clip, convertHtmlToMarkdown } from "../services/clipper";
 import { summarize } from "../services/summarizer";
 import type { ReadablePage } from "../types";
 import { isUrl } from "../utils";
+import ArticleMap from "../components/ArticleMap.astro";
 export const prerender = false;
 
 const { urlToClip } = Astro.params;
@@ -162,6 +163,7 @@ const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\
 		>
 			<Icon name="inbox-download" />
 		</DownloadAs>
+		<ArticleMap class="lg:sticky lg:top-0" />
 	</aside>
 	<div class="lg:col-start-2 max-w-prose">
 		<header class="border-b-2 pb-4">
