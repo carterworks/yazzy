@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
+import ArticleMap from "../components/ArticleMap.astro";
 import Button from "../components/Button.astro";
 import DownloadAs from "../components/DownloadAs.astro";
 import BasePage from "../layouts/BasePage.astro";
@@ -8,7 +9,6 @@ import { clip, convertHtmlToMarkdown } from "../services/clipper";
 import { summarize } from "../services/summarizer";
 import type { ReadablePage } from "../types";
 import { isUrl } from "../utils";
-import ArticleMap from "../components/ArticleMap.astro";
 export const prerender = false;
 
 const { urlToClip } = Astro.params;

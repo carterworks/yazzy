@@ -29,7 +29,6 @@ const { class: classes } = Astro.props;
 		activeHeading.mapEl.classList.add("!opacity-100");
 	}
 	document.addEventListener("DOMContentLoaded", () => {
-		// Your code to run after the document is ready
 		const article = document.querySelector("article");
 		if (!article) {
 			return;
@@ -37,6 +36,18 @@ const { class: classes } = Astro.props;
 		const headingElements = Array.from(
 			article.querySelectorAll("h1, h2, h3, h4, h5, h6"),
 		);
+		headingElements
+			.filter((h) => !h.id)
+			.forEach((h, i) => {
+				let newId = `heading-${i}`;
+				if (h.textContent) {
+					newId = h.textContent
+						.toLowerCase()
+						.replaceAll(/\s+/g, "-")
+						.replaceAll(/[^a-z0-9-]/g, "");
+				}
+				h.id = newId;
+			});
 		const minHeadingLevel = Math.min(
 			...headingElements.map((el) => parseInt(el.tagName[1])),
 		);
