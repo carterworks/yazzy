@@ -28,7 +28,7 @@ const { class: classes } = Astro.props;
 		}
 		activeHeading.mapEl.classList.add("!opacity-100");
 	}
-	document.addEventListener("DOMContentLoaded", () => {
+	document.addEventListener("astro:page-load", () => {
 		const article = document.querySelector("article");
 		if (!article) {
 			return;
