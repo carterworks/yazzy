@@ -1,4 +1,6 @@
 ---
+import Button from "./Button.astro";
+
 // A few settings:
 // * a checkbox to "enable AI summaries",
 // * a selector for the "AI model" to use,
@@ -76,10 +78,7 @@
 		/>
 	</label>
 	<div class="flex items-center">
-		<button
-			type="submit"
-			class="border py-1 px-6 rounded-lg transition bg-transparent">Save</button
-		>
+		<Button type="submit" class="py-1 px-6">Save</Button>
 		<div class="ml-2" id="status"></div>
 	</div>
 </form>

@@ -19,10 +19,10 @@ const { title, class: classes } = Astro.props;
 		<slot name="head" />
 		<style is:global>
 			.primary {
-				@apply fill-slate-400;
+				@apply fill-neutral-400;
 			}
 			.secondary {
-				@apply fill-slate-900;
+				@apply fill-neutral-900;
 			}
 			:root {
 				@apply scroll-smooth;
@@ -30,7 +30,7 @@ const { title, class: classes } = Astro.props;
 		</style>
 	</head>
 
-	<body class="text-base px-4 lg:px-0">
+	<body class="text-base px-4 lg:px-0 bg-orange-50 text-neutral-950">
 		<div class="m-auto max-w-prose my-4">
 			<nav class="flex items-center mb-4 gap-4" transition:animate="slide">
 				<div class="mr-auto">
@@ -42,7 +42,7 @@ const { title, class: classes } = Astro.props;
 				<details class="relative">
 					<summary>Settings</summary>
 					<div
-						class="absolute -left-10 border-black border-2 p-2 bg-inherit rounded-lg bg-white m-2"
+						class="absolute -left-10 border-2 border-neutral-950 p-2 bg-orange-50 bg-inherit rounded-lg m-2"
 					>
 						<Settings />
 					</div>
