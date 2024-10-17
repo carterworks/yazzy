@@ -163,7 +163,7 @@ const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\
 		>
 			<Icon name="inbox-download" />
 		</DownloadAs>
-		<ArticleMap class="lg:sticky lg:top-0" />
+		<ArticleMap class="lg:sticky lg:top-0 hidden lg:block" />
 	</aside>
 	<div class="lg:col-start-2 max-w-prose">
 		<header class="border-b-2 pb-4">
@@ -184,7 +184,7 @@ const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\
 		</header>
 		<main>
 			<article
-				class="prose lg:prose-xl font-humanist prose-headings:font-transitional prose-a:break-words prose-hr:my-4"
+				class="prose lg:prose-xl font-humanist prose-headings:font-transitional prose-a:break-words prose-hr:my-4 prose-headings:mt-10 prose-headings:mb-0"
 				set:html={article.htmlContent}
 			/>
 		</main>
