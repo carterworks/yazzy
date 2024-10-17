@@ -163,27 +163,26 @@ const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\
 			<Icon name="inbox-download" />
 		</DownloadAs>
 	</aside>
-	<div class="lg:col-start-2">
-		<header class="max-w-prose">
+	<div class="lg:col-start-2 max-w-prose">
+		<header class="border-b-2 pb-4">
 			<h2 class="text-3xl font-transitional">
 				<a href={article.url} class="hover:underline">{article.title}</a>
 			</h2>
-			<p class="text-sm mt-2">
+			<p class="text-sm mt-0.5">
 				{metadata.join(" ・ ")}
 			</p>
-		</header>
-		<main>
 			{
 				article.summary && (
 					<aside class="prose font-humanist mt-4">
-						<h3>Summary</h3>
-						<div set:html={article.summary} />
-						<hr />
+						<h3 class="mb-0 font-transitional">Summary</h3>
+						<div set:html={article.summary} class="*:my-0" />
 					</aside>
 				)
 			}
+		</header>
+		<main>
 			<article
-				class="prose lg:prose-xl font-humanist"
+				class="prose lg:prose-xl font-humanist prose-headings:font-transitional prose-a:break-words prose-hr:my-4"
 				set:html={article.htmlContent}
 			/>
 		</main>
