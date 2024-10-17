@@ -1,7 +1,11 @@
 ---
 import { ViewTransitions } from "astro:transitions";
 import Settings from "../components/Settings.astro";
-const { title } = Astro.props;
+interface Props {
+	title: string;
+	class?: string;
+}
+const { title, class: classes } = Astro.props;
 ---
 
 <html lang="en">
@@ -41,7 +45,9 @@ const { title } = Astro.props;
 					Github
 				</a>
 			</nav>
-			<slot />
+			<div class={classes}>
+				<slot />
+			</div>
 		</div>
 	</body>
 </html>
