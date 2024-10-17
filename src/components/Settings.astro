@@ -1,4 +1,6 @@
 ---
+import Button from "./Button.astro";
+
 // A few settings:
 // * a checkbox to "enable AI summaries",
 // * a selector for the "AI model" to use,
@@ -63,7 +65,10 @@
 	</label>
 	<label class="flex flex-col items-start">
 		<span>AI model</span>
-		<select name="model" class="border rounded-md py-1 px-4">
+		<select
+			name="model"
+			class="border rounded-md py-1 px-4 dark:text-neutral-950"
+		>
 			<option value="gpt-4o-mini">GPT-4o mini</option>
 		</select>
 	</label>
@@ -72,14 +77,11 @@
 		<input
 			type="text"
 			name="apiKey"
-			class="border focus:border-transparent block w-full rounded-md focus:ring-0 py-1 px-4 transition"
+			class="border focus:border-transparent block w-full rounded-md focus:ring-0 py-1 px-4 transition dark:text-neutral-950"
 		/>
 	</label>
 	<div class="flex items-center">
-		<button
-			type="submit"
-			class="border py-1 px-6 rounded-lg transition bg-transparent">Save</button
-		>
+		<Button type="submit" class="py-1 px-6 dark:text-neutral-950">Save</Button>
 		<div class="ml-2" id="status"></div>
 	</div>
 </form>

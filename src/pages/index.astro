@@ -1,12 +1,19 @@
 ---
+import Button from "../components/Button.astro";
 import BasePage from "../layouts/BasePage.astro";
 ---
 
 <BasePage title="yazzy">
 	<Fragment slot="head">
-		<meta name="description" content="A simple tool to clip web pages to plain text." />
+		<meta
+			name="description"
+			content="A simple tool to clip web pages to plain text."
+		/>
 		<meta name="keywords" content="clipping, markdown, web pages, plain text" />
-		<meta property="og:description" content="A simple tool to clip web pages to plain text." />
+		<meta
+			property="og:description"
+			content="A simple tool to clip web pages to plain text."
+		/>
 		<meta property="og:title" content="yazzy" />
 		<meta property="og:type" content="website" />
 	</Fragment>
@@ -19,18 +26,13 @@ import BasePage from "../layouts/BasePage.astro";
 	</header>
 	<form action="/api/clip" method="GET" class="flex gap-1 items-center">
 		<input
-			class="border focus:border-transparent block w-full rounded-md focus:ring-0 py-1 px-4 transition"
+			class="border dark:text-neutral-950 focus:border-transparent block w-full rounded-md focus:ring-0 py-1 px-4 transition"
 			type="url"
 			id="url"
 			name="url"
 			required
 			placeholder="https://paulgraham.com/submarine.html"
 		/>
-		<button
-			type="submit"
-			class="mx-auto border py-1 px-6 rounded-lg transition bg-transparent"
-		>
-			Clip
-		</button>
+		<Button type="submit" class="px-4"> Clip </Button>
 	</form>
 </BasePage>

@@ -1,0 +1,109 @@
+---
+interface Props {
+	class?: string;
+}
+const { class: classes } = Astro.props;
+---
+
+<script>
+	// when the dom is ready...
+	const ACTIVE_SCROLL_THRESHOLD = 50;
+	interface MapHeading {
+		id: string;
+		text: string | null;
+		level: number;
+		el: Element;
+		mapEl: HTMLElement;
+	}
+	function setActiveHeading({ headings }: { headings: MapHeading[] }) {
+		headings.forEach((heading) => {
+			heading.mapEl.classList.remove("!opacity-100");
+		});
+		const activeHeading = headings
+			// above the top of the viewport
+			.filter((h) => h.el.getBoundingClientRect().top < ACTIVE_SCROLL_THRESHOLD)
+			.at(-1);
+		if (!activeHeading) {
+			return;
+		}
+		activeHeading.mapEl.classList.add("!opacity-100");
+	}
+	document.addEventListener("astro:page-load", () => {
+		const article = document.querySelector("article");
+		if (!article) {
+			return;
+		}
+		const headingElements = Array.from(
+			article.querySelectorAll("h1, h2, h3, h4, h5, h6"),
+		);
+		headingElements
+			.filter((h) => !h.id)
+			.forEach((h, i) => {
+				let newId = `heading-${i}`;
+				if (h.textContent) {
+					newId = h.textContent
+						.toLowerCase()
+						.replaceAll(/\s+/g, "-")
+						.replaceAll(/[^a-z0-9-]/g, "");
+				}
+				h.id = newId;
+			});
+		const minHeadingLevel = Math.min(
+			...headingElements.map((el) => parseInt(el.tagName[1])),
+		);
+		const maxHeadingLevel = Math.max(
+			...headingElements.map((el) => parseInt(el.tagName[1])),
+		);
+		const headings: MapHeading[] = headingElements.map((el) => {
+			const id = el.id;
+			const text = el.textContent;
+			const level = parseInt(el.tagName[1]) - minHeadingLevel + 1;
+			const item = document.createElement("li");
+			let child;
+			if (id) {
+				child = document.createElement("a");
+				child.href = `#${id}`;
+			} else {
+				child = document.createElement("span");
+			}
+			child.textContent = "—".repeat(maxHeadingLevel - level);
+			child.dataset.level = level.toString();
+			if (text) {
+				child.title = text;
+			}
+			item.appendChild(child);
+			item.classList.add("opacity-40");
+			item.classList.add("user-select-none");
+			if (id) {
+				item.classList.add("hover:opacity-100");
+			}
+			return {
+				id,
+				text,
+				level,
+				el,
+				mapEl: item,
+			};
+		});
+		const map = document.getElementById("article-map");
+		if (!map) {
+			return;
+		}
+		const list = document.createElement("ol");
+		headings.forEach((heading) => {
+			list.appendChild(heading.mapEl);
+		});
+		map.appendChild(list);
+		// on scroll, determine which element is out of view and closest to the top of the viewport
+		// highlight it in the map
+		queueMicrotask(() => setActiveHeading({ headings }));
+		window.addEventListener("scroll", () => setActiveHeading({ headings }), {
+			passive: true,
+		});
+	});
+</script>
+<div
+	id="article-map"
+	class:list={[classes, "text-right", "transition-opacity"]}
+>
+</div>

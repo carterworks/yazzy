@@ -1,7 +1,11 @@
 ---
 import { ViewTransitions } from "astro:transitions";
 import Settings from "../components/Settings.astro";
-const { title } = Astro.props;
+interface Props {
+	title: string;
+	class?: string;
+}
+const { title, class: classes } = Astro.props;
 ---
 
 <html lang="en">
@@ -13,11 +17,27 @@ const { title } = Astro.props;
 		<link rel="icon" href="/scissors.svg" type="image/svg+xml" />
 		<ViewTransitions />
 		<slot name="head" />
+		<style is:global>
+			.primary {
+				@apply fill-neutral-400;
+			}
+			.secondary {
+				@apply fill-neutral-900;
+			}
+			:root {
+				@apply scroll-smooth;
+			}
+		</style>
 	</head>
 
-	<body class="text-base px-4 lg:px-0">
+	<body
+		class="text-base px-4 lg:px-0 bg-neutral-50 dark:bg-sky-950 text-neutral-950 dark:text-neutral-50"
+	>
 		<div class="m-auto max-w-prose my-4">
-			<nav class="flex items-center mb-4 gap-4" transition:animate="slide">
+			<nav
+				class="flex items-center mb-4 gap-4 print:hidden"
+				transition:animate="slide"
+			>
 				<div class="mr-auto">
 					<h1 class="text-2xl">
 						<a href="/">yazzy</a>
@@ -27,7 +47,7 @@ const { title } = Astro.props;
 				<details class="relative">
 					<summary>Settings</summary>
 					<div
-						class="absolute -left-10 border-black border-2 p-2 bg-inherit rounded-lg bg-white m-2"
+						class="absolute -left-10 border-2 border-neutral-950 dark:border-neutral-50 p-2 bg-neutral-50 dark:bg-sky-950 rounded-lg m-2"
 					>
 						<Settings />
 					</div>
@@ -41,7 +61,9 @@ const { title } = Astro.props;
 					Github
 				</a>
 			</nav>
-			<slot />
+			<div class={classes}>
+				<slot />
+			</div>
 		</div>
 	</body>
 </html>

@@ -3,13 +3,15 @@
 	"version": "0.0.1",
 	"dependencies": {
 		"@ai-sdk/openai": "^0.0.48",
-		"@astrojs/check": "^0.9.2",
-		"@astrojs/node": "^8.3.3",
-		"@astrojs/tailwind": "^5.1.0",
+		"@astrojs/check": "^0.9.4",
+		"@astrojs/node": "^8.3.4",
+		"@astrojs/tailwind": "^5.1.2",
+		"@iconify-json/lucide": "^1.2.10",
 		"@mozilla/readability": "^0.5.0",
 		"@tailwindcss/typography": "^0.5.13",
 		"ai": "^3.3.9",
-		"astro": "^4.14.2",
+		"astro": "^4.16.5",
+		"astro-icon": "^1.1.1",
 		"better-sqlite3": "^11.1.2",
 		"dompurify": "^3.1.6",
 		"jsdom": "^24.1.1",
@@ -31,6 +33,7 @@
 		"@types/better-sqlite3": "^7.6.11",
 		"@types/dompurify": "^3.0.5",
 		"@types/jsdom": "^21.1.7",
-		"@types/turndown": "^5.0.5"
+		"@types/turndown": "^5.0.5",
+		"lefthook": "^1.7.18"
 	}
 }

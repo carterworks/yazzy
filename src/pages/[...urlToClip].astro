@@ -1,4 +1,7 @@
 ---
+import { Icon } from "astro-icon/components";
+import ArticleMap from "../components/ArticleMap.astro";
+import Button from "../components/Button.astro";
 import DownloadAs from "../components/DownloadAs.astro";
 import BasePage from "../layouts/BasePage.astro";
 import { cache } from "../services/cache";
@@ -105,9 +108,13 @@ const metadata = [
 const markdownContent = generateObsidianContents(article);
 const obsidianUri = generateObsidianUri(markdownContent, article.title);
 const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\n---\n${article.textContent}`;
+const buttonClasses = "";
 ---
 
-<BasePage title={`${article.title} | ${articleHostname} | yazzy`}>
+<BasePage
+	title={`${article.title} | ${articleHostname} | yazzy`}
+	class="grid grid-cols-1 lg:grid-cols-[auto,1fr] gap-2 lg:gap-4"
+>
 	<Fragment slot="head">
 		<meta name="description" content={plainTextSummary} />
 		<meta
@@ -131,48 +138,52 @@ const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\
 			)
 		}
 	</Fragment>
-	<div id="controls" class="flex flex-wrap gap-3 mb-4 items-center">
-		<div
-			class="border py-1 px-2 rounded-lg transition bg-transparent text-center hover:bg-slate-200 active:bg-slate-400"
-		>
-			<a href={obsidianUri}> Save to Obsidian </a>
-		</div>
+	<aside
+		class="flex lg:flex-col gap-3 items-center lg:col-start-1 lg:row-span-2 print:hidden"
+	>
+		<Button href={obsidianUri} title="Save to Obsidian" class={buttonClasses}>
+			<Icon class="h-4" name="simple-icons/obsidian" />
+		</Button>
 		<DownloadAs
-			class="border py-1 px-2 rounded-lg transition bg-transparent text-center hover:bg-slate-200 active:bg-slate-400"
 			contents={markdownContent}
 			filename={`${getFilename(article.title)}.md`}
+			title="Download as Markdown"
+			class={buttonClasses}
 		>
-			Download as .md
+			<Icon name="refactoring-ui/book-closed" />
 		</DownloadAs>
 		<DownloadAs
-			class="border py-1 px-2 rounded-lg transition bg-transparent text-center hover:bg-slate-200 active:bg-slate-400"
 			contents={plainTextContent}
 			filename={`${getFilename(article.title)}.txt`}
+			title="Download as plain text"
+			class={buttonClasses}
 		>
-			Download as .txt
+			<Icon name="refactoring-ui/inbox-download" />
 		</DownloadAs>
+		<ArticleMap class="lg:sticky lg:top-0 hidden lg:block" />
+	</aside>
+	<div class="lg:col-start-2 max-w-prose">
+		<header class="border-b-2 border-neutral-400 pb-4">
+			<h2 class="text-3xl font-transitional">
+				<a href={article.url} class="hover:underline">{article.title}</a>
+			</h2>
+			<p class="text-sm mt-0.5">
+				{metadata.join(" ・ ")}
+			</p>
+			{
+				article.summary && (
+					<aside class="prose font-humanist mt-4">
+						<h3 class="mb-0 font-transitional">Summary</h3>
+						<div set:html={article.summary} class="*:my-0" />
+					</aside>
+				)
+			}
+		</header>
+		<main>
+			<article
+				class="prose dark:prose-invert lg:prose-xl font-humanist prose-headings:font-transitional prose-a:break-words prose-hr:my-4 prose-headings:mt-10 prose-headings:mb-0 !prose-img:max-w-[55ch] prose-img:mx-auto prose-img:rounded-lg"
+				set:html={article.htmlContent}
+			/>
+		</main>
 	</div>
-	<header class="max-w-prose">
-		<h2 class="text-3xl">
-			<a href={article.url} class="hover:underline">{article.title}</a>
-		</h2>
-		<p class="text-sm mt-4">
-			{metadata.join(" ・ ")}
-		</p>
-	</header>
-	<main>
-		{
-			article.summary && (
-				<aside class="prose font-humanist mt-4">
-					<h3>Summary</h3>
-					<div set:html={article.summary} />
-					<hr />
-				</aside>
-			)
-		}
-		<article
-			class="prose lg:prose-xl font-humanist"
-			set:html={article.htmlContent}
-		/>
-	</main>
 </BasePage>
