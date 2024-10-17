@@ -143,25 +143,25 @@ const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\
 		<Button
 			href={obsidianUri}
 			title="Save to Obsidian"
-			class="opacity-50 hover:opacity-80 active:opacity-100"
+			class="opacity-50 hover:opacity-100 active:opacity-100"
 		>
-			<Icon class="h-4" name="attach" />
+			<Icon class="h-4" name="simple-icons/obsidian" />
 		</Button>
 		<DownloadAs
 			contents={markdownContent}
 			filename={`${getFilename(article.title)}.md`}
 			title="Download as Markdown"
-			class="opacity-50 hover:opacity-80 active:opacity-100"
+			class="opacity-50 hover:opacity-100 active:opacity-100"
 		>
-			<Icon name="book-closed" />
+			<Icon name="refactoring-ui/book-closed" />
 		</DownloadAs>
 		<DownloadAs
 			contents={plainTextContent}
 			filename={`${getFilename(article.title)}.txt`}
 			title="Download as plain text"
-			class="opacity-50 hover:opacity-80 active:opacity-100"
+			class="opacity-50 hover:opacity-100 active:opacity-100"
 		>
-			<Icon name="inbox-download" />
+			<Icon name="refactoring-ui/inbox-download" />
 		</DownloadAs>
 		<ArticleMap class="lg:sticky lg:top-0 hidden lg:block" />
 	</aside>
