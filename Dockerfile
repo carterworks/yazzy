@@ -1,7 +1,7 @@
 # syntax = docker/dockerfile:1
 
 # Adjust NODE_VERSION as desired
-ARG NODE_VERSION=current
+ARG NODE_VERSION=lts
 FROM node:${NODE_VERSION} AS base
 
 LABEL fly_launch_runtime="Bun"
