@@ -19,10 +19,10 @@ const { title, class: classes } = Astro.props;
 		<slot name="head" />
 		<style is:global>
 			.primary {
-				@apply fill-neutral-400;
+				@apply fill-neutral-400 dark:fill-neutral-100;
 			}
 			.secondary {
-				@apply fill-neutral-900;
+				@apply fill-neutral-900 dark:fill-neutral-500;
 			}
 			:root {
 				@apply scroll-smooth;
