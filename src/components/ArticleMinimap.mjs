@@ -9,7 +9,7 @@
  * @property {"active" | "inactive"} status
  *
  * @typedef {(args: { heading: MinimapHeading }) => void} ScrollEventListener
- * 
+ *
  * @typedef {Object} MinimapTick
  * @property {Element} element
  * @property {Element} link
@@ -41,7 +41,7 @@ class HeadlessMinimap {
 			...headingElements.map((el) => Number.parseInt(el.tagName[1], 10)),
 		);
 
-		this.#headings  = headingElements.map((el) => {
+		this.#headings = headingElements.map((el) => {
 			/** @type {MinimapHeading} */
 			const h = {
 				element: el,
@@ -62,7 +62,9 @@ class HeadlessMinimap {
 				if (!entry.isIntersecting) {
 					return;
 				}
-				const activeHeading = this.#headings.find((h) => h.element === entry.target);
+				const activeHeading = this.#headings.find(
+					(h) => h.element === entry.target,
+				);
 				if (!activeHeading) {
 					return;
 				}
@@ -156,7 +158,7 @@ class ArticleMinimap extends HTMLElement {
 		this.#vibrate = this.dataset.vibrate === "true";
 		const linkify = this.dataset.linkify === "true";
 		this.#minimap = new HeadlessMinimap({ article, linkify });
-		
+
 		const ol = document.createElement("ol");
 		ol.classList.add("minimap");
 		this.#ticks = this.#minimap.headings.map((h) => {
@@ -169,7 +171,7 @@ class ArticleMinimap extends HTMLElement {
 				link: a,
 				element: li,
 				heading: h,
-			}
+			};
 		});
 		for (const tick of this.#ticks) {
 			ol.appendChild(tick.element);
@@ -190,11 +192,20 @@ ol {
 	list-style: none;
 	padding: 0;
 	margin: 0;
+	display: flex;
+	flex-direction: row;
+	gap: 0.25em;
 }
 a {
 	text-decoration: none;
 	color: inherit;
-}`;
+}
+@media (min-width: 768px) {
+	ol {
+		flex-direction: column;
+	}
+}	
+`;
 		const sheet = new CSSStyleSheet();
 		sheet.replaceSync(styles);
 		return sheet;
@@ -210,7 +221,7 @@ a {
 			return;
 		}
 		tick.link.textContent = this.#activeState;
-	};
+	}
 
 	/** @type {ScrollEventListener} */
 	#onDeactivate({ heading }) {
@@ -219,16 +230,15 @@ a {
 			return;
 		}
 		tick.link.textContent = this.#inactiveState;
-	};
-
+	}
 }
 
 // Usage:
-// <article-minimap 
+// <article-minimap
 //    data-article-selector="article"
 //    data-linkify="true"
 //    data-vibrate="true"
 //    data-active-state="●"
 //    data-inactive-state="○"
 // ></article-minimap>
-customElements.define('article-minimap', ArticleMinimap);
+customElements.define("article-minimap", ArticleMinimap);

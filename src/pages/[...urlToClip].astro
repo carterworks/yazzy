@@ -9,6 +9,7 @@ import { clip, convertHtmlToMarkdown } from "../services/clipper";
 import { summarize } from "../services/summarizer";
 import type { ReadablePage } from "../types";
 import { isUrl } from "../utils";
+import { bg } from "../constants";
 export const prerender = false;
 
 const { urlToClip } = Astro.params;
@@ -162,7 +163,7 @@ const buttonClasses = "";
 		</DownloadAs>
 		<ArticleMinimap
 			selector="article"
-			class="lg:sticky lg:top-0 hidden lg:block"
+			class={`fixed bottom-3 mx-auto ${bg} px-2 rounded-lg lg:bg-inherit lg:dark:bg-inherit lg:m-0 lg:static lg:rounded-none`}
 		/>
 	</aside>
 	<div class="lg:col-start-2 max-w-prose">
