@@ -155,20 +155,25 @@ class ArticleMinimap extends HTMLElement {
 		}
 		this.#activeState = this.dataset.activeState || this.#activeState;
 		this.#inactiveState = this.dataset.inactiveState || this.#inactiveState;
-		this.#vibrate = this.dataset.vibrate === "true";
-		const linkify = this.dataset.linkify === "true";
+		this.#vibrate = this.dataset.vibrate ? this.dataset.vibrate === "true" : true;
+		const linkify = this.dataset.linkify ? this.dataset.linkify === "true" : true;
 		this.#minimap = new HeadlessMinimap({ article, linkify });
 
 		const ol = document.createElement("ol");
 		ol.classList.add("minimap");
 		this.#ticks = this.#minimap.headings.map((h) => {
 			const li = document.createElement("li");
-			const a = document.createElement("a");
-			a.href = `#${h.id}`;
-			a.textContent = this.#inactiveState;
-			li.appendChild(a);
+			let inner;
+			if (h.id) {
+				inner = document.createElement("a");
+				inner.href = `#${h.id}`;
+			} else {
+				inner = document.createElement("span");
+			}
+			inner.textContent = this.#inactiveState;
+			li.appendChild(inner);
 			return {
-				link: a,
+				link: inner,
 				element: li,
 				heading: h,
 			};
