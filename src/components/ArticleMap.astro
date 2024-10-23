@@ -6,104 +6,160 @@ const { class: classes } = Astro.props;
 ---
 
 <script>
-	// when the dom is ready...
-	const ACTIVE_SCROLL_THRESHOLD = 50;
-	interface MapHeading {
-		id: string;
-		text: string | null;
-		level: number;
-		el: Element;
-		mapEl: HTMLElement;
-	}
-	function setActiveHeading({ headings }: { headings: MapHeading[] }) {
-		headings.forEach((heading) => {
-			heading.mapEl.classList.remove("!opacity-100");
-		});
-		const activeHeading = headings
-			// above the top of the viewport
-			.filter((h) => h.el.getBoundingClientRect().top < ACTIVE_SCROLL_THRESHOLD)
-			.at(-1);
-		if (!activeHeading) {
-			return;
+	const createHeadlessMinimap = ({
+		articleSelector,
+		linkify = true,
+	}: {
+		articleSelector: string;
+		linkify: boolean;
+	}) => {
+		const article = document.querySelector(articleSelector);
+		if (!article) {
+			throw new Error(`No article found with selector: ${articleSelector}`);
 		}
-		activeHeading.mapEl.classList.add("!opacity-100");
-	}
+
+		interface MinimapHeading {
+			element: Element;
+			text: string | null;
+			id: string;
+			level: number;
+			status: "active" | "inactive";
+		}
+		interface ScrollEventListenerArgs {
+			header: MinimapHeading;
+		}
+		type ScrollEventListener = (args: { header: MinimapHeading }) => void;
+		const onActivateListeners: ScrollEventListener[] = [];
+		const onActivate: ScrollEventListener = (args) => {
+			for (const listener of onActivateListeners) {
+				listener(args);
+			}
+		};
+		const onDeactivateListeners: ScrollEventListener[] = [];
+		const onDeactivate: ScrollEventListener = (args) => {
+			for (const listener of onDeactivateListeners) {
+				listener(args);
+			}
+		};
+
+		const headingElements = Array.from(
+			document.querySelectorAll("h1, h2, h3, h4, h5, h6"),
+		);
+		const minHeadingLevel = Math.min(
+			...headingElements.map((el) => Number.parseInt(el.tagName[1], 10)),
+		);
+		const headings: MinimapHeading[] = headingElements.map((el) => {
+			return {
+				element: el,
+				text: el.textContent,
+				id: el.id,
+				level: Number.parseInt(el.tagName[1], 10) - minHeadingLevel + 1,
+				status: "inactive",
+			} satisfies MinimapHeading;
+		});
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const [entry] = entries;
+				const previousActiveHeader = headings.find(
+					(h) => h.status === "active",
+				);
+				if (!entry.isIntersecting) {
+					return;
+				}
+				const header = headings.find((h) => h.element === entry.target);
+				if (!header) {
+					return;
+				}
+				header.status = "active";
+				if (previousActiveHeader && previousActiveHeader !== header) {
+					previousActiveHeader.status = "inactive";
+					onDeactivate({ header: previousActiveHeader });
+				}
+				onActivate({ header });
+			},
+			{
+				rootMargin: "0px 0px -100% 0px",
+			},
+		);
+
+		for (const h of headings) {
+			observer.observe(h.element);
+		}
+
+		if (linkify) {
+			headings
+				.filter((h) => !h.id)
+				.forEach((h, i) => {
+					let newId = `heading-${i}`;
+					if (h.element.textContent) {
+						newId = h.element.textContent
+							.toLowerCase()
+							.replaceAll(/\s+/g, "-")
+							.replaceAll(/[^a-z0-9-]/g, "");
+					}
+					h.id = newId;
+					h.element.id = newId;
+				});
+		}
+
+		return {
+			element: article,
+			addOnActivate: (listener: ScrollEventListener) => {
+				onActivateListeners.push(listener);
+			},
+			addOnDeactivate: (listener: ScrollEventListener) => {
+				onDeactivateListeners.push(listener);
+			},
+			headings: Object.freeze(headings),
+		};
+	};
+
 	document.addEventListener("astro:page-load", () => {
-		const article = document.querySelector("article");
+		const articleSelector = "#article-map";
+		const article = document.querySelector(articleSelector);
 		if (!article) {
 			return;
 		}
-		const headingElements = Array.from(
-			article.querySelectorAll("h1, h2, h3, h4, h5, h6"),
-		);
-		headingElements
-			.filter((h) => !h.id)
-			.forEach((h, i) => {
-				let newId = `heading-${i}`;
-				if (h.textContent) {
-					newId = h.textContent
-						.toLowerCase()
-						.replaceAll(/\s+/g, "-")
-						.replaceAll(/[^a-z0-9-]/g, "");
-				}
-				h.id = newId;
-			});
-		const minHeadingLevel = Math.min(
-			...headingElements.map((el) => parseInt(el.tagName[1])),
-		);
-		const maxHeadingLevel = Math.max(
-			...headingElements.map((el) => parseInt(el.tagName[1])),
-		);
-		const headings: MapHeading[] = headingElements.map((el) => {
-			const id = el.id;
-			const text = el.textContent;
-			const level = parseInt(el.tagName[1]) - minHeadingLevel + 1;
-			const item = document.createElement("li");
-			let child;
-			if (id) {
-				child = document.createElement("a");
-				child.href = `#${id}`;
-			} else {
-				child = document.createElement("span");
+		const minimap = createHeadlessMinimap({
+			articleSelector,
+			linkify: true,
+		});
+		const list = document.createElement("ol");
+		const progressTicks = minimap.headings.map((h, i) => {
+			const el = document.createElement("li");
+			const link = document.createElement("a");
+			link.href = `#${h.id}`;
+			link.textContent = "○";
+			if (h.text) {
+				link.title = h.text;
 			}
-			child.textContent = "—".repeat(maxHeadingLevel - level);
-			child.dataset.level = level.toString();
-			if (text) {
-				child.title = text;
-			}
-			item.appendChild(child);
-			item.classList.add("opacity-40");
-			item.classList.add("user-select-none");
-			if (id) {
-				item.classList.add("hover:opacity-100");
-			}
+			el.appendChild(link);
 			return {
-				id,
-				text,
-				level,
-				el,
-				mapEl: item,
+				link,
+				element: el,
+				heading: h,
 			};
 		});
-		const map = document.getElementById("article-map");
-		if (!map) {
-			return;
+		for (const tick of progressTicks) {
+			list.appendChild(tick.element);
 		}
-		const list = document.createElement("ol");
-		headings.forEach((heading) => {
-			list.appendChild(heading.mapEl);
+		article.appendChild(list);
+		minimap.addOnActivate(({ header }) => {
+			const tick = progressTicks.find((t) => t.heading === header);
+			if (!tick) {
+				return;
+			}
+			tick.link.textContent = "●";
+			navigator.vibrate(5);
 		});
-		map.appendChild(list);
-		// on scroll, determine which element is out of view and closest to the top of the viewport
-		// highlight it in the map
-		queueMicrotask(() => setActiveHeading({ headings }));
-		window.addEventListener("scroll", () => setActiveHeading({ headings }), {
-			passive: true,
+		minimap.addOnDeactivate(({ header }) => {
+			const tick = progressTicks.find((t) => t.heading === header);
+			if (!tick) {
+				return;
+			}
+			tick.link.textContent = "○";
 		});
 	});
 </script>
-<div
-	id="article-map"
-	class:list={[classes, "text-right", "transition-opacity"]}
->
-</div>
+<div id="article-map" class:list={[classes, "transition-opacity"]}></div>
