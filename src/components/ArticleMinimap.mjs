@@ -155,8 +155,12 @@ class ArticleMinimap extends HTMLElement {
 		}
 		this.#activeState = this.dataset.activeState || this.#activeState;
 		this.#inactiveState = this.dataset.inactiveState || this.#inactiveState;
-		this.#vibrate = this.dataset.vibrate ? this.dataset.vibrate === "true" : true;
-		const linkify = this.dataset.linkify ? this.dataset.linkify === "true" : true;
+		this.#vibrate = this.dataset.vibrate
+			? this.dataset.vibrate === "true"
+			: true;
+		const linkify = this.dataset.linkify
+			? this.dataset.linkify === "true"
+			: true;
 		this.#minimap = new HeadlessMinimap({ article, linkify });
 
 		const ol = document.createElement("ol");
