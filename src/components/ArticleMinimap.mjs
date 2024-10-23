@@ -203,7 +203,7 @@ ol {
 	margin: 0;
 	display: flex;
 	flex-direction: row;
-	gap: 0.25em;
+	gap: 0.5em;
 }
 a {
 	text-decoration: none;
