@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import ArticleMap from "../components/ArticleMap.astro";
+import ArticleMinimap from "../components/ArticleMinimap.astro";
 import Button from "../components/Button.astro";
 import DownloadAs from "../components/DownloadAs.astro";
 import BasePage from "../layouts/BasePage.astro";
@@ -160,7 +160,10 @@ const buttonClasses = "";
 		>
 			<Icon name="refactoring-ui/inbox-download" />
 		</DownloadAs>
-		<ArticleMap class="lg:sticky lg:top-0 hidden lg:block" />
+		<ArticleMinimap
+			selector="article"
+			class="lg:sticky lg:top-0 hidden lg:block"
+		/>
 	</aside>
 	<div class="lg:col-start-2 max-w-prose">
 		<header class="border-b-2 border-neutral-400 pb-4">
