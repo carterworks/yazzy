@@ -174,10 +174,30 @@ class ArticleMinimap extends HTMLElement {
 		for (const tick of this.#ticks) {
 			ol.appendChild(tick.element);
 		}
-		this.appendChild(ol);
+		const shadow = this.attachShadow({ mode: "open" });
+		shadow.appendChild(ol);
+		shadow.adoptedStyleSheets = [this.#generateStyles()];
 		this.#minimap.addOnActivate(this.#onActivate.bind(this));
 		this.#minimap.addOnDeactivate(this.#onDeactivate.bind(this));
+	}
 
+	/**
+	 * @returns {CSSStyleSheet}
+	 */
+	#generateStyles() {
+		const styles = `
+ol {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+a {
+	text-decoration: none;
+	color: inherit;
+}`;
+		const sheet = new CSSStyleSheet();
+		sheet.replaceSync(styles);
+		return sheet;
 	}
 
 	/** @type {ScrollEventListener} */
