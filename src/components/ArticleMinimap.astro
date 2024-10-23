@@ -1,0 +1,13 @@
+---
+interface Props {
+	class?: string;
+	selector: string;
+}
+const { class: classes, selector } = Astro.props;
+---
+
+<script>
+	import "./ArticleMinimap.mjs";
+</script>
+<article-minimap class={classes} data-article-selector={selector}
+></article-minimap>

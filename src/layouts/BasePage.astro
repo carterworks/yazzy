@@ -1,6 +1,7 @@
 ---
 import { ViewTransitions } from "astro:transitions";
 import Settings from "../components/Settings.astro";
+import { bg } from "../constants.ts";
 interface Props {
 	title: string;
 	class?: string;
@@ -31,7 +32,7 @@ const { title, class: classes } = Astro.props;
 	</head>
 
 	<body
-		class="text-base px-4 lg:px-0 bg-neutral-50 dark:bg-slate-950 text-neutral-950 dark:text-neutral-50"
+		class={`text-base px-4 lg:px-0 ${bg} text-neutral-950 dark:text-neutral-50`}
 	>
 		<div class="m-auto max-w-prose my-4">
 			<nav
@@ -47,7 +48,7 @@ const { title, class: classes } = Astro.props;
 				<details class="relative">
 					<summary>Settings</summary>
 					<div
-						class="absolute -left-10 border-2 border-neutral-950 dark:border-neutral-50 p-2 bg-neutral-50 dark:bg-slate-950 rounded-lg m-2"
+						class={`absolute -left-10 border-2 border-neutral-950 dark:border-neutral-50 p-2 ${bg} rounded-lg m-2`}
 					>
 						<Settings />
 					</div>
