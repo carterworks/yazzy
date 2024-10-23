@@ -7,7 +7,6 @@ const { class: classes, selector } = Astro.props;
 ---
 
 <script>
-	import "./ArticleMinimap.mjs";
+	import "wc-minimap";
 </script>
-<article-minimap class={classes} data-article-selector={selector}
-></article-minimap>
+<wc-minimap class={classes} data-article-selector={selector}></wc-minimap>
