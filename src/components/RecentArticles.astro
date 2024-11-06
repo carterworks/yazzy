@@ -52,6 +52,7 @@ const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
 						<p class="text-xs">${article.summary}</p>
 					</a>
 				`;
+				recentArticles.appendChild(li);
 			});
 		} catch (error) {
 			console.error("Failed to get recent articles", error);
