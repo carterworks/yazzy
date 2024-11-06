@@ -36,7 +36,7 @@ const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
 	async function insertRecentArticles() {
 		try {
 			const response = await fetch("/api/articles/recent");
-			const articles: ReadablePage[] = await response.json();
+			const { articles }: { articles: ReadablePage[] } = await response.json();
 			const recentArticles = document.getElementById("recent-articles");
 			if (!recentArticles) {
 				return;
