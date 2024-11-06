@@ -1,7 +1,7 @@
 ---
 import { ViewTransitions } from "astro:transitions";
+import Button from "../components/Button.astro";
 import Settings from "../components/Settings.astro";
-import { bg } from "../constants.ts";
 interface Props {
 	title: string;
 	class?: string;
@@ -13,27 +13,29 @@ const { title, class: classes } = Astro.props;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="color-scheme" content="light dark" />
 		<title>{title}</title>
 		<link rel="manifest" href="/manifest.webmanifest" />
 		<link rel="icon" href="/scissors.svg" type="image/svg+xml" />
 		<ViewTransitions />
 		<slot name="head" />
 		<style is:global>
+			:root {
+				@apply scroll-smooth;
+			}
 			.primary {
 				@apply fill-neutral-400 dark:fill-neutral-100;
 			}
 			.secondary {
 				@apply fill-neutral-900 dark:fill-neutral-500;
 			}
-			:root {
-				@apply scroll-smooth;
+			::backdrop {
+				@apply backdrop-blur-sm;
 			}
 		</style>
 	</head>
 
-	<body
-		class={`text-base px-4 lg:px-0 ${bg} text-neutral-950 dark:text-neutral-50`}
-	>
+	<body class={`text-base px-4 lg:px-0`}>
 		<div class="m-auto max-w-prose my-4">
 			<nav
 				class="flex items-center mb-4 gap-4 print:hidden"
@@ -45,14 +47,12 @@ const { title, class: classes } = Astro.props;
 					</h1>
 					<p class="text-xs">Plain ol' reading</p>
 				</div>
-				<details class="relative">
-					<summary>Settings</summary>
-					<div
-						class={`absolute -left-10 border-2 border-neutral-950 dark:border-neutral-50 p-2 ${bg} rounded-lg m-2`}
-					>
-						<Settings />
-					</div>
-				</details>
+				<Button type="button" popovertarget="settings-dialog">
+					Settings
+				</Button>
+				<div popover id="settings-dialog" class={`border p-2 rounded`}>
+					<Settings />
+				</div>
 				<a
 					href="https://github.com/carterworks/yazzy"
 					target="_blank"

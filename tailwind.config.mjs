@@ -3,6 +3,12 @@ export default {
 	content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
 	theme: {
 		extend: {
+			colors: {
+				button: "ButtonFace",
+				"button-text": "ButtonText",
+				canvas: "Canvas",
+				"canvas-text": "CanvasText",
+			},
 			fontFamily: {
 				// from https://github.com/system-fonts/modern-font-stacks
 				/* System UI fonts are those native to the operating system interface.

@@ -3,7 +3,6 @@ import { Icon } from "astro-icon/components";
 import ArticleMinimap from "../components/ArticleMinimap.astro";
 import Button from "../components/Button.astro";
 import DownloadAs from "../components/DownloadAs.astro";
-import { bg } from "../constants";
 import BasePage from "../layouts/BasePage.astro";
 import { cache } from "../services/cache";
 import { clip, convertHtmlToMarkdown } from "../services/clipper";
@@ -163,7 +162,7 @@ const buttonClasses = "";
 		</DownloadAs>
 		<ArticleMinimap
 			selector="article"
-			class={`fixed bottom-3 mx-auto ${bg} px-2 rounded-lg lg:bg-inherit lg:dark:bg-inherit lg:m-0 lg:rounded-none lg:top-2 lg:sticky`}
+			class={`fixed bottom-3 mx-auto px-2 rounded lg:m-0 lg:rounded-none lg:top-2 lg:sticky`}
 		/>
 	</aside>
 	<div class="lg:col-start-2 max-w-prose">
@@ -176,7 +175,7 @@ const buttonClasses = "";
 			</p>
 			{
 				article.summary && (
-					<aside class="prose font-humanist mt-4 dark:prose-invert">
+					<aside class="prose dark:prose-invert font-humanist mt-4 ">
 						<h3 class="mb-0 font-transitional">Summary</h3>
 						<div set:html={article.summary} class="*:my-0" />
 					</aside>
@@ -185,7 +184,7 @@ const buttonClasses = "";
 		</header>
 		<main>
 			<article
-				class="prose dark:prose-invert lg:prose-xl font-humanist prose-headings:font-transitional prose-a:break-words prose-hr:my-4 prose-headings:mt-10 prose-headings:mb-0 !prose-img:max-w-[55ch] prose-img:mx-auto prose-img:rounded-lg"
+				class="prose dark:prose-invert lg:prose-xl font-humanist prose-headings:font-transitional prose-a:break-words prose-hr:my-4 prose-headings:mt-10 prose-headings:mb-0 !prose-img:max-w-[55ch] prose-img:mx-auto prose-img:rounded"
 				set:html={article.htmlContent}
 			/>
 		</main>
