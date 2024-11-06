@@ -32,6 +32,10 @@ class CacheService {
 		unknown[],
 		{ "COUNT(*)": number }
 	>;
+	#getRecentArticlesStatement: YazzyDBStatement<
+		{ limit: number },
+		SerializedReadablePage
+	>;
 	constructor(db: YazzyDB) {
 		this.#addArticleStatement = db.prepare(`INSERT INTO articles (
 		url,
@@ -64,6 +68,9 @@ class CacheService {
 		);
 		this.#getArticleCountStatement = db.prepare(
 			"SELECT COUNT(*) FROM articles",
+		);
+		this.#getRecentArticlesStatement = db.prepare(
+			"SELECT * FROM articles ORDER BY createdAt DESC LIMIT :limit",
 		);
 
 		console.log(
@@ -104,6 +111,20 @@ class CacheService {
 		if (!result || !result["COUNT(*)"]) return 0;
 		const count = result["COUNT(*)"];
 		return count;
+	}
+
+	getRecentArticles(limit = 10): ReadablePage[] {
+		const results = this.#getRecentArticlesStatement.all({ limit });
+		if (!results) return [];
+		return results.map((result) => {
+			const article: ReadablePage = {
+				...result,
+				published: result.published ? new Date(result.published) : undefined,
+				createdAt: result.createdAt ? new Date(result.createdAt) : undefined,
+				tags: result.tags.split(LIST_DELIMITER),
+			};
+			return article;
+		});
 	}
 }
 

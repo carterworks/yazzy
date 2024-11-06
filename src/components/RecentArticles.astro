@@ -2,9 +2,19 @@
 import { cache } from "../services/cache";
 
 const articleCountAtBuildTime = cache.getArticleCount();
+const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
+	...article,
+	summary: `${article.summary
+		?.replace(/<[^>]*>/g, "")
+		.split(/\s+/)
+		.slice(0, 20)
+		.join(" ")}…`,
+}));
 ---
 
 <script>
+	import type { ReadablePage } from "../types";
+
 	async function getArticleCount() {
 		try {
 			const response = await fetch("/api/articles/count");
@@ -14,7 +24,7 @@ const articleCountAtBuildTime = cache.getArticleCount();
 			console.error("Failed to get article count", error);
 		}
 	}
-	async function insertRecentCount() {
+	async function insertArticleCount() {
 		const articlesAtRuntime = await getArticleCount();
 		const articleDisplay = document.getElementById("article-count");
 		if (!articlesAtRuntime || !articleDisplay) {
@@ -22,8 +32,50 @@ const articleCountAtBuildTime = cache.getArticleCount();
 		}
 		articleDisplay.textContent = articlesAtRuntime;
 	}
-	insertRecentCount();
+	insertArticleCount();
+	async function insertRecentArticles() {
+		try {
+			const response = await fetch("/api/articles/recent");
+			const articles: ReadablePage[] = await response.json();
+			const recentArticles = document.getElementById("recent-articles");
+			if (!recentArticles) {
+				return;
+			}
+			articles.forEach((article) => {
+				const li = document.createElement("li");
+				li.className =
+					"w-40 h-64 p-2 bg-canvas overflow-hidden transition rounded border hover:brightness-95 dark:hover:brightness-125 active:brightness-105 dark:active:brightness-90";
+				li.innerHTML = `
+					<a class="h-full" href="/${article.url}">
+						<h3 class="font-transitional">${article.title}</h3>
+						<p class="text-xs my-1">${new URL(article.url).hostname}</p>
+						<p class="text-xs">${article.summary}</p>
+					</a>
+				`;
+			});
+		} catch (error) {
+			console.error("Failed to get recent articles", error);
+		}
+	}
+	insertRecentArticles();
 </script>
-<div>
-	There are <span id="article-count">{articleCountAtBuildTime}</span> clipped articles.
-</div>
+<section>
+	<h2 class="text-lg font-transitional mb-2">What people are reading.</h2>
+	<ol id="recent-articles" class="flex flex-row flex-wrap gap-2 mb-2">
+		{
+			recentArticlesAtBuildTime.map((article) => (
+				<li class="w-40 h-64 p-2 bg-canvas overflow-hidden transition rounded border hover:brightness-95 dark:hover:brightness-125 active:brightness-105 dark:active:brightness-90">
+					<a class="h-full" href={`/${article.url}`}>
+						<h3 class="font-transitional">{article.title}</h3>
+						<p class="text-xs my-1">{new URL(article.url).hostname}</p>
+						<p class="text-xs">{article.summary}</p>
+					</a>
+				</li>
+			))
+		}
+	</ol>
+	<p class="">
+		Articles archived: <span id="article-count">{articleCountAtBuildTime}</span
+		>.
+	</p>
+</section>
