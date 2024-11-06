@@ -67,7 +67,7 @@ import Button from "./Button.astro";
 		<span>AI model</span>
 		<select
 			name="model"
-			class="border rounded-md py-1 px-4 dark:text-neutral-950"
+			class="border rounded-md py-1 px-4 "
 		>
 			<option value="gpt-4o-mini">GPT-4o mini</option>
 		</select>
@@ -77,11 +77,11 @@ import Button from "./Button.astro";
 		<input
 			type="text"
 			name="apiKey"
-			class="border focus:border-transparent block w-full rounded-md focus:ring-0 py-1 px-4 transition dark:text-neutral-950"
+			class="border focus:border-transparent block w-full rounded-md focus:ring-0 py-1 px-4 transition"
 		/>
 	</label>
 	<div class="flex items-center">
-		<Button type="submit" class="py-1 px-6 dark:text-neutral-950">Save</Button>
+		<Button type="submit" class="py-1 px-6">Save</Button>
 		<div class="ml-2" id="status"></div>
 	</div>
 </form>
