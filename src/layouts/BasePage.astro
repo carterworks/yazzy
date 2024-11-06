@@ -1,7 +1,7 @@
 ---
 import { ViewTransitions } from "astro:transitions";
-import Settings from "../components/Settings.astro";
 import Button from "../components/Button.astro";
+import Settings from "../components/Settings.astro";
 interface Props {
 	title: string;
 	class?: string;
@@ -50,7 +50,7 @@ const { title, class: classes } = Astro.props;
 				<Button type="button" popovertarget="settings-dialog">
 					Settings
 				</Button>
-				<div popover id="settings-dialog" class={`border p-2 rounded-lg`}>
+				<div popover id="settings-dialog" class={`border p-2 rounded`}>
 					<Settings />
 				</div>
 				<a
