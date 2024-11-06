@@ -7,7 +7,7 @@ export default {
 				button: "ButtonFace",
 				"button-text": "ButtonText",
 				canvas: "Canvas",
-				"canvas-text": "CanvasText"
+				"canvas-text": "CanvasText",
 			},
 			fontFamily: {
 				// from https://github.com/system-fonts/modern-font-stacks
