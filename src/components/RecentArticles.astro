@@ -59,7 +59,7 @@ const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
 			console.error("Failed to get recent articles", error);
 		}
 	}
-	document.addEventListener("astro:load", async () => {
+	document.addEventListener("astro:page-load", async () => {
 		await Promise.allSettled([insertArticleCount(), insertRecentArticles()]);
 	});
 </script>
