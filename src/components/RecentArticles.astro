@@ -34,7 +34,6 @@ const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
 		}
 		articleDisplay.textContent = articlesAtRuntime;
 	}
-	insertArticleCount();
 	async function insertRecentArticles() {
 		try {
 			const response = await fetch("/api/articles/recent");
@@ -60,7 +59,9 @@ const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
 			console.error("Failed to get recent articles", error);
 		}
 	}
-	insertRecentArticles();
+	document.addEventListener("astro:load", async () => {
+		await Promise.allSettled([insertArticleCount(), insertRecentArticles()]);
+	});
 </script>
 <section>
 	<h2 class="text-lg font-transitional mb-2">What people are reading.</h2>
