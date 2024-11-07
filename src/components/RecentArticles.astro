@@ -1,4 +1,5 @@
 ---
+import { recentArticleCardClasses } from "../constants";
 import { cache } from "../services/cache";
 
 const articleCountAtBuildTime = cache.getArticleCount();
@@ -13,6 +14,7 @@ const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
 ---
 
 <script>
+	import { recentArticleCardClasses } from "../constants";
 	import type { ReadablePage } from "../types";
 
 	async function getArticleCount() {
@@ -41,14 +43,14 @@ const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
 			if (!recentArticles) {
 				return;
 			}
+			recentArticles.innerHTML = "";
 			articles.forEach((article) => {
 				const li = document.createElement("li");
-				li.className =
-					"w-40 h-64 p-2 bg-canvas overflow-hidden transition rounded border hover:brightness-95 dark:hover:brightness-125 active:brightness-105 dark:active:brightness-90";
+				li.className = recentArticleCardClasses;
 				li.innerHTML = `
-					<a class="h-full" href="/${article.url}">
+					<a class="" href="/${article.url}">
 						<h3 class="font-transitional">${article.title}</h3>
-						<p class="text-xs my-1">${new URL(article.url).hostname}</p>
+						<p class="text-xs my-1 truncate">${new URL(article.url).hostname}</p>
 						<p class="text-xs">${article.summary}</p>
 					</a>
 				`;
@@ -62,13 +64,16 @@ const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
 </script>
 <section>
 	<h2 class="text-lg font-transitional mb-2">What people are reading.</h2>
-	<ol id="recent-articles" class="flex flex-row flex-wrap gap-2 mb-2">
+	<ol
+		id="recent-articles"
+		class="flex flex-column lg:flex-row flex-wrap gap-2 justify-between"
+	>
 		{
 			recentArticlesAtBuildTime.map((article) => (
-				<li class="w-40 h-64 p-2 bg-canvas overflow-hidden transition rounded border hover:brightness-95 dark:hover:brightness-125 active:brightness-105 dark:active:brightness-90">
-					<a class="h-full" href={`/${article.url}`}>
+				<li class={recentArticleCardClasses}>
+					<a href={`/${article.url}`}>
 						<h3 class="font-transitional">{article.title}</h3>
-						<p class="text-xs my-1">{new URL(article.url).hostname}</p>
+						<p class="text-xs my-1 truncate">{new URL(article.url).hostname}</p>
 						<p class="text-xs">{article.summary}</p>
 					</a>
 				</li>
