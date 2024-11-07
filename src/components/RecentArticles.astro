@@ -47,7 +47,7 @@ const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
 				const li = document.createElement("li");
 				li.className = recentArticleCardClasses;
 				li.innerHTML = `
-					<a class="h-full" href="/${article.url}">
+					<a class="" href="/${article.url}">
 						<h3 class="font-transitional">${article.title}</h3>
 						<p class="text-xs my-1">${new URL(article.url).hostname}</p>
 						<p class="text-xs">${article.summary}</p>
@@ -70,7 +70,7 @@ const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
 		{
 			recentArticlesAtBuildTime.map((article) => (
 				<li class={recentArticleCardClasses}>
-					<a class="h-full" href={`/${article.url}`}>
+					<a href={`/${article.url}`}>
 						<h3 class="font-transitional">{article.title}</h3>
 						<p class="text-xs my-1">{new URL(article.url).hostname}</p>
 						<p class="text-xs">{article.summary}</p>

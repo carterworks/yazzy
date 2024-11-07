@@ -2,7 +2,6 @@ export const recentArticleCardClasses = [
 	"lg:w-40",
 	"md:w-60",
 	"flex-auto",
-	"lg:h-64",
 	"p-2",
 	"bg-canvas",
 	"overflow-hidden",
