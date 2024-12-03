@@ -86,14 +86,25 @@ if (!article) {
 }
 
 const authCookie = Astro.cookies.get("Authorization");
+let apiErrorMsg = "";
 if (!article.summary && authCookie) {
 	const [model, apiKey] = (atob(authCookie.value) || "=").split("=");
 	if (!model || !apiKey) {
 		return;
 	}
-	article.summary = await summarize(article.textContent, model, apiKey);
-	if (article.summary) {
-		cache.addSummary(urlToClip, article.summary as string);
+	try {
+		article.summary = await summarize(article.textContent, model, apiKey);
+		if (article.summary) {
+			cache.addSummary(urlToClip, article.summary as string);
+		}
+	} catch (error) {
+		if (error instanceof Error) {
+			apiErrorMsg = error.message;
+		} else if (typeof error === "string") {
+			apiErrorMsg = error;
+		} else {
+			apiErrorMsg = `Unknown error: ${error}`;
+		}
 	}
 }
 const plainTextSummary = article.summary
@@ -174,6 +185,14 @@ const buttonClasses = "";
 				{metadata.join(" ・ ")}
 			</p>
 			{
+				apiErrorMsg && (
+					<div class="bg-slate-100 dark:bg-gray-700 rounded px-4 py-2 mt-2">
+						<h3 class="font-bold">Failed to retrieve AI summary</h3>
+						<p class="">{apiErrorMsg}</p>
+					</div>
+				)
+			}
+			{
 				article.summary && (
 					<aside class="prose dark:prose-invert font-humanist mt-4 ">
 						<h3 class="mb-0 font-transitional">Summary</h3>
@@ -184,7 +203,7 @@ const buttonClasses = "";
 		</header>
 		<main>
 			<article
-				class="prose dark:prose-invert lg:prose-xl font-humanist prose-headings:font-transitional prose-a:break-words prose-hr:my-4 prose-headings:mt-10 prose-headings:mb-0 !prose-img:max-w-[55ch] prose-img:mx-auto prose-img:rounded"
+				class="prose dark:prose-invert lg:prose-xl font-humanist prose-headings:font-transitional prose-a:break-words prose-hr:my-4 prose-headings:mt-10 prose-headings:mb-0 prose-img:max-w-lg prose-img:mx-auto prose-img:rounded"
 				set:html={article.htmlContent}
 			/>
 		</main>
