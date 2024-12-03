@@ -1,5 +1,5 @@
 ---
-import { ViewTransitions } from "astro:transitions";
+import { ClientRouter } from "astro:transitions";
 import Button from "../components/Button.astro";
 import Settings from "../components/Settings.astro";
 interface Props {
@@ -17,7 +17,7 @@ const { title, class: classes } = Astro.props;
 		<title>{title}</title>
 		<link rel="manifest" href="/manifest.webmanifest" />
 		<link rel="icon" href="/scissors.svg" type="image/svg+xml" />
-		<ViewTransitions />
+		<ClientRouter />
 		<slot name="head" />
 		<style is:global>
 			:root {
