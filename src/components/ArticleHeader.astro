@@ -1,0 +1,72 @@
+---
+import { cache } from "../services/cache";
+import { summarize } from "../services/summarizer";
+import type { ReadablePage } from "../types";
+import { formatDate } from "../utils";
+
+interface Props {
+	article: ReadablePage;
+	class?: string;
+}
+const { article, class: baseClasses = "" } = Astro.props;
+
+function generateMetadataNuggets(article: ReadablePage): string[] {
+	const articleHostname = new URL(article.url).hostname;
+	const metadata = [
+		article.author,
+		article.published && formatDate(article.published),
+		articleHostname,
+	].filter((nugget) => !!nugget) as string[];
+	return metadata;
+}
+
+const authCookie = Astro.cookies.get("Authorization");
+let apiErrorMsg = "";
+if (!article.summary && authCookie) {
+	const [model, apiKey] = (atob(authCookie.value) || "=").split("=");
+	if (!model || !apiKey) {
+		return;
+	}
+	try {
+		article.summary = await summarize(article.textContent, model, apiKey);
+		if (article.summary) {
+			cache.addSummary(article.url, article.summary);
+		}
+	} catch (error) {
+		if (error instanceof Error) {
+			apiErrorMsg = error.message;
+		} else if (typeof error === "string") {
+			apiErrorMsg = error;
+		} else {
+			apiErrorMsg = `Unknown error: ${error}`;
+		}
+	}
+}
+
+const metadata = generateMetadataNuggets(article);
+---
+
+<header class:list={[baseClasses]}>
+	<h2 class="text-3xl font-transitional">
+		<a href={article.url} class="hover:underline">{article.title}</a>
+	</h2>
+	<p class="text-sm mt-0.5">
+		{metadata.join(" ・ ")}
+	</p>
+	{
+		apiErrorMsg && (
+			<div class="bg-slate-100 dark:bg-gray-700 rounded px-4 py-2 mt-2">
+				<h3 class="font-bold">Failed to retrieve AI summary</h3>
+				<p class="">{apiErrorMsg}</p>
+			</div>
+		)
+	}
+	{
+		article.summary && (
+			<aside class="prose dark:prose-invert font-humanist mt-2 ">
+				<h3 class="mb-0 font-transitional">Summary</h3>
+				<div set:html={article.summary} class="*:my-0" />
+			</aside>
+		)
+	}
+</header>
