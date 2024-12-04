@@ -19,23 +19,19 @@ import Button from "./Button.astro";
 	if (!form) {
 		throw new Error("Form not found");
 	}
-	const enableSummaries: HTMLInputElement | null = form.querySelector(
-		"input[name=enableSummaries]",
-	);
 	const model: HTMLSelectElement | null =
 		form.querySelector("select[name=model]");
 	const apiKey: HTMLInputElement | null =
 		form.querySelector("input[name=apiKey]");
-	if (!enableSummaries || !model || !apiKey) {
+	if (!model || !apiKey) {
 		throw new Error("Form elements not found");
 	}
 
 	const cookie = document.cookie
-		.split(";")
-		.find((c) => c.startsWith("Authorization="));
+		.split(/;\s*/)
+		.find((c) => c.toLocaleLowerCase().startsWith("authorization="));
 	if (cookie) {
 		const [modelValue, apiKeyValue] = atob(cookie.split("=")[1]).split("=");
-		enableSummaries.checked = true;
 		model.value = modelValue;
 		apiKey.value = apiKeyValue;
 	}
@@ -43,32 +39,25 @@ import Button from "./Button.astro";
 	const statusText = form.querySelector("#status");
 	form.addEventListener("submit", (event) => {
 		event.preventDefault();
-		if (!enableSummaries.checked) {
+		const apiKeyValue = apiKey.value;
+		if (!apiKeyValue) {
 			// delete the cookie
 			document.cookie = `Authorization=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Secure; Path=/; Domain=${window.location.hostname};`;
-			model.value = "";
 			apiKey.value = "";
 			return;
 		}
 		const value = btoa(`${model.value}=${apiKey.value}`);
 		document.cookie = `Authorization=${value}; max-age=31536000; SameSite=Strict; Secure; Path=/; Domain=${window.location.hostname};`;
-		statusText && (statusText.textContent = "✔︎ Saved!");
+		statusText && statusText.classList.toggle("opacity-100");
 		setTimeout(() => {
-			statusText && (statusText.textContent = "");
+			statusText && statusText.classList.toggle("opacity-100");
 		}, 3000);
 	});
 </script>
 <form class="flex flex-col gap-4 items-start" id="settings-form">
 	<label class="flex flex-col items-start">
-		<span>Enable AI summaries</span>
-		<input type="checkbox" name="enableSummaries" />
-	</label>
-	<label class="flex flex-col items-start">
 		<span>AI model</span>
-		<select
-			name="model"
-			class="border rounded-md py-1 px-4 "
-		>
+		<select name="model" class="border rounded-md py-1 px-4">
 			<option value="gpt-4o-mini">GPT-4o mini</option>
 		</select>
 	</label>
@@ -80,8 +69,18 @@ import Button from "./Button.astro";
 			class="border focus:border-transparent block w-full rounded-md focus:ring-0 py-1 px-4 transition"
 		/>
 	</label>
-	<div class="flex items-center">
+	<div
+		id="status"
+		class="h-4 -mt-3 transition-opacity opacity-0 dark:text-green-400 text-green-700"
+	>
+		✔︎ Saved!
+	</div>
+	<div class="flex items-center gap-2">
 		<Button type="submit" class="py-1 px-6">Save</Button>
-		<div class="ml-2" id="status"></div>
+		<Button
+			type="reset"
+			class="py-1 px-6 text-red-700 border-red-700 dark:text-red-400 dark:border-red-400"
+			>Reset</Button
+		>
 	</div>
 </form>

@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
+import ArticleHeader from "../components/ArticleHeader.astro";
 import ArticleMinimap from "../components/ArticleMinimap.astro";
 import Button from "../components/Button.astro";
 import DownloadAs from "../components/DownloadAs.astro";
@@ -8,17 +9,10 @@ import { cache } from "../services/cache";
 import { clip, convertHtmlToMarkdown } from "../services/clipper";
 import { summarize } from "../services/summarizer";
 import type { ReadablePage } from "../types";
-import { isUrl } from "../utils";
+import { formatDate, isUrl } from "../utils";
 export const prerender = false;
 
 const { urlToClip } = Astro.params;
-
-function formatDate(date: Date | undefined): string {
-	if (!date) {
-		return "";
-	}
-	return date.toISOString().split("T")[0];
-}
 
 function getFilename(title: string): string {
 	return (
@@ -85,41 +79,13 @@ if (!article) {
 	cache.insertArticle(article);
 }
 
-const authCookie = Astro.cookies.get("Authorization");
-let apiErrorMsg = "";
-if (!article.summary && authCookie) {
-	const [model, apiKey] = (atob(authCookie.value) || "=").split("=");
-	if (!model || !apiKey) {
-		return;
-	}
-	try {
-		article.summary = await summarize(article.textContent, model, apiKey);
-		if (article.summary) {
-			cache.addSummary(urlToClip, article.summary as string);
-		}
-	} catch (error) {
-		if (error instanceof Error) {
-			apiErrorMsg = error.message;
-		} else if (typeof error === "string") {
-			apiErrorMsg = error;
-		} else {
-			apiErrorMsg = `Unknown error: ${error}`;
-		}
-	}
-}
 const plainTextSummary = article.summary
 	? article.summary.replace(/<[^>]*>/g, "")
 	: `${article.textContent.substring(0, 300)}…`;
 const articleHostname = new URL(article.url).hostname;
-const metadata = [
-	article.author,
-	article.published && formatDate(article.published),
-	articleHostname,
-].filter(Boolean);
 const markdownContent = generateObsidianContents(article);
 const obsidianUri = generateObsidianUri(markdownContent, article.title);
 const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\n---\n${article.textContent}`;
-const buttonClasses = "";
 ---
 
 <BasePage
@@ -152,14 +118,13 @@ const buttonClasses = "";
 	<aside
 		class="flex lg:flex-col gap-3 items-center lg:col-start-1 lg:row-span-2 print:hidden"
 	>
-		<Button href={obsidianUri} title="Save to Obsidian" class={buttonClasses}>
+		<Button href={obsidianUri} title="Save to Obsidian">
 			<Icon class="h-4" name="simple-icons/obsidian" />
 		</Button>
 		<DownloadAs
 			contents={markdownContent}
 			filename={`${getFilename(article.title)}.md`}
 			title="Download as Markdown"
-			class={buttonClasses}
 		>
 			<Icon name="refactoring-ui/book-closed" />
 		</DownloadAs>
@@ -167,7 +132,6 @@ const buttonClasses = "";
 			contents={plainTextContent}
 			filename={`${getFilename(article.title)}.txt`}
 			title="Download as plain text"
-			class={buttonClasses}
 		>
 			<Icon name="refactoring-ui/inbox-download" />
 		</DownloadAs>
@@ -176,31 +140,11 @@ const buttonClasses = "";
 			class={`fixed bottom-3 mx-auto px-2 rounded lg:m-0 lg:rounded-none lg:top-2 lg:sticky`}
 		/>
 	</aside>
-	<div class="lg:col-start-2 max-w-prose">
-		<header class="border-b-2 border-neutral-400 pb-4">
-			<h2 class="text-3xl font-transitional">
-				<a href={article.url} class="hover:underline">{article.title}</a>
-			</h2>
-			<p class="text-sm mt-0.5">
-				{metadata.join(" ・ ")}
-			</p>
-			{
-				apiErrorMsg && (
-					<div class="bg-slate-100 dark:bg-gray-700 rounded px-4 py-2 mt-2">
-						<h3 class="font-bold">Failed to retrieve AI summary</h3>
-						<p class="">{apiErrorMsg}</p>
-					</div>
-				)
-			}
-			{
-				article.summary && (
-					<aside class="prose dark:prose-invert font-humanist mt-4 ">
-						<h3 class="mb-0 font-transitional">Summary</h3>
-						<div set:html={article.summary} class="*:my-0" />
-					</aside>
-				)
-			}
-		</header>
+	<div class="lg:col-start-2 max-w-prose space-x-2">
+		<ArticleHeader
+			class="border-b-2 border-neutral-400 pb-2"
+			article={article}
+		/>
 		<main>
 			<article
 				class="prose dark:prose-invert lg:prose-xl font-humanist prose-headings:font-transitional prose-a:break-words prose-hr:my-4 prose-headings:mt-10 prose-headings:mb-0 prose-img:max-w-lg prose-img:mx-auto prose-img:rounded"

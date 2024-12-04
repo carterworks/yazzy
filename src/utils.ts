@@ -6,3 +6,10 @@ export function isUrl(potentialUrl: string): boolean {
 		return false;
 	}
 }
+
+export function formatDate(date: Date | undefined): string {
+	if (!date) {
+		return "";
+	}
+	return date.toISOString().split("T")[0];
+}
