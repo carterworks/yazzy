@@ -31,8 +31,8 @@ import Button from "./Button.astro";
 	}
 
 	const cookie = document.cookie
-		.split(";")
-		.find((c) => c.startsWith("Authorization="));
+		.split(/;\s*/)
+		.find((c) => c.toLocaleLowerCase().startsWith("authorization="));
 	if (cookie) {
 		const [modelValue, apiKeyValue] = atob(cookie.split("=")[1]).split("=");
 		enableSummaries.checked = true;
@@ -65,10 +65,7 @@ import Button from "./Button.astro";
 	</label>
 	<label class="flex flex-col items-start">
 		<span>AI model</span>
-		<select
-			name="model"
-			class="border rounded-md py-1 px-4 "
-		>
+		<select name="model" class="border rounded-md py-1 px-4">
 			<option value="gpt-4o-mini">GPT-4o mini</option>
 		</select>
 	</label>
