@@ -54,22 +54,22 @@ const { title, class: classes } = Astro.props;
 				<div popover id="settings-dialog" class={`border p-2 rounded`}>
 					<Settings />
 				</div>
-				<a
-					href="https://github.com/carterworks/yazzy"
-					target="_blank"
-					rel="noreferrer"
-					class="underline"
-				>
-					Github
-				</a>
 			</header>
 			<div class={classes}>
 				<slot />
 			</div>
-			<footer class="border-t-2 pt-2 border-neutral-400">
+			<footer class="border-t-2 py-2 border-neutral-400 flex flex-row">
 				<ArticleCount server:defer>
 					<ArticleCount slot="fallback" />
 				</ArticleCount>
+				<a
+					href="https://github.com/carterworks/yazzy"
+					target="_blank"
+					rel="noreferrer"
+					class="underline ml-auto"
+				>
+					Github
+				</a>
 			</footer>
 		</div>
 	</body>
