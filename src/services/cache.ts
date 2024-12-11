@@ -70,7 +70,7 @@ class CacheService {
 			"SELECT COUNT(*) FROM articles",
 		);
 		this.#getRecentArticlesStatement = db.prepare(
-			"SELECT * FROM articles ORDER BY createdAt DESC LIMIT :limit",
+			"SELECT * FROM articles ORDER BY createdAt, published DESC LIMIT :limit",
 		);
 
 		console.log(
