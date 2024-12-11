@@ -12,6 +12,7 @@ const recentArticles = cache.getRecentArticles().map((article) => {
 	}
 	return {
 		...article,
+		summary,
 	};
 });
 ---
