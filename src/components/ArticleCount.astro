@@ -1,0 +1,32 @@
+---
+import { cache } from "../services/cache";
+
+const articleCountAtBuildTime = cache.getArticleCount();
+---
+
+<script>
+	async function getArticleCount() {
+		try {
+			const response = await fetch("/api/articles/count");
+			const articles = await response.json();
+			return articles.count;
+		} catch (error) {
+			console.error("Failed to get article count", error);
+		}
+	}
+	async function insertArticleCount() {
+		const articlesAtRuntime = await getArticleCount();
+		const articleDisplay = document.getElementById("article-count");
+		if (!articlesAtRuntime || !articleDisplay) {
+			return;
+		}
+		articleDisplay.textContent = articlesAtRuntime;
+	}
+
+	document.addEventListener("astro:page-load", async () => {
+		await Promise.allSettled([insertArticleCount()]);
+	});
+</script>
+<div>
+	Articles archived: <span id="article-count">{articleCountAtBuildTime}</span>.
+</div>

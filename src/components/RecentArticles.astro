@@ -2,7 +2,6 @@
 import { recentArticleCardClasses } from "../constants";
 import { cache } from "../services/cache";
 
-const articleCountAtBuildTime = cache.getArticleCount();
 const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
 	...article,
 	summary: `${article.summary
@@ -17,23 +16,6 @@ const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
 	import { recentArticleCardClasses } from "../constants";
 	import type { ReadablePage } from "../types";
 
-	async function getArticleCount() {
-		try {
-			const response = await fetch("/api/articles/count");
-			const articles = await response.json();
-			return articles.count;
-		} catch (error) {
-			console.error("Failed to get article count", error);
-		}
-	}
-	async function insertArticleCount() {
-		const articlesAtRuntime = await getArticleCount();
-		const articleDisplay = document.getElementById("article-count");
-		if (!articlesAtRuntime || !articleDisplay) {
-			return;
-		}
-		articleDisplay.textContent = articlesAtRuntime;
-	}
 	async function insertRecentArticles() {
 		try {
 			const response = await fetch("/api/articles/recent");
@@ -60,7 +42,7 @@ const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
 		}
 	}
 	document.addEventListener("astro:page-load", async () => {
-		await Promise.allSettled([insertArticleCount(), insertRecentArticles()]);
+		await Promise.allSettled([insertRecentArticles()]);
 	});
 </script>
 <section>
@@ -81,8 +63,4 @@ const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
 			))
 		}
 	</ol>
-	<p class="">
-		Articles archived: <span id="article-count">{articleCountAtBuildTime}</span
-		>.
-	</p>
 </section>

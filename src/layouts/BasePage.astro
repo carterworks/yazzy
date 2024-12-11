@@ -2,6 +2,7 @@
 import { ClientRouter } from "astro:transitions";
 import Button from "../components/Button.astro";
 import Settings from "../components/Settings.astro";
+import ArticleCount from "../components/ArticleCount.astro";
 interface Props {
 	title: string;
 	class?: string;
@@ -36,8 +37,8 @@ const { title, class: classes } = Astro.props;
 	</head>
 
 	<body class={`text-base px-4 lg:px-0`}>
-		<div class="m-auto max-w-prose my-4">
-			<nav
+		<div class="m-auto max-w-prose space-y-2">
+			<header
 				class="flex items-center mb-4 gap-4 print:hidden"
 				transition:animate="slide"
 			>
@@ -61,10 +62,13 @@ const { title, class: classes } = Astro.props;
 				>
 					Github
 				</a>
-			</nav>
+			</header>
 			<div class={classes}>
 				<slot />
 			</div>
+			<footer class="border-t-2 pt-2 border-neutral-400">
+				<ArticleCount />
+			</footer>
 		</div>
 	</body>
 </html>
