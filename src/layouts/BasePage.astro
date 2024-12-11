@@ -58,18 +58,27 @@ const { title, class: classes } = Astro.props;
 			<div class={classes}>
 				<slot />
 			</div>
-			<footer class="border-t-2 py-2 border-neutral-400 flex flex-row">
-				<ArticleCount server:defer>
-					<ArticleCount slot="fallback" />
+			<footer
+				class="border-t-2 py-2 border-neutral-400 flex justify-between items-start"
+			>
+				<ul>
+					<li>
+						<a
+							href="https://github.com/carterworks/yazzy"
+							target="_blank"
+							rel="noreferrer"
+							class="underline"
+						>
+							Github
+						</a>
+					</li>
+					<li>
+						<a href="/api/dump" class="underline">Download db dump</a>
+					</li>
+				</ul>
+				<ArticleCount class="text-right" server:defer>
+					<ArticleCount class="text-right" slot="fallback" />
 				</ArticleCount>
-				<a
-					href="https://github.com/carterworks/yazzy"
-					target="_blank"
-					rel="noreferrer"
-					class="underline ml-auto"
-				>
-					Github
-				</a>
 			</footer>
 		</div>
 	</body>

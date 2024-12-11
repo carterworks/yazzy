@@ -1,9 +1,14 @@
 ---
 import { cache } from "../services/cache";
 
+interface Props {
+	class?: string;
+}
+const { class: classes } = Astro.props;
+
 const articleCount = cache.getArticleCount();
 ---
 
-<div>
+<div class={classes}>
 	Articles archived: {articleCount}.
 </div>
