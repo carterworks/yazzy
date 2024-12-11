@@ -113,6 +113,7 @@ export async function clip(url: URL): Promise<ReadablePage> {
 		title: article.title,
 		url: url.toString(),
 		published,
+		createdAt: new Date(),
 		author,
 		tags,
 		markdownContent: markdownBody,
