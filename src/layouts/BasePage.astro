@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from "astro:transitions";
+import ArticleCount from "../components/ArticleCount.astro";
 import Button from "../components/Button.astro";
 import Settings from "../components/Settings.astro";
 interface Props {
@@ -36,8 +37,8 @@ const { title, class: classes } = Astro.props;
 	</head>
 
 	<body class={`text-base px-4 lg:px-0`}>
-		<div class="m-auto max-w-prose my-4">
-			<nav
+		<div class="m-auto max-w-prose space-y-2">
+			<header
 				class="flex items-center mb-4 gap-4 print:hidden"
 				transition:animate="slide"
 			>
@@ -53,18 +54,32 @@ const { title, class: classes } = Astro.props;
 				<div popover id="settings-dialog" class={`border p-2 rounded`}>
 					<Settings />
 				</div>
-				<a
-					href="https://github.com/carterworks/yazzy"
-					target="_blank"
-					rel="noreferrer"
-					class="underline"
-				>
-					Github
-				</a>
-			</nav>
+			</header>
 			<div class={classes}>
 				<slot />
 			</div>
+			<footer
+				class="border-t-2 py-2 border-neutral-400 flex justify-between items-start"
+			>
+				<ul>
+					<li>
+						<a
+							href="https://github.com/carterworks/yazzy"
+							target="_blank"
+							rel="noreferrer"
+							class="underline"
+						>
+							Github
+						</a>
+					</li>
+					<li>
+						<a href="/api/dump" class="underline">Download db dump</a>
+					</li>
+				</ul>
+				<ArticleCount class="text-right" server:defer>
+					<ArticleCount class="text-right" slot="fallback" />
+				</ArticleCount>
+			</footer>
 		</div>
 	</body>
 </html>

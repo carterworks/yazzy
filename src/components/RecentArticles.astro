@@ -1,68 +1,21 @@
 ---
-import { recentArticleCardClasses } from "../constants";
 import { cache } from "../services/cache";
 
-const articleCountAtBuildTime = cache.getArticleCount();
-const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
-	...article,
-	summary: `${article.summary
+const recentArticles = cache.getRecentArticles().map((article) => {
+	let summary = article.summary
 		?.replace(/<[^>]*>/g, "")
 		.split(/\s+/)
 		.slice(0, 20)
-		.join(" ")}…`,
-}));
+		.join(" ");
+	if (summary?.length && summary.length > 0) {
+		summary += "...";
+	}
+	return {
+		...article,
+	};
+});
 ---
 
-<script>
-	import { recentArticleCardClasses } from "../constants";
-	import type { ReadablePage } from "../types";
-
-	async function getArticleCount() {
-		try {
-			const response = await fetch("/api/articles/count");
-			const articles = await response.json();
-			return articles.count;
-		} catch (error) {
-			console.error("Failed to get article count", error);
-		}
-	}
-	async function insertArticleCount() {
-		const articlesAtRuntime = await getArticleCount();
-		const articleDisplay = document.getElementById("article-count");
-		if (!articlesAtRuntime || !articleDisplay) {
-			return;
-		}
-		articleDisplay.textContent = articlesAtRuntime;
-	}
-	async function insertRecentArticles() {
-		try {
-			const response = await fetch("/api/articles/recent");
-			const { articles }: { articles: ReadablePage[] } = await response.json();
-			const recentArticles = document.getElementById("recent-articles");
-			if (!recentArticles) {
-				return;
-			}
-			recentArticles.innerHTML = "";
-			articles.forEach((article) => {
-				const li = document.createElement("li");
-				li.className = recentArticleCardClasses;
-				li.innerHTML = `
-					<a class="" href="/${article.url}">
-						<h3 class="font-transitional">${article.title}</h3>
-						<p class="text-xs my-1 truncate">${new URL(article.url).hostname}</p>
-						<p class="text-xs">${article.summary}</p>
-					</a>
-				`;
-				recentArticles.appendChild(li);
-			});
-		} catch (error) {
-			console.error("Failed to get recent articles", error);
-		}
-	}
-	document.addEventListener("astro:page-load", async () => {
-		await Promise.allSettled([insertArticleCount(), insertRecentArticles()]);
-	});
-</script>
 <section>
 	<h2 class="text-lg font-transitional mb-2">What people are reading.</h2>
 	<ol
@@ -70,8 +23,24 @@ const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
 		class="flex flex-column lg:flex-row flex-wrap gap-2 justify-between"
 	>
 		{
-			recentArticlesAtBuildTime.map((article) => (
-				<li class={recentArticleCardClasses}>
+			recentArticles.map((article) => (
+				<li
+					class:list={[
+						"lg:w-40",
+						"md:w-60",
+						"flex-auto",
+						"p-2",
+						"bg-canvas",
+						"overflow-hidden",
+						"transition",
+						"rounded",
+						"border",
+						"hover:brightness-95",
+						"dark:hover:brightness-125",
+						"active:brightness-105",
+						"dark:active:brightness-90",
+					]}
+				>
 					<a href={`/${article.url}`}>
 						<h3 class="font-transitional">{article.title}</h3>
 						<p class="text-xs my-1 truncate">{new URL(article.url).hostname}</p>
@@ -81,8 +50,4 @@ const recentArticlesAtBuildTime = cache.getRecentArticles().map((article) => ({
 			))
 		}
 	</ol>
-	<p class="">
-		Articles archived: <span id="article-count">{articleCountAtBuildTime}</span
-		>.
-	</p>
 </section>

@@ -36,5 +36,7 @@ import BasePage from "../layouts/BasePage.astro";
 		/>
 		<Button type="submit" class="px-4"> Clip </Button>
 	</form>
-	<RecentArticles />
+	<RecentArticles server:defer>
+		<RecentArticles slot="fallback" />
+	</RecentArticles>
 </BasePage>
