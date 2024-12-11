@@ -140,27 +140,29 @@ const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\
 		/>
 	</aside>
 	<div class="lg:col-start-2 max-w-prose space-x-2">
-		<ArticleHeader
-			class="border-b-2 border-neutral-400 pb-2"
-			article={article}
-		/>
 		<main>
-			<article
-				class:list={[
-					"prose dark:prose-invert",
-					"lg:prose-xl",
-					"font-humanist",
-					"prose-headings:font-transitional",
-					"prose-a:break-words",
-					"prose-hr:my-4",
-					"prose-headings:mt-10",
-					"prose-headings:mb-0",
-					"!prose-img:max-w-lg",
-					"prose-img:mx-auto",
-					"prose-img:rounded",
-				]}
-				set:html={article.htmlContent}
-			/>
+			<article>
+				<ArticleHeader
+					class="border-b-2 border-neutral-400 pb-2"
+					article={article}
+				/>
+				<div
+					class:list={[
+						"prose dark:prose-invert",
+						"lg:prose-xl",
+						"font-humanist",
+						"prose-headings:font-transitional",
+						"prose-a:break-words",
+						"prose-hr:my-4",
+						"prose-headings:mt-10",
+						"prose-headings:mb-0",
+						"!prose-img:max-w-lg",
+						"prose-img:mx-auto",
+						"prose-img:rounded",
+					]}
+					set:html={article.htmlContent}
+				/>
+			</article>
 		</main>
 	</div>
 </BasePage>
