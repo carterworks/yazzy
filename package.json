@@ -22,7 +22,7 @@
 	},
 	"scripts": {
 		"dev": "astro dev",
-		"start": "bun run ./dist/server/entry.mjs",
+		"start": "node ./dist/server/entry.mjs",
 		"build": "astro build",
 		"preview": "astro preview",
 		"astro": "astro",
