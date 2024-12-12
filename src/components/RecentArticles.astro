@@ -1,5 +1,6 @@
 ---
 import { cache } from "../services/cache";
+export const prerender = false;
 
 const recentArticles = cache.getRecentArticles().map((article) => {
 	let summary = article.summary

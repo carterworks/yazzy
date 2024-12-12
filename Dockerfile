@@ -41,4 +41,4 @@ COPY --from=build /app /app
 ENV HOST=${HOST}
 ENV PORT=${PORT}
 EXPOSE ${PORT}
-CMD [ "npm", "run", "start" ]
+CMD [ "bun", "run", "--bun", "start" ]

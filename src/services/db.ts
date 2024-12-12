@@ -1,7 +1,8 @@
-import Database from "better-sqlite3";
-import type BetterSqlite3 from "better-sqlite3";
+import { Database } from "bun:sqlite";
 
-function getSchemaVersion(db: BetterSqlite3.Database): number {
+export type YazzyDB = Database;
+
+function getSchemaVersion(db: YazzyDB): number {
 	// first, check if the schema version table exists
 	const schemaVersionTable = db
 		.prepare(
@@ -12,21 +13,21 @@ function getSchemaVersion(db: BetterSqlite3.Database): number {
 		return -1;
 	}
 	const row = db
-		.prepare<[], { version: number }>("SELECT version FROM schema_version")
+		.prepare<{ version?: number }, []>("SELECT version FROM schema_version")
 		.get();
 	return row?.version ?? -1;
 }
-function incrementSchemaVersion(db: BetterSqlite3.Database): void {
+function incrementSchemaVersion(db: YazzyDB): void {
 	db.prepare("UPDATE schema_version SET version = version + 1").run();
 }
 
-type Migration = (db: BetterSqlite3.Database) => void;
+type Migration = (db: YazzyDB) => void;
 const migrations: Migration[] = [
 	/**
 	 * Initial version
 	 * Creates article table and schema version table
 	 */
-	function v0(db: BetterSqlite3.Database) {
+	function v0(db: YazzyDB) {
 		db.prepare(`CREATE TABLE IF NOT EXISTS articles (
 			url TEXT PRIMARY KEY,
 			title TEXT,
@@ -49,9 +50,9 @@ const migrations: Migration[] = [
 	},
 ];
 
-function listTables(db: BetterSqlite3.Database): string[] {
+function listTables(db: YazzyDB): string[] {
 	return db
-		.prepare<unknown[], { name: string }>(
+		.prepare<{ name: string }, []>(
 			"SELECT name FROM sqlite_master WHERE type='table'",
 		)
 		.all()
@@ -59,8 +60,8 @@ function listTables(db: BetterSqlite3.Database): string[] {
 }
 
 function initalizeDB(location = ":memory:"): YazzyDB {
-	const db = new Database(location, {});
-	db.pragma("journal_mode = WAL");
+	const db = new Database(location, { strict: true });
+	db.exec("PRAGMA journal_mode = WAL");
 	const currentVersion = getSchemaVersion(db);
 	const newMigrations =
 		currentVersion === -1 ? migrations : migrations.slice(currentVersion + 1);
@@ -81,9 +82,3 @@ function initalizeDB(location = ":memory:"): YazzyDB {
 
 const db = initalizeDB(process.env.DB_PATH);
 export default db;
-export type YazzyDB = BetterSqlite3.Database;
-export type YazzyDBStatement<
-	// biome-ignore lint/complexity/noBannedTypes: Type is copied directly from BetterSqlite3
-	BindParameters extends unknown[] | {} = unknown[],
-	Result = unknown,
-> = BetterSqlite3.Statement<BindParameters, Result>;
