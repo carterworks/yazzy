@@ -12,7 +12,6 @@
 		"ai": "^3.3.9",
 		"astro": "^5.0.1",
 		"astro-icon": "^1.1.1",
-		"better-sqlite3": "^11.1.2",
 		"dompurify": "^3.1.6",
 		"jsdom": "^24.1.1",
 		"tailwindcss": "^3.4.7",
@@ -22,7 +21,7 @@
 	},
 	"scripts": {
 		"dev": "astro dev",
-		"start": "bun run ./dist/server/entry.mjs",
+		"start": "bun run --bun ./dist/server/entry.mjs",
 		"build": "astro build",
 		"preview": "astro preview",
 		"astro": "astro",
@@ -31,7 +30,7 @@
 	"type": "module",
 	"devDependencies": {
 		"@biomejs/biome": "^1.8.3",
-		"@types/better-sqlite3": "^7.6.11",
+		"@types/bun": "^1.1.14",
 		"@types/dompurify": "^3.0.5",
 		"@types/jsdom": "^21.1.7",
 		"@types/turndown": "^5.0.5",
