@@ -3,7 +3,8 @@
 		"astro-build.astro-vscode",
 		"bradlc.vscode-tailwindcss",
 		"biomejs.biome",
-		"editorconfig.editorconfig"
+		"editorconfig.editorconfig",
+		"oven.bun-vscode"
 	],
 	"unwantedRecommendations": []
 }
