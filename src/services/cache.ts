@@ -68,7 +68,10 @@ class CacheService {
 		this.#getRecentArticlesStatement = db.query<
 			SerializedReadablePage,
 			{ limit: number }
-		>("SELECT * FROM articles ORDER BY createdAt, published DESC LIMIT :limit");
+		>(`SELECT * FROM articles
+			ORDER BY
+			CASE WHEN createdAt IS NULL THEN published ELSE createdAt END DESC
+			LIMIT :limit`);
 
 		console.log(
 			"CacheService initialized [article count: %d]",
