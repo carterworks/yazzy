@@ -15,6 +15,10 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 	if (!response.ok) {
 		throw new Error(`Failed to fetch ${url.toString()}`);
 	}
+	const contentType = response.headers.get("content-type");
+	if (!contentType || !contentType.includes("text/html")) {
+		throw new Error(`URL "${url.toString()}" is not an HTML page`);
+	}
 	const page = new JSDOM(await response.text(), { url: url.toString() });
 	// force lazy-loaded images to load
 	const LAZY_DATA_ATTRS = [
