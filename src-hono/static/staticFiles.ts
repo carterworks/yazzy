@@ -21,6 +21,10 @@ const htmx = resolve(
 	`../../node_modules/htmx.org/dist/htmx${isDev ? ".js" : ".min.js"}`,
 );
 const clientScripts = resolve(__dirname, "./scripts.mjs");
+const wcMinimap = resolve(
+	__dirname,
+	"../../node_modules/wc-minimap/wc-minimap.js",
+);
 
 const staticFiles = new Hono();
 
@@ -47,5 +51,6 @@ staticFiles.use(
 	"/scripts.mjs",
 	serveStatic({ path: clientScripts, root: "/" }),
 );
+staticFiles.use("/wc-minimap.js", serveStatic({ path: wcMinimap, root: "/" }));
 
 export default staticFiles;

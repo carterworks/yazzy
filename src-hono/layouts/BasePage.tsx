@@ -25,7 +25,8 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 			{Head && <Head />}
 			<link rel="stylesheet" href="/styles.css" />
 			<script src="/htmx.js" />
-			<script src="/scripts.mjs" type="module" />
+			<script src="/scripts.mjs" type="module" defer />
+			<script src="/wc-minimap.js" type="module" defer />
 		</head>
 
 		<body className="text-base px-4 lg:px-0">
