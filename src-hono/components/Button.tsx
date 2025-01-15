@@ -1,6 +1,7 @@
 import type { FC, PropsWithChildren } from "hono/jsx";
 
 interface LinkProps {
+	type: "link";
 	href: string;
 }
 interface ButtonProps {
@@ -12,9 +13,9 @@ interface CommonProps {
 }
 type Props = (LinkProps | ButtonProps) & CommonProps;
 
-const isLink = (props: Props): props is LinkProps & CommonProps => {
-	return Boolean((props as LinkProps).href);
-};
+function isLink(props: Props): props is LinkProps & CommonProps {
+	return props.type === "link";
+}
 
 const classes = [
 	"border",
@@ -31,11 +32,14 @@ const classes = [
 ] as const;
 
 const Button: FC<PropsWithChildren<Props>> = (props) => {
-	return isLink(props) ? (
-		<a className={[...classes, props.className].join(" ")} {...props}>
-			{props.children}
-		</a>
-	) : (
+	if (isLink(props)) {
+		return (
+			<a className={[...classes, props.className].join(" ")} {...props}>
+				{props.children}
+			</a>
+		);
+	}
+	return (
 		<button className={[...classes, props.className].join(" ")} {...props}>
 			{props.children}
 		</button>

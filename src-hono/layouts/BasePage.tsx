@@ -3,13 +3,13 @@ import Button from "../components/Button";
 
 interface BasePageProps {
 	title?: string;
-	classes?: string;
+	className?: string;
 	head?: FC;
 }
 
 const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 	title = "",
-	classes = "",
+	className = "",
 	head: Head,
 	children,
 }) => (
@@ -25,46 +25,46 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 			<link rel="stylesheet" href="/styles.min.css" />
 		</head>
 
-		<body class="text-base px-4 lg:px-0">
-			<div class="m-auto max-w-prose space-y-2">
+		<body className="text-base px-4 lg:px-0">
+			<div className="m-auto max-w-prose space-y-2">
 				<header
-					class="flex items-center mb-4 gap-4 print:hidden"
+					className="flex items-center mb-4 gap-4 print:hidden"
 					transition:animate="slide"
 				>
-					<div class="mr-auto">
-						<h1 class="text-2xl font-transitional">
+					<div className="mr-auto">
+						<h1 className="text-2xl font-transitional">
 							<a href="/">yazzy</a>
 						</h1>
-						<p class="text-xs">Plain ol' reading</p>
+						<p className="text-xs">Plain ol' reading</p>
 					</div>
 					<Button type="button" popovertarget="settings-dialog">
 						Settings
 					</Button>
-					<div popover id="settings-dialog" class={"border p-2 rounded"}>
+					<div popover id="settings-dialog" className={"border p-2 rounded"}>
 						{/* <Settings /> */}
 					</div>
 				</header>
-				<div class={classes}>{children}</div>
-				<footer class="border-t-2 py-2 border-neutral-400 flex justify-between items-start">
+				<div className={className}>{children}</div>
+				<footer className="border-t-2 py-2 border-neutral-400 flex justify-between items-start">
 					<ul>
 						<li>
 							<a
 								href="https://github.com/carterworks/yazzy"
 								target="_blank"
 								rel="noreferrer"
-								class="underline"
+								className="underline"
 							>
 								Github
 							</a>
 						</li>
 						<li>
-							<a href="/api/dump" class="underline">
+							<a href="/api/dump" className="underline">
 								Download db dump
 							</a>
 						</li>
 					</ul>
-					{/* <ArticleCount class="text-right" server:defer>
-					<ArticleCount class="text-right" slot="fallback" />
+					{/* <ArticleCount className="text-right" server:defer>
+					<ArticleCount className="text-right" slot="fallback" />
 				</ArticleCount> */}
 				</footer>
 			</div>

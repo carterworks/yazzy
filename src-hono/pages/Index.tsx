@@ -20,23 +20,27 @@ const Head: FC = () => (
 
 const IndexPage: FC = () => (
 	<BasePage title="yazzy" head={Head}>
-		<header class="mb-4">
-			<p class="">
+		<header className="mb-4">
+			<p className="">
 				Tired of popups, ads, and other distractions on your page? Just put the
 				URL in the box below and yazzy will clean it up so you can focus. You
 				can even save it as a Markdown file to keep forever.
 			</p>
 		</header>
-		<form action="/api/clip" method="get" class="flex gap-1 items-center mb-4">
+		<form
+			action="/api/clip"
+			method="get"
+			className="flex gap-1 items-center mb-4"
+		>
 			<input
-				class="border focus:border-transparent block w-full rounded-md focus:ring-0 py-1 px-4 transition"
+				className="border focus:border-transparent block w-full rounded-md focus:ring-0 py-1 px-4 transition"
 				type="url"
 				id="url"
 				name="url"
 				required
 				placeholder="https://paulgraham.com/submarine.html"
 			/>
-			<Button type="submit" class="px-4">
+			<Button type="submit" className="px-4">
 				{" "}
 				Clip{" "}
 			</Button>

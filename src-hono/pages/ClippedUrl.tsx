@@ -1,5 +1,12 @@
 import type { FC } from "hono/jsx";
 import Button from "../components/Button";
+import DownloadAs from "../components/DownloadAs";
+import {
+	Attach,
+	BookClosed,
+	InboxDownload,
+} from "../components/icons/refactoring-ui";
+import { Obsidian } from "../components/icons/simple-icons";
 import BasePage from "../layouts/BasePage";
 import { convertHtmlToMarkdown } from "../services/clipper";
 import type { ReadablePage } from "../types";
@@ -72,39 +79,39 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 	const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\n---\n${article.textContent}`;
 
 	return (
-		<BasePage classes="grid grid-cols-1 lg:grid-cols-[auto,1fr] gap-2 lg:gap-4">
-			<aside class="flex lg:flex-col gap-3 items-center lg:col-start-1 lg:row-span-2 print:hidden">
-				<Button href={obsidianUri} title="Save to Obsidian">
-					{/* <Icon class="h-4" name="simple-icons/obsidian" /> */}
+		<BasePage className="grid grid-cols-1 lg:grid-cols-[auto,1fr] gap-2 lg:gap-4">
+			<aside className="flex lg:flex-col gap-3 items-center lg:col-start-1 lg:row-span-2 print:hidden">
+				<Button href={obsidianUri} title="Save to Obsidian" type="link">
+					<Obsidian className="h-4" />
 				</Button>
-				{/* <DownloadAs
+				<DownloadAs
 					contents={markdownContent}
 					filename={`${getFilename(article.title)}.md`}
 					title="Download as Markdown"
 				>
-					<Icon name="refactoring-ui/book-closed" />
+					<BookClosed className="h-4" />
 				</DownloadAs>
 				<DownloadAs
 					contents={plainTextContent}
 					filename={`${getFilename(article.title)}.txt`}
 					title="Download as plain text"
 				>
-					<Icon name="refactoring-ui/inbox-download" />
+					<InboxDownload className="h-4" />
 				</DownloadAs>
-				<ArticleMinimap
+				{/* <ArticleMinimap
 					selector="article"
-					class={`fixed bottom-3 mx-auto px-2 rounded lg:m-0 lg:rounded-none lg:top-2 lg:sticky`}
+					className={`fixed bottom-3 mx-auto px-2 rounded lg:m-0 lg:rounded-none lg:top-2 lg:sticky`}
 				/> */}
 			</aside>
-			<div class="lg:col-start-2 max-w-prose space-x-2">
+			<div className="lg:col-start-2 max-w-prose space-x-2">
 				<main>
 					<article>
 						{/* <ArticleHeader
-							class="border-b-2 border-neutral-400 pb-2"
+							className="border-b-2 border-neutral-400 pb-2"
 							article={article}
 						/> */}
 						<div
-							class="prose dark:prose-invert lg:prose-xl font-humanist prose-headings:font-transitional prose-a:break-words prose-hr:my-4 prose-headings:mt-10 prose-headings:mb-0 !prose-img:max-w-lg prose-img:mx-auto prose-img:rounded"
+							className="prose dark:prose-invert lg:prose-xl font-humanist prose-headings:font-transitional prose-a:break-words prose-hr:my-4 prose-headings:mt-10 prose-headings:mb-0 !prose-img:max-w-lg prose-img:mx-auto prose-img:rounded"
 							// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
 							dangerouslySetInnerHTML={{ __html: article.htmlContent }}
 						/>
