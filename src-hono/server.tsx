@@ -115,5 +115,9 @@ app.get(
 		return c.html(<ClippedUrlPage article={article} />);
 	},
 );
+app.get("/api/article-count", (c) => {
+	const count = cache.getArticleCount();
+	return c.text(count.toString());
+});
 
 export default app;

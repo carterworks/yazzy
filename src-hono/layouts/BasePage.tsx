@@ -87,9 +87,12 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 							</a>
 						</li>
 					</ul>
-					{/* <ArticleCount className="text-right" server:defer>
-					<ArticleCount className="text-right" slot="fallback" />
-				</ArticleCount> */}
+					<div className="text-right">
+						Article count:{" "}
+						<span hx-trigger="load" hx-get="/api/article-count">
+							-1
+						</span>
+					</div>
 				</footer>
 			</div>
 		</body>
