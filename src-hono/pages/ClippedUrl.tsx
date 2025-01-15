@@ -1,4 +1,5 @@
 import type { FC } from "hono/jsx";
+import ArticleHeader from "../components/ArticleHeader";
 import Button from "../components/Button";
 import DownloadAs from "../components/DownloadAs";
 import {
@@ -79,7 +80,7 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 	const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\n---\n${article.textContent}`;
 
 	return (
-		<BasePage className="grid grid-cols-1 lg:grid-cols-[auto,1fr] gap-2 lg:gap-4">
+		<BasePage className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-2 lg:gap-4">
 			<aside className="flex lg:flex-col gap-3 items-center lg:col-start-1 lg:row-span-2 print:hidden">
 				<Button href={obsidianUri} title="Save to Obsidian" type="link">
 					<Obsidian className="h-4" />
@@ -106,10 +107,10 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 			<div className="lg:col-start-2 max-w-prose space-x-2">
 				<main>
 					<article>
-						{/* <ArticleHeader
-							className="border-b-2 border-neutral-400 pb-2"
+						<ArticleHeader
+							classes="border-b-2 border-neutral-400 pb-2"
 							article={article}
-						/> */}
+						/>
 						<div
 							className="prose dark:prose-invert lg:prose-xl font-humanist prose-headings:font-transitional prose-a:break-words prose-hr:my-4 prose-headings:mt-10 prose-headings:mb-0 !prose-img:max-w-lg prose-img:mx-auto prose-img:rounded"
 							// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
