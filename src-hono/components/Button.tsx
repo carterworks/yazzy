@@ -8,7 +8,7 @@ interface ButtonProps {
 	type: "button" | "submit" | "reset";
 }
 interface CommonProps {
-	className?: string;
+	classes?: string;
 	[key: string]: unknown;
 }
 type Props = (LinkProps | ButtonProps) & CommonProps;
@@ -32,15 +32,16 @@ const classes = [
 ] as const;
 
 const Button: FC<PropsWithChildren<Props>> = (props) => {
+	console.log(props.classes);
 	if (isLink(props)) {
 		return (
-			<a className={[...classes, props.className].join(" ")} {...props}>
+			<a className={[...classes, props.classes].join(" ")} {...props}>
 				{props.children}
 			</a>
 		);
 	}
 	return (
-		<button className={[...classes, props.className].join(" ")} {...props}>
+		<button className={[...classes, props.classes].join(" ")} {...props}>
 			{props.children}
 		</button>
 	);

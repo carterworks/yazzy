@@ -40,7 +40,7 @@ const IndexPage: FC = () => (
 				required
 				placeholder="https://paulgraham.com/submarine.html"
 			/>
-			<Button type="submit" className="px-4">
+			<Button type="submit" classes="px-4">
 				{" "}
 				Clip{" "}
 			</Button>

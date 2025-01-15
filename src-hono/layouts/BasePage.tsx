@@ -1,5 +1,6 @@
 import type { FC, PropsWithChildren } from "hono/jsx";
 import Button from "../components/Button";
+import Settings from "../components/Settings";
 
 interface BasePageProps {
 	title?: string;
@@ -22,7 +23,9 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 			<link rel="manifest" href="/manifest.webmanifest" />
 			<link rel="icon" href="/scissors.svg" type="image/svg+xml" />
 			{Head && <Head />}
-			<link rel="stylesheet" href="/styles.min.css" />
+			<link rel="stylesheet" href="/styles.css" />
+			<script src="/htmx.js" />
+			<script src="/scripts.mjs" type="module" />
 		</head>
 
 		<body className="text-base px-4 lg:px-0">
@@ -40,8 +43,12 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 					<Button type="button" popovertarget="settings-dialog">
 						Settings
 					</Button>
-					<div popover id="settings-dialog" className={"border p-2 rounded"}>
-						{/* <Settings /> */}
+					<div
+						popover="auto"
+						id="settings-dialog"
+						className="border p-2 rounded m-auto"
+					>
+						<Settings />
 					</div>
 				</header>
 				<div className={className}>{children}</div>
