@@ -7,8 +7,20 @@ import ClippedUrlPage from "./pages/ClippedUrl";
 import IndexPage from "./pages/Index";
 import staticFiles from "./static/staticFiles";
 
-const app = new Hono();
+const app = new Hono<{ Variables: { requestId: string } }>();
 
+app.use(async (c, next) => {
+	const requestId = crypto.randomUUID();
+	c.set("requestId", requestId);
+	await next();
+	c.res.headers.set("X-Request-Id", requestId);
+});
+app.use(async (c, next) => {
+	const start = performance.now();
+	await next();
+	const end = performance.now();
+	c.res.headers.set("X-Response-Time", `${end - start}`);
+});
 app.use(logger(log));
 app.route("/", staticFiles);
 app.get("/", (c) => {
