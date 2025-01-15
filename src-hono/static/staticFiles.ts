@@ -1,7 +1,7 @@
 import { $ } from "bun";
 import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
-import log from "../log";
+import log from "../services/log";
 import webManifest from "./manifest.webmanifest";
 import scissorsIcon from "./scissors.svg";
 import CSS_INPUT_PATH from "./styles.css";

@@ -2,10 +2,13 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { z } from "zod";
-import log from "./log";
 import ClippedUrlPage from "./pages/ClippedUrl";
 import IndexPage from "./pages/Index";
+import { cache } from "./services/cache";
+import { clip } from "./services/clipper";
+import log from "./services/log";
 import staticFiles from "./static/staticFiles";
+import type { ReadablePage } from "./types";
 
 const app = new Hono<{ Variables: { requestId: string } }>();
 
@@ -42,8 +45,14 @@ app.get(
 			url: z.string().url(),
 		}),
 	),
-	(c) => {
-		return c.html(<ClippedUrlPage url={c.req.param("url")} />);
+	async (c) => {
+		const url = c.req.param("url");
+		let article: ReadablePage | undefined = cache.getArticle(url);
+		if (!article) {
+			article = await clip(new URL(url));
+			cache.insertArticle(article);
+		}
+		return c.html(<ClippedUrlPage article={article} />);
 	},
 );
 
