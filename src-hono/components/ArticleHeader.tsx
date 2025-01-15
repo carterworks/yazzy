@@ -1,4 +1,5 @@
-import type { FC, PropsWithChildren } from "hono/jsx";
+import type { FC } from "hono/jsx";
+import AISummary from "../components/AISummary";
 import type { ReadablePage } from "../types";
 import { formatDate } from "../utils";
 
@@ -16,14 +17,7 @@ const ArticleHeader: FC<{ article: ReadablePage; classes?: string }> = ({
 	article,
 	classes = "",
 }) => {
-	// const willGenerateSummary = Boolean(Astro.cookies.get("Authorization"));
 	const metadata = generateMetadataNuggets(article);
-	const lineLengths: Readonly<string[]> = [
-		"w-[30ch]",
-		"w-[45ch]",
-		"w-[40ch]",
-		"w-[42ch]",
-	];
 	return (
 		<header className={[classes, "space-y-2"].join(" ")}>
 			<h2 class="text-3xl font-transitional">
@@ -32,6 +26,7 @@ const ArticleHeader: FC<{ article: ReadablePage; classes?: string }> = ({
 				</a>
 			</h2>
 			<p class="text-sm">{metadata.join(" ・ ")}</p>
+			<AISummary url={article.url} />
 		</header>
 	);
 };

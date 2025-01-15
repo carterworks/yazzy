@@ -1,23 +1,22 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
+import { getCookie } from "hono/cookie";
 import { logger } from "hono/logger";
+import { requestId } from "hono/request-id";
 import { z } from "zod";
+import AISummaryError from "./components/AISummaryError";
 import ClippedUrlPage from "./pages/ClippedUrl";
 import IndexPage from "./pages/Index";
 import { cache } from "./services/cache";
 import { clip } from "./services/clipper";
 import log from "./services/log";
+import { summarize } from "./services/summarizer";
 import staticFiles from "./static/staticFiles";
 import type { ReadablePage } from "./types";
 
 const app = new Hono<{ Variables: { requestId: string } }>();
 
-app.use(async (c, next) => {
-	const requestId = crypto.randomUUID();
-	c.set("requestId", requestId);
-	await next();
-	c.res.headers.set("X-Request-Id", requestId);
-});
+app.use("*", requestId());
 app.use(async (c, next) => {
 	const start = performance.now();
 	await next();
@@ -37,6 +36,67 @@ app.get("/api/clip", (c) => {
 	}
 	return c.redirect(`/${url}`);
 });
+
+app.get(
+	"/api/summary",
+	zValidator("query", z.object({ url: z.string().url() })),
+	zValidator("cookie", z.object({ Authorization: z.string() }), (result, c) => {
+		if (!result.success) {
+			c.status(201);
+			return c.html("");
+		}
+	}),
+	async (c) => {
+		const url = c.req.query("url");
+		if (!url) {
+			c.status(400);
+			return c.html(
+				<AISummaryError>Value '{url}' is not a valid URL</AISummaryError>,
+			);
+		}
+		const authCookie = getCookie(c, "Authorization");
+		if (!authCookie) {
+			c.status(201);
+			return c.text("");
+		}
+		try {
+			const [model, apiKey] = (atob(authCookie) || "=").split("=");
+			if (!model || !apiKey) {
+				c.status(400);
+				return c.html(
+					<AISummaryError>Invalid Authorization cookie</AISummaryError>,
+				);
+			}
+			const article: ReadablePage | undefined = cache.getArticle(url);
+			if (!article) {
+				c.status(404);
+				return c.html(
+					<AISummaryError>Article not found for URL {url}</AISummaryError>,
+				);
+			}
+
+			article.summary = await summarize(article.textContent, model, apiKey);
+			if (!article.summary) {
+				// empty
+				c.status(204);
+				return c;
+			}
+			cache.addSummary(url, article.summary);
+			return c.html(article.summary);
+		} catch (err) {
+			c.status(500);
+			let apiErrorMsg: string;
+			if (err instanceof Error) {
+				apiErrorMsg = err.message;
+			} else if (typeof err === "string") {
+				apiErrorMsg = err;
+			} else {
+				apiErrorMsg = `Unknown error: ${err}`;
+			}
+			return c.html(<AISummaryError>{apiErrorMsg}</AISummaryError>);
+		}
+	},
+);
 app.get(
 	"/:url{https?://.*}",
 	zValidator(

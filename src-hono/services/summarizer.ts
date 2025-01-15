@@ -2,6 +2,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import createDomPurify from "dompurify";
 import { JSDOM } from "jsdom";
+
 type ValidModelName = "gpt-4o-mini";
 const validModels: ValidModelName[] = ["gpt-4o-mini"];
 const systemPrompt = `You will receive an article. Summarize it. 

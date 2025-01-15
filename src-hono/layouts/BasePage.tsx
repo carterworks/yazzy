@@ -24,9 +24,25 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 			<link rel="icon" href="/scissors.svg" type="image/svg+xml" />
 			{Head && <Head />}
 			<link rel="stylesheet" href="/styles.css" />
-			<script src="/htmx.js" />
-			<script src="/scripts.mjs" type="module" defer />
-			<script src="/wc-minimap.js" type="module" defer />
+			<script
+				src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js"
+				integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+				crossorigin="anonymous"
+			/>
+			<script src="/scripts.mjs" type="module" defer async />
+			<script
+				src="https://unpkg.com/wc-minimap@0.1.1/wc-minimap.js"
+				integrity="sha384-/2H4ZWwvl8I+zlaydkj25HA1904mLGlWuniHPBxq+f9G80sL85UTKMYCQz2ADm34"
+				crossorigin="anonymous"
+				defer
+				async
+			/>
+			<meta
+				name="htmx-config"
+				content={JSON.stringify({
+					responseHandling: [{ code: ".*", swap: true }],
+				})}
+			/>
 		</head>
 
 		<body className="text-base px-4 lg:px-0">
