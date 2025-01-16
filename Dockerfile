@@ -27,7 +27,7 @@ RUN bun install --frozen-lockfile
 COPY --link . .
 
 # Build application
-RUN bun run --bun build
+RUN bun run build
 
 # Final stage for app image
 FROM base
@@ -35,10 +35,10 @@ ARG HOST=0.0.0.0
 ARG PORT=4321
 
 # Copy built application
-COPY --from=build /app /app
+COPY --from=build /app/dist/yazzy /app/yazzy
 
 # Start the server by default, this can be overwritten at runtime
 ENV HOST=${HOST}
 ENV PORT=${PORT}
 EXPOSE ${PORT}
-CMD [ "bun", "run", "--bun", "start" ]
+CMD [ "./yazzy" ]
