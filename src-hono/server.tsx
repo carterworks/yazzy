@@ -4,6 +4,7 @@ import { getCookie } from "hono/cookie";
 import { logger } from "hono/logger";
 import { requestId } from "hono/request-id";
 import { z } from "zod";
+import RecentArticles from "./components/RecentArticles";
 import AISummaryError from "./components/AISummaryError";
 import ClippedUrlPage from "./pages/ClippedUrl";
 import IndexPage from "./pages/Index";
@@ -118,6 +119,10 @@ app.get(
 app.get("/api/article-count", (c) => {
 	const count = cache.getArticleCount();
 	return c.text(count.toString());
+});
+app.get("/api/recent-articles", (c) => {
+	const recentArticles = cache.getRecentArticles();
+	return c.html(<RecentArticles articles={recentArticles} />);
 });
 
 export default app;

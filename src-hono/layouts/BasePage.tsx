@@ -90,7 +90,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 					<div className="text-right">
 						Article count:{" "}
 						<span hx-trigger="load" hx-get="/api/article-count">
-							-1
+							0
 						</span>
 					</div>
 				</footer>

@@ -45,9 +45,7 @@ const IndexPage: FC = () => (
 				Clip{" "}
 			</Button>
 		</form>
-		{/* <RecentArticles server:defer>
-			<RecentArticles slot="fallback" />
-		</RecentArticles> */}
+		<div hx-trigger="load" hx-get="/api/recent-articles" hx-swap="outerHTML" />
 	</BasePage>
 );
 export default IndexPage;
