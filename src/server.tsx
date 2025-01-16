@@ -1,6 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
+import { etag } from "hono/etag";
 import { logger } from "hono/logger";
 import { requestId } from "hono/request-id";
 import { z } from "zod";
@@ -26,6 +27,7 @@ app.use(async (c, next) => {
 	c.res.headers.set("X-Response-Time", `${end - start}`);
 });
 app.use(logger(log));
+app.use("*", etag());
 app.route("/", staticFiles);
 app.get("/", (c) => {
 	return c.html(<IndexPage />);
