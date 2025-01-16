@@ -2,6 +2,7 @@ import type { ReadablePage } from "../types";
 // A sqlite database is used to cache articles
 import db from "./db";
 import type { YazzyDB } from "./db";
+import log from "./log";
 
 interface SerializedReadablePage {
 	title: string;
@@ -73,9 +74,9 @@ class CacheService {
 			CASE WHEN createdAt IS NULL THEN published ELSE createdAt END DESC
 			LIMIT :limit`);
 
-		console.log(
+		log(
 			"CacheService initialized [article count: %d]",
-			this.getArticleCount(),
+			this.getArticleCount().toString(),
 		);
 	}
 

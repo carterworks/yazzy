@@ -1,4 +1,5 @@
 import { Database } from "bun:sqlite";
+import log from "./log";
 
 export type YazzyDB = Database;
 
@@ -70,12 +71,12 @@ function initalizeDB(location = ":memory:"): YazzyDB {
 		incrementSchemaVersion(db);
 	}
 	const tableNames = listTables(db);
-	console.log(
+	log(
 		"Database initialized with tables %s [location: %s][version: %d][migrationsRun: %d]",
 		tableNames.join(","),
 		location,
-		getSchemaVersion(db),
-		newMigrations.length,
+		getSchemaVersion(db).toString(),
+		newMigrations.length.toString(),
 	);
 	return db;
 }
