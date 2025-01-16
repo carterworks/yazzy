@@ -1,11 +1,12 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
-import { logger } from "hono/logger";
+import { etag } from "hono/etag";
 import { requestId } from "hono/request-id";
 import { z } from "zod";
 import AISummaryError from "./components/AISummaryError";
 import RecentArticles from "./components/RecentArticles";
+import { logger } from "./middleware/logger";
 import ClippedUrlPage from "./pages/ClippedUrl";
 import IndexPage from "./pages/Index";
 import { cache } from "./services/cache";
@@ -26,6 +27,7 @@ app.use(async (c, next) => {
 	c.res.headers.set("X-Response-Time", `${end - start}`);
 });
 app.use(logger(log));
+app.use("*", etag());
 app.route("/", staticFiles);
 app.get("/", (c) => {
 	return c.html(<IndexPage />);
