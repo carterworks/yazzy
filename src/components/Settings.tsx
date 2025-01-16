@@ -6,7 +6,10 @@ const Settings: FC = () => (
 	<form className="flex flex-col gap-4 items-start" id="settings-form">
 		<label className="flex flex-col items-start">
 			<span>AI model</span>
-			<select name="model" className="border rounded-md py-1 px-4">
+			<select
+				name="model"
+				className="border-b border-base-100 dark:border-base-900 active:border-b-0 py-2"
+			>
 				<option value="gpt-4o-mini">GPT-4o mini</option>
 			</select>
 		</label>
