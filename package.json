@@ -18,8 +18,9 @@
 	},
 	"scripts": {
 		"check": "biome check --write",
-		"dev": "NODE_ENV=development bun --watch run src-hono/server.tsx",
-		"css": "tailwindcss --input $YAZZY_CSS_INPUT --minify --output $YAZZY_CSS_OUTPUT --cwd src-hono"
+		"dev": "bun run css && NODE_ENV=development bun --watch run src-hono/server.tsx",
+		"css": "tailwindcss --input static/styles.css --output static/styles.min.css --cwd src-hono",
+		"build": " bun run css --minify && NODE_ENV=production bun build src-hono/server.tsx --compile --outfile dist/yazzy"
 	},
 	"type": "module",
 	"devDependencies": {

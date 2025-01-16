@@ -32,7 +32,6 @@ const classes = [
 ] as const;
 
 const Button: FC<PropsWithChildren<Props>> = (props) => {
-	console.log(props.classes);
 	if (isLink(props)) {
 		return (
 			<a className={[...classes, props.classes].join(" ")} {...props}>

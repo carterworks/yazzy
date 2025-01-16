@@ -1,20 +1,9 @@
-import { resolve } from "node:path";
-import { $ } from "bun";
 import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
-import log from "../services/log";
-import webManifest from "./manifest.webmanifest";
-import scissorsIcon from "./scissors.svg";
-import CSS_INPUT_PATH from "./styles.css";
-
-const CSS_OUTPUT_PATH = CSS_INPUT_PATH.replace(/\.css$/, ".min.css");
-async function buildCss() {
-	await $`YAZZY_CSS_INPUT=${CSS_INPUT_PATH} YAZZY_CSS_OUTPUT=${CSS_OUTPUT_PATH} bun run css`.quiet();
-	log(`Built CSS to ${CSS_OUTPUT_PATH}`);
-}
-buildCss();
-
-const clientScripts = resolve(__dirname, "./scripts.mjs");
+import webManifest from "./manifest.webmanifest" with { type: "file" };
+import scissorsIcon from "./scissors.svg" with { type: "file" };
+import clientScripts from "./scripts.mjs" with { type: "file" };
+import CSS_OUTPUT_PATH from "./styles.min.css" with { type: "file" };
 
 const staticFiles = new Hono();
 
