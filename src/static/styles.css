@@ -181,7 +181,7 @@
 	--color-magenta-900: #39172b;
 	--color-magenta-950: #24131d;
 
-/* 
+	/* 
  * Base color
  * Flexoki uses warm monochromatic base values that blend the black value with 
  * the paper value. 8 values are used in light and dark mode:
@@ -190,7 +190,7 @@
  * - 3 interface values: normal, hover, active
  * - 2 background values: primary, secondary
  */
- /* --color-tx: light-dark(var(--color-black), var(--color-base-200));
+	/* --color-tx: light-dark(var(--color-black), var(--color-base-200));
  --color-tx-2: light-dark(var(--color-base-600), var(--color-base-500));
  --color-tx-3: light-dark(var(--color-base-300), var(--color-base-700));
  --color-ui-3: light-dark(var(--color-base-200), var(--color-base-800));
@@ -199,7 +199,7 @@
  --color-bg-2: light-dark(var(--color-base-50), var(--color-base-950));
  --color-bg: light-dark(var(--color-paper), var(--color-black)); */
 
- /*
+	/*
  * Accent colors
  * 8 accent colors are available for accents and syntax highlighting. Unlike the
  * base values, accent values cannot be derived using opacity because this
@@ -210,7 +210,7 @@
  * highlighting and interface elements like buttons and links. Light themes
  * should use 600 for syntax highlighted text, dark themes should use 400.
  */
- /* --color-re: light-dark(var(--color-red-600), var(--color-red-400));
+	/* --color-re: light-dark(var(--color-red-600), var(--color-red-400));
  --color-re-2: light-dark(var(--color-red-400), var(--color-red-600));
  --color-or: light-dark(var(--color-orange-600), var(--color-orange-400));
  --color-or-2: light-dark(var(--color-orange-400), var(--color-orange-600));
@@ -238,5 +238,5 @@
 	fill: var(--color-tx-2);
 }
 ::backdrop {
-	@apply backdrop-blur-sm;
+	@apply backdrop-brightness-75;
 }

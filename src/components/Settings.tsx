@@ -1,5 +1,6 @@
-import type { FC, PropsWithChildren } from "hono/jsx";
+import type { FC } from "hono/jsx";
 import Button from "../components/Button";
+import Input from "./Input";
 
 const Settings: FC = () => (
 	<form className="flex flex-col gap-4 items-start" id="settings-form">
@@ -9,13 +10,10 @@ const Settings: FC = () => (
 				<option value="gpt-4o-mini">GPT-4o mini</option>
 			</select>
 		</label>
+		{/* biome-ignore lint/a11y/noLabelWithoutControl: <explanation> */}
 		<label className="flex flex-col items-start">
 			<span>API key</span>
-			<input
-				type="text"
-				name="apiKey"
-				className="border focus:border-transparent block w-full rounded-md focus:ring-0 py-1 px-4 transition"
-			/>
+			<Input type="text" name="apiKey" />
 		</label>
 		<div
 			id="status"

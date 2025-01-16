@@ -1,5 +1,6 @@
 import { type FC, Fragment } from "hono/jsx";
 import Button from "../components/Button";
+import Input from "../components/Input";
 import BasePage from "../layouts/BasePage";
 
 const Head: FC = () => (
@@ -32,8 +33,7 @@ const IndexPage: FC = () => (
 			method="get"
 			className="flex gap-1 items-center mb-4"
 		>
-			<input
-				className="border focus:border-transparent block w-full rounded-md focus:ring-0 py-1 px-4 transition"
+			<Input
 				type="url"
 				id="url"
 				name="url"
