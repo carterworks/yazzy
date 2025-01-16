@@ -2,10 +2,10 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-	--color-button: "ButtonFace";
-	--color-button-text: "ButtonText";
-	--color-canvas: "Canvas";
-	--color-canvas-text: "CanvasText";
+	--color-button: ButtonFace;
+	--color-button-text: ButtonText;
+	--color-canvas: Canvas;
+	--color-canvas-text: CanvasText;
 
 	/* from https://github.com/system-fonts/modern-font-stacks */
 	--font-system: "system-ui", "sans-serif";
