@@ -36,6 +36,7 @@ ARG PORT=4321
 
 # Copy built application
 COPY --from=build /app/dist/yazzy /app/yazzy
+COPY --from=build /app/node_modules /app/node_modules
 
 # Start the server by default, this can be overwritten at runtime
 ENV HOST=${HOST}
