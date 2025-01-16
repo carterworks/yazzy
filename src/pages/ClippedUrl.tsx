@@ -102,16 +102,13 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 				</DownloadAs>
 				<ArticleMinimap
 					selector="article"
-					classes="border fixed bottom-3 mx-auto px-2 rounded lg:m-0 lg:top-2 lg:sticky bg-white dark:bg-neutral-800"
+					classes="fixed bottom-3 mx-auto px-2 rounded lg:m-0 lg:top-2 lg:sticky bg-paper dark:bg-black"
 				/>
 			</aside>
 			<div className="lg:col-start-2 max-w-prose space-x-2">
 				<main>
 					<article>
-						<ArticleHeader
-							classes="border-b-2 border-neutral-400 pb-2"
-							article={article}
-						/>
+						<ArticleHeader classes="pb-2" article={article} />
 						<div
 							className="prose dark:prose-invert lg:prose-xl font-humanist prose-headings:font-transitional prose-a:break-words prose-hr:my-4 prose-headings:mt-10 prose-headings:mb-0 !prose-img:max-w-lg prose-img:mx-auto prose-img:rounded"
 							hx-disable

@@ -45,7 +45,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 			/>
 		</head>
 
-		<body className="text-base px-4 lg:px-0">
+		<body className="text-base bg-paper dark:bg-black text-black dark:text-base-200 px-4 lg:px-0">
 			<div className="m-auto max-w-prose space-y-2">
 				<header
 					className="flex items-center mb-4 gap-4 print:hidden"
@@ -63,13 +63,13 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 					<div
 						popover="auto"
 						id="settings-dialog"
-						className="border p-2 rounded m-auto"
+						className="p-2 rounded m-auto bg-paper dark:bg-black"
 					>
 						<Settings />
 					</div>
 				</header>
 				<div className={className}>{children}</div>
-				<footer className="border-t-2 py-2 border-neutral-400 flex justify-between items-start">
+				<footer className="flex justify-between items-start">
 					<ul>
 						<li>
 							<a

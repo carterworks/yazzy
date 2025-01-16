@@ -19,7 +19,7 @@ const Settings: FC = () => (
 		</label>
 		<div
 			id="status"
-			className="h-4 -mt-3 transition-opacity opacity-0 dark:text-green-400 text-green-700"
+			className="h-4 -mt-3 transition-opacity opacity-0 text-green-600 dark:text-green-400"
 		>
 			✔︎ Saved!
 		</div>
@@ -27,10 +27,7 @@ const Settings: FC = () => (
 			<Button type="submit" classes="py-1 px-6">
 				Save
 			</Button>
-			<Button
-				type="reset"
-				classes="py-1 px-6 text-red-700 border-red-700 dark:text-red-400 dark:border-red-400"
-			>
+			<Button type="reset" classes="py-1 px-6">
 				Reset
 			</Button>
 		</div>
