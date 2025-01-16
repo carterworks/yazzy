@@ -3,29 +3,24 @@
 	"version": "0.0.1",
 	"dependencies": {
 		"@ai-sdk/openai": "^0.0.48",
-		"@astrojs/check": "^0.9.4",
-		"@astrojs/node": "9.0.1",
-		"@astrojs/tailwind": "5.1.4",
-		"@iconify-json/lucide": "^1.2.10",
+		"@hono/zod-validator": "^0.4.2",
 		"@mozilla/readability": "^0.5.0",
-		"@tailwindcss/typography": "^0.5.13",
+		"@tailwindcss/cli": "^4.0.0-beta.9",
+		"@tailwindcss/typography": "^0.5.16",
 		"ai": "^3.3.9",
-		"astro": "5.1.6",
-		"astro-icon": "^1.1.1",
 		"dompurify": "^3.1.6",
+		"hono": "^4.6.16",
 		"jsdom": "^24.1.1",
-		"tailwindcss": "^3.4.7",
+		"tailwindcss": "^4.0.0-beta.9",
 		"turndown": "^7.2.0",
 		"typescript": "^5.5.4",
-		"wc-minimap": "^0.1.1"
+		"zod": "^3.24.1"
 	},
 	"scripts": {
-		"dev": "astro dev",
-		"start": "bun run --bun ./dist/server/entry.mjs",
-		"build": "astro build",
-		"preview": "astro preview",
-		"astro": "astro",
-		"check": "biome check --write && astro check"
+		"check": "biome check --write",
+		"dev": "bun run css && NODE_ENV=development bun --watch run src/server.tsx",
+		"css": "tailwindcss --input static/styles.css --output static/styles.min.css --cwd src",
+		"build": "bun run css --minify && NODE_ENV=production bun build src/server.tsx --compile --outfile dist/yazzy"
 	},
 	"type": "module",
 	"devDependencies": {
@@ -35,5 +30,12 @@
 		"@types/jsdom": "^21.1.7",
 		"@types/turndown": "^5.0.5",
 		"lefthook": "^1.7.18"
-	}
+	},
+	"trustedDependencies": [
+		"@biomejs/biome",
+		"@parcel/watcher",
+		"esbuild",
+		"lefthook",
+		"sharp"
+	]
 }

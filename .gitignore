@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # databases
 *.sqlite*
+
+# tailwindcss output
+*.min.css

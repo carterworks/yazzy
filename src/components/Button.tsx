@@ -1,19 +1,22 @@
----
+import type { FC, PropsWithChildren } from "hono/jsx";
+
 interface LinkProps {
+	type: "link";
 	href: string;
 }
 interface ButtonProps {
 	type: "button" | "submit" | "reset";
 }
 interface CommonProps {
-	class?: string;
+	classes?: string;
 	[key: string]: unknown;
 }
 type Props = (LinkProps | ButtonProps) & CommonProps;
-const { props } = Astro;
+
 function isLink(props: Props): props is LinkProps & CommonProps {
-	return Boolean((props as LinkProps).href);
+	return props.type === "link";
 }
+
 const classes = [
 	"border",
 	"py-1",
@@ -27,19 +30,20 @@ const classes = [
 	"active:brightness-105",
 	"dark:active:brightness-90",
 ] as const;
----
 
-{
-	isLink(props) && (
-		<a class:list={[...classes, props.class]} {...props}>
-			<slot />
-		</a>
-	)
-}
-{
-	!isLink(props) && (
-		<button class:list={[...classes, props.class]} {...props}>
-			<slot />
+const Button: FC<PropsWithChildren<Props>> = (props) => {
+	if (isLink(props)) {
+		return (
+			<a className={[...classes, props.classes].join(" ")} {...props}>
+				{props.children}
+			</a>
+		);
+	}
+	return (
+		<button className={[...classes, props.classes].join(" ")} {...props}>
+			{props.children}
 		</button>
-	)
-}
+	);
+};
+
+export default Button;

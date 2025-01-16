@@ -1,3 +1,8 @@
 {
-	"extends": "astro/tsconfigs/strict"
+	"compilerOptions": {
+		"strict": true,
+		"jsx": "react-jsx",
+		"jsxImportSource": "hono/jsx",
+		"esModuleInterop": true
+	}
 }
