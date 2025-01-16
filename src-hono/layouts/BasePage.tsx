@@ -82,7 +82,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 							</a>
 						</li>
 						<li>
-							<a href="/api/dump" className="underline">
+							<a href="/api/db-dump" className="underline">
 								Download db dump
 							</a>
 						</li>

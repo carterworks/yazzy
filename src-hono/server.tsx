@@ -4,12 +4,13 @@ import { getCookie } from "hono/cookie";
 import { logger } from "hono/logger";
 import { requestId } from "hono/request-id";
 import { z } from "zod";
-import RecentArticles from "./components/RecentArticles";
 import AISummaryError from "./components/AISummaryError";
+import RecentArticles from "./components/RecentArticles";
 import ClippedUrlPage from "./pages/ClippedUrl";
 import IndexPage from "./pages/Index";
 import { cache } from "./services/cache";
 import { clip } from "./services/clipper";
+import db from "./services/db";
 import log from "./services/log";
 import { summarize } from "./services/summarizer";
 import staticFiles from "./static/staticFiles";
@@ -123,6 +124,16 @@ app.get("/api/article-count", (c) => {
 app.get("/api/recent-articles", (c) => {
 	const recentArticles = cache.getRecentArticles();
 	return c.html(<RecentArticles articles={recentArticles} />);
+});
+app.get("/api/db-dump", (c) => {
+	const dump = db.serialize();
+	c.res.headers.set("Content-Type", "application/vnd.sqlite3");
+	c.res.headers.set(
+		"Content-Disposition",
+		`attachment; filename=yazzy-dump-${new Date().toISOString()}.sqlite3`,
+	);
+	c.res.headers.set("Content-Length", dump.length.toString());
+	return c.body(dump.buffer as unknown as ArrayBuffer);
 });
 
 export default app;
