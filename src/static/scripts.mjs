@@ -21,6 +21,7 @@ function initSettingsForm() {
 	const statusText = form.querySelector("#status");
 	form.addEventListener("submit", (event) => {
 		event.preventDefault();
+		event.stopPropagation();
 		const apiKeyValue = apiKey.value;
 		if (!apiKeyValue) {
 			// delete the cookie
@@ -36,4 +37,4 @@ function initSettingsForm() {
 		}, 3000);
 	});
 }
-document.addEventListener("DOMContentLoaded", initSettingsForm);
+initSettingsForm();
