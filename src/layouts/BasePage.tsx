@@ -69,7 +69,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 					</div>
 				</header>
 				<div className={className}>{children}</div>
-				<footer className="flex justify-between items-start">
+				<footer className="flex justify-between py-8 my-8 items-start border-t border-base-100 dark:border-base-900">
 					<ul>
 						<li>
 							<a
