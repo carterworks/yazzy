@@ -2,6 +2,8 @@ import { type FC, Fragment } from "hono/jsx";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import BasePage from "../layouts/BasePage";
+import { ReadablePage } from "../types";
+import RecentArticles from "../components/RecentArticles";
 
 const Head: FC = () => (
 	<Fragment>
@@ -19,7 +21,9 @@ const Head: FC = () => (
 	</Fragment>
 );
 
-const IndexPage: FC = () => (
+const IndexPage: FC<{ recentArticles: ReadablePage[] }> = ({
+	recentArticles,
+}) => (
 	<BasePage title="yazzy" head={<Head />}>
 		<header className="mb-4">
 			<p className="">
@@ -45,7 +49,7 @@ const IndexPage: FC = () => (
 				Clip{" "}
 			</Button>
 		</form>
-		<div hx-trigger="load" hx-get="/api/recent-articles" hx-swap="outerHTML" />
+		<RecentArticles articles={recentArticles} />
 	</BasePage>
 );
 export default IndexPage;

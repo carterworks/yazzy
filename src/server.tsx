@@ -30,7 +30,8 @@ app.use(logger(log));
 app.use("*", etag());
 app.route("/", staticFiles);
 app.get("/", (c) => {
-	return c.html(<IndexPage />);
+	const recentArticles = cache.getRecentArticles();
+	return c.html(<IndexPage recentArticles={recentArticles} />);
 });
 app.get("/api/clip", (c) => {
 	const url = c.req.query("url");
@@ -122,10 +123,6 @@ app.get(
 app.get("/api/article-count", (c) => {
 	const count = cache.getArticleCount();
 	return c.text(count.toString());
-});
-app.get("/api/recent-articles", (c) => {
-	const recentArticles = cache.getRecentArticles();
-	return c.html(<RecentArticles articles={recentArticles} />);
 });
 app.get("/api/db-dump", (c) => {
 	const dump = db.serialize();
