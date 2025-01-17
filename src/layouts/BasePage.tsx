@@ -45,7 +45,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 			/>
 		</head>
 
-		<body className="text-base bg-paper dark:bg-black text-black dark:text-base-200 px-4 lg:px-0">
+		<body className="text-base bg-paper font-humanist dark:bg-black text-black dark:text-base-200 px-4 lg:px-0">
 			<div className="m-auto max-w-prose space-y-2">
 				<header
 					className="flex items-center mb-4 gap-4 print:hidden"
@@ -69,7 +69,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 					</div>
 				</header>
 				<div className={className}>{children}</div>
-				<footer className="flex justify-between py-8 my-8 items-start border-t border-base-100 dark:border-base-900">
+				<footer className="flex justify-between py-4 my-4 items-start border-t border-base-100 dark:border-base-900">
 					<ul>
 						<li>
 							<a
