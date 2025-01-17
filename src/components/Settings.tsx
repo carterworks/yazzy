@@ -3,12 +3,15 @@ import Button from "../components/Button";
 import Input from "./Input";
 
 const Settings: FC = () => (
-	<form className="flex flex-col gap-4 items-start" id="settings-form">
+	<form
+		className="flex flex-col gap-4 items-start text-black dark:text-base-200"
+		id="settings-form"
+	>
 		<label className="flex flex-col items-start">
 			<span>AI model</span>
 			<select
 				name="model"
-				className="border-b border-base-100 dark:border-base-900 active:border-b-0 py-2"
+				className="border border-base-100 rounded dark:border-base-900 p-1 bg-paper hover:bg-base-150 active:bg-base-100 dark:bg-base-900 hover:dark:bg-base-800 active:dark:bg-base-850"
 			>
 				<option value="gpt-4o-mini">GPT-4o mini</option>
 			</select>
@@ -25,12 +28,8 @@ const Settings: FC = () => (
 			✔︎ Saved!
 		</div>
 		<div className="flex items-center gap-2">
-			<Button type="submit" classes="py-1 px-6">
-				Save
-			</Button>
-			<Button type="reset" classes="py-1 px-6">
-				Reset
-			</Button>
+			<Button type="submit">Save</Button>
+			<Button type="reset">Reset</Button>
 		</div>
 	</form>
 );

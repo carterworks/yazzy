@@ -63,7 +63,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 					<div
 						popover="auto"
 						id="settings-dialog"
-						className="p-4 rounded m-auto bg-paper dark:bg-black drop-shadow-lg"
+						className="p-4 rounded m-auto bg-paper dark:bg-black drop-shadow-lg border border-base-100 dark:border-base-900"
 					>
 						<Settings />
 					</div>

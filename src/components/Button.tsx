@@ -18,8 +18,7 @@ function isLink(props: Props): props is LinkProps & CommonProps {
 }
 
 const classes = [
-	"py-1",
-	"px-2",
+	"px-2 py-1",
 	"rounded",
 	"transition",
 	"text-center",

@@ -268,5 +268,5 @@
 	fill: light-dark(var(--color-base-600), var(--color-base-500));
 }
 ::backdrop {
-	@apply backdrop-brightness-75;
+	@apply backdrop-brightness-75 dark:backdrop-brightness-50;
 }
