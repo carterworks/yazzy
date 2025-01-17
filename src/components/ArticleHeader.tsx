@@ -23,7 +23,7 @@ const ArticleHeader: FC<{ article: ReadablePage; classes?: string }> = ({
 			className={[
 				"space-y-2",
 				"mb-4",
-				"py-4",
+				"pb-4",
 				"border-b border-base-100 dark:border-base-900",
 				classes,
 			].join(" ")}

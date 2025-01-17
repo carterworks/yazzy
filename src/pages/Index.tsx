@@ -20,7 +20,7 @@ const Head: FC = () => (
 );
 
 const IndexPage: FC = () => (
-	<BasePage title="yazzy" head={Head}>
+	<BasePage title="yazzy" head={<Head />}>
 		<header className="mb-4">
 			<p className="">
 				Tired of popups, ads, and other distractions on your page? Just put the

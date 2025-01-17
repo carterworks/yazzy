@@ -1,4 +1,4 @@
-import type { FC } from "hono/jsx";
+import type { FC, PropsWithChildren } from "hono/jsx";
 import ArticleHeader from "../components/ArticleHeader";
 import ArticleMinimap from "../components/ArticleMinimap";
 import Button from "../components/Button";
@@ -69,7 +69,34 @@ function generateObsidianUri(
 	return `obsidian://new?file=${encodeURIComponent(folder + fileName)}&content=${encodeURIComponent(fileContent)}${vaultName}`;
 }
 
-const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => <></>;
+const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
+	const plainTextSummary = article.summary
+		? article.summary.replace(/<[^>]*>/g, "")
+		: `${article.textContent.substring(0, 300)}…`;
+
+	const articleHostname = new URL(article.url).hostname;
+	return (
+		<>
+			<meta name="description" content={plainTextSummary} />
+			<meta
+				property="og:title"
+				content={`${article.title} | ${articleHostname} | yazzy`}
+			/>
+			<meta property="og:description" content={plainTextSummary} />
+			<meta property="og:url" content={article.url} />
+			<meta property="og:type" content="article" />
+			{article.published && (
+				<meta
+					property="og:article:published_time"
+					content={formatDate(article.published)}
+				/>
+			)}
+			{article.author && (
+				<meta property="og:article:author" content={article.author} />
+			)}
+		</>
+	);
+};
 
 const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 	const plainTextSummary = article.summary
@@ -81,7 +108,10 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 	const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\n---\n${article.textContent}`;
 
 	return (
-		<BasePage className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-2 lg:gap-4">
+		<BasePage
+			className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-2 lg:gap-4"
+			head={<ClippedPageHead article={article} />}
+		>
 			<aside className="flex lg:flex-col gap-3 items-center lg:col-start-1 lg:row-span-2 print:hidden">
 				<Button href={obsidianUri} title="Save to Obsidian" type="link">
 					<Obsidian className="h-4" />

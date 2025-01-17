@@ -1,11 +1,11 @@
-import type { FC, PropsWithChildren } from "hono/jsx";
+import type { Child, FC, PropsWithChildren } from "hono/jsx";
 import Button from "../components/Button";
 import Settings from "../components/Settings";
 
 interface BasePageProps {
 	title?: string;
 	className?: string;
-	head?: FC;
+	head?: Child;
 }
 
 const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
@@ -22,7 +22,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 			<title>{title}</title>
 			<link rel="manifest" href="/manifest.webmanifest" />
 			<link rel="icon" href="/scissors.svg" type="image/svg+xml" />
-			{Head && <Head />}
+			{Head}
 			<link rel="stylesheet" href="/styles.css" />
 			<script
 				src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js"
