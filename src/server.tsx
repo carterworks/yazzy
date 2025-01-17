@@ -86,7 +86,7 @@ app.get(
 				return c;
 			}
 			cache.addSummary(url, article.summary);
-			return c.html(article.summary);
+			return c.html(`<h2>AI-generated summary</h2>${article.summary}`);
 		} catch (err) {
 			c.status(500);
 			let apiErrorMsg: string;

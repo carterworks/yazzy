@@ -72,7 +72,7 @@ function generateObsidianUri(
 const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
 	const plainTextSummary = article.summary
 		? article.summary.replace(/<[^>]*>/g, "")
-		: `${article.textContent.substring(0, 300)}…`;
+		: `${article.textContent.trim().substring(0, 300)}…`;
 
 	const articleHostname = new URL(article.url).hostname;
 	return (
@@ -102,7 +102,6 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 	const plainTextSummary = article.summary
 		? article.summary.replace(/<[^>]*>/g, "")
 		: `${article.textContent.substring(0, 300)}…`;
-	const articleHostname = new URL(article.url).hostname;
 	const markdownContent = generateObsidianContents(article);
 	const obsidianUri = generateObsidianUri(markdownContent, article.title);
 	const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\n---\n${article.textContent}`;

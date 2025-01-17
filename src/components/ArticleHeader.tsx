@@ -34,7 +34,7 @@ const ArticleHeader: FC<{ article: ReadablePage; classes?: string }> = ({
 				</a>
 			</h2>
 			<p class="text-sm">{metadata.join(" ・ ")}</p>
-			<AISummary url={article.url} />
+			<AISummary url={article.url} summary={article.summary} />
 		</header>
 	);
 };
