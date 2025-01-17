@@ -20,11 +20,12 @@ const AISummary: FC<{ url: string; summary?: string }> = ({ url, summary }) => {
 			hx-vals={JSON.stringify({ url })}
 			className={proseClasses}
 		>
-			<div class="flex flex-col gap-1">
-				<div className="w-[30ch] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
-				<div className="w-[33ch] lg:w-[45ch] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
-				<div className="w-[33ch] lg:w-[40ch] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
-				<div className="w-[39ch] lg:w-[42ch] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
+			<div class="flex flex-col gap-1 @container">
+				<div className="w-[40cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
+				<div className="w-[87cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
+				<div className="w-[93cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
+				<div className="w-[74cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
+				<div className="w-[90cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
 			</div>
 		</aside>
 	);
