@@ -232,10 +232,10 @@
 	@apply scroll-smooth scheme-light-dark;
 }
 .primary {
-	fill: var(--color-tx);
+	fill: light-dark(var(--color-black), var(--color-base-200));
 }
 .secondary {
-	fill: var(--color-tx-2);
+	fill: light-dark(var(--color-base-600), var(--color-base-500));
 }
 ::backdrop {
 	@apply backdrop-brightness-75;
