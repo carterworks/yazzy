@@ -18,9 +18,10 @@ const AISummary: FC<{ url: string; summary?: string }> = ({ url, summary }) => {
 			hx-trigger="load"
 			hx-get="/api/summary"
 			hx-vals={JSON.stringify({ url })}
+			hx-swap="outerHTML"
 			className={proseClasses}
 		>
-			<div class="flex flex-col gap-1 @container">
+			<div class="flex flex-col gap-1 @container htmx-indicator">
 				<div className="w-[40cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
 				<div className="w-[87cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
 				<div className="w-[93cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />

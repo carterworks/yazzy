@@ -1,9 +1,9 @@
 import { type FC, Fragment } from "hono/jsx";
 import Button from "../components/Button";
 import Input from "../components/Input";
-import BasePage from "../layouts/BasePage";
-import { ReadablePage } from "../types";
 import RecentArticles from "../components/RecentArticles";
+import BasePage from "../layouts/BasePage";
+import type { ReadablePage } from "../types";
 
 const Head: FC = () => (
 	<Fragment>

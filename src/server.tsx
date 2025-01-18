@@ -87,7 +87,11 @@ app.get(
 				return c;
 			}
 			cache.addSummary(url, article.summary);
-			return c.html(`<h2>AI-generated summary</h2>${article.summary}`);
+			const proseClasses =
+				"prose dark:prose-invert font-humanist mt-2 prose-p:mt-0 prose-headings:font-transitional prose-headings:my-0 prose-h2:text-lg";
+			return c.html(
+				`<aside class="${proseClasses}"><h2>AI-generated summary</h2>${article.summary}</aside>`,
+			);
 		} catch (err) {
 			c.status(500);
 			let apiErrorMsg: string;
