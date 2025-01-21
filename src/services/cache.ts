@@ -1,131 +1,68 @@
+import { eq, sql } from "drizzle-orm";
+import database from "../db/db";
+import { articles } from "../db/schema";
 import type { ReadablePage } from "../types";
-// A sqlite database is used to cache articles
-import db from "./db";
-import type { YazzyDB } from "./db";
-import log from "./log";
-
-interface SerializedReadablePage {
-	title: string;
-	url: string;
-	published?: number;
-	author: string;
-	tags: string;
-	markdownContent: string;
-	textContent: string;
-	htmlContent: string;
-	createdAt?: number;
-	summary?: string;
-}
 
 const LIST_DELIMITER = "|";
 
+function toReadablePage(article: typeof articles.$inferSelect): ReadablePage {
+	return {
+		...article,
+		published: article.published ? new Date(article.published) : undefined,
+		createdAt: article.createdAt ? new Date(article.createdAt) : undefined,
+		tags: (article.tags ?? "").split(LIST_DELIMITER),
+	};
+}
+
+function fromReadablePage(article: ReadablePage): typeof articles.$inferInsert {
+	return {
+		...article,
+		published: article.published?.getTime(),
+		createdAt: article.createdAt?.getTime(),
+		tags: article.tags.join(LIST_DELIMITER),
+	};
+}
+
 class CacheService {
-	#addArticleStatement;
-	#getArticleStatement;
-	#addSummaryStatement;
-	#getArticleCountStatement;
-	#getRecentArticlesStatement;
-	constructor(db: YazzyDB) {
-		this.#addArticleStatement = db.query<
-			unknown,
-			Record<
-				string,
-				string | bigint | NodeJS.TypedArray | number | boolean | null
-			>
-		>(`INSERT INTO articles (
-		url,
-		title,
-		author,
-		published,
-		tags,
-		markdownContent,
-		textContent,
-		htmlContent,
-		createdAt,
-		summary
-	) VALUES (
-		:url,
-		:title,
-		:author,
-		:published,
-		:tags,
-		:markdownContent,
-		:textContent,
-		:htmlContent,
-		:createdAt,
-		:summary
-	)`);
-		this.#getArticleStatement = db.query<
-			SerializedReadablePage,
-			{ url: string }
-		>("SELECT * FROM articles WHERE url = :url");
-		this.#addSummaryStatement = db.query<
-			unknown,
-			{ url: string; summary: string }
-		>("UPDATE articles SET summary = :summary WHERE url = :url");
-		this.#getArticleCountStatement = db.query<{ "COUNT(*)": number }, []>(
-			"SELECT COUNT(*) FROM articles",
-		);
-		this.#getRecentArticlesStatement = db.query<
-			SerializedReadablePage,
-			{ limit: number }
-		>(`SELECT * FROM articles
-			ORDER BY
-			CASE WHEN createdAt IS NULL THEN published ELSE createdAt END DESC
-			LIMIT :limit`);
-
-		log(
-			"CacheService initialized [article count: %d]",
-			this.getArticleCount().toString(),
-		);
+	#db: typeof database;
+	constructor(db: typeof database) {
+		this.#db = db;
 	}
 
-	insertArticle(article: ReadablePage): void {
+	async insertArticle(article: ReadablePage) {
 		// convert all the types
-		const serializedArticle = {
-			...article,
-			published: article.published?.getTime() ?? null,
-			createdAt: article.createdAt?.getTime() ?? null,
-			tags: article.tags.join(LIST_DELIMITER),
-			summary: article.summary ?? "",
-		};
-		this.#addArticleStatement.run(serializedArticle);
+		const serializedArticle = fromReadablePage(article);
+		await this.#db.insert(articles).values(serializedArticle);
 	}
 
-	getArticle(url: string): ReadablePage | undefined {
-		const result = this.#getArticleStatement.get({ url });
+	async getArticle(url: string) {
+		const [result] = await this.#db
+			.select()
+			.from(articles)
+			.limit(1)
+			.where(eq(articles.url, url));
 		if (!result) return undefined;
-		const article: ReadablePage = {
-			...result,
-			published: result.published ? new Date(result.published) : undefined,
-			createdAt: result.createdAt ? new Date(result.createdAt) : undefined,
-			tags: result.tags.split(LIST_DELIMITER),
-		};
-		return article;
+		return toReadablePage(result);
 	}
 
-	addSummary(url: string, summary: string): void {
-		this.#addSummaryStatement.run({ url, summary });
+	addSummary(url: string, summary: string): Promise<void> {
+		return this.#db.insert(articles).values({ url, summary });
 	}
 
-	getArticleCount(): number {
-		const result = this.#getArticleCountStatement.get();
-		return result?.["COUNT(*)"] ?? 0;
+	getArticleCount(): Promise<number> {
+		return this.#db.$count(articles);
 	}
 
-	getRecentArticles(limit = 10): ReadablePage[] {
-		const results = this.#getRecentArticlesStatement.all({ limit });
-		if (!results) return [];
-		return results.map((result) => {
-			const article: ReadablePage = {
-				...result,
-				published: result.published ? new Date(result.published) : undefined,
-				createdAt: result.createdAt ? new Date(result.createdAt) : undefined,
-				tags: result.tags.split(LIST_DELIMITER),
-			};
-			return article;
-		});
+	async getRecentArticles(limit = 10) {
+		const result = await this.#db
+			.select()
+			.from(articles)
+			.orderBy(
+				sql`CASE WHEN createdAt IS NULL THEN published ELSE createdAt END DESC`,
+			)
+			.limit(limit);
+		return result.map(toReadablePage);
 	}
 }
 
-export const cache = new CacheService(db);
+export const cache = new CacheService(database);

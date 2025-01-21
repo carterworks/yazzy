@@ -1,13 +1,9 @@
-import type { FC, PropsWithChildren } from "hono/jsx";
+import type { FC } from "hono/jsx";
 import ArticleHeader from "../components/ArticleHeader";
 import ArticleMinimap from "../components/ArticleMinimap";
 import Button from "../components/Button";
 import DownloadAs from "../components/DownloadAs";
-import {
-	Attach,
-	BookClosed,
-	InboxDownload,
-} from "../components/icons/refactoring-ui";
+import { BookClosed, InboxDownload } from "../components/icons/refactoring-ui";
 import { Obsidian } from "../components/icons/simple-icons";
 import BasePage from "../layouts/BasePage";
 import { convertHtmlToMarkdown } from "../services/clipper";
@@ -72,7 +68,7 @@ function generateObsidianUri(
 const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
 	const plainTextSummary = article.summary
 		? article.summary.replace(/<[^>]*>/g, "")
-		: `${article.textContent.trim().substring(0, 300)}…`;
+		: `${(article.textContent ?? "").trim().substring(0, 300)}…`;
 
 	const articleHostname = new URL(article.url).hostname;
 	return (
@@ -101,9 +97,10 @@ const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
 const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 	const plainTextSummary = article.summary
 		? article.summary.replace(/<[^>]*>/g, "")
-		: `${article.textContent.substring(0, 300)}…`;
+		: `${(article.textContent ?? "").substring(0, 300)}…`;
 	const markdownContent = generateObsidianContents(article);
-	const obsidianUri = generateObsidianUri(markdownContent, article.title);
+	const title = article.title ?? `${new Date().toISOString()} Clipping`;
+	const obsidianUri = generateObsidianUri(markdownContent, title ?? "");
 	const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\n---\n${article.textContent}`;
 
 	return (
@@ -118,14 +115,14 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 				</Button>
 				<DownloadAs
 					contents={markdownContent}
-					filename={`${getFilename(article.title)}.md`}
+					filename={`${getFilename(title)}.md`}
 					title="Download as Markdown"
 				>
 					<BookClosed className="h-4" />
 				</DownloadAs>
 				<DownloadAs
 					contents={plainTextContent}
-					filename={`${getFilename(article.title)}.txt`}
+					filename={`${getFilename(title)}.txt`}
 					title="Download as plain text"
 				>
 					<InboxDownload className="h-4" />

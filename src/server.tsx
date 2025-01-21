@@ -6,18 +6,16 @@ import { requestId } from "hono/request-id";
 import type { StatusCode } from "hono/utils/http-status";
 import { z } from "zod";
 import AISummaryError from "./components/AISummaryError";
-import RecentArticles from "./components/RecentArticles";
+import db from "./db/db";
 import { logger } from "./middleware/logger";
 import ClippedUrlPage from "./pages/ClippedUrl";
 import ErrorPage from "./pages/ErrorPage";
 import IndexPage from "./pages/Index";
 import { cache } from "./services/cache";
 import { clip } from "./services/clipper";
-import db from "./services/db";
 import log from "./services/log";
 import { summarize } from "./services/summarizer";
 import staticFiles from "./static/staticFiles";
-import type { ReadablePage } from "./types";
 
 const app = new Hono<{ Variables: { requestId: string } }>();
 
@@ -31,8 +29,8 @@ app.use(async (c, next) => {
 app.use(logger(log));
 app.use("*", etag());
 app.route("/", staticFiles);
-app.get("/", (c) => {
-	const recentArticles = cache.getRecentArticles();
+app.get("/", async (c) => {
+	const recentArticles = await cache.getRecentArticles();
 	return c.html(<IndexPage recentArticles={recentArticles} />);
 });
 app.get("/api/clip", (c) => {
@@ -74,8 +72,8 @@ app.get(
 					<AISummaryError>Invalid Authorization cookie</AISummaryError>,
 				);
 			}
-			const article: ReadablePage | undefined = cache.getArticle(url);
-			if (!article) {
+			const article = await cache.getArticle(url);
+			if (!article || !article.textContent) {
 				c.status(404);
 				return c.html(
 					<AISummaryError>Article not found for URL {url}</AISummaryError>,
@@ -119,10 +117,10 @@ app.get(
 	async (c) => {
 		const url = c.req.param("url");
 		try {
-			let article: ReadablePage | undefined = cache.getArticle(url);
+			let article = await cache.getArticle(url);
 			if (!article) {
 				article = await clip(new URL(url));
-				cache.insertArticle(article);
+				await cache.insertArticle(article);
 			}
 			return c.html(<ClippedUrlPage article={article} />);
 		} catch (err) {
@@ -146,12 +144,12 @@ app.get(
 		}
 	},
 );
-app.get("/api/article-count", (c) => {
-	const count = cache.getArticleCount();
+app.get("/api/article-count", async (c) => {
+	const count = await cache.getArticleCount();
 	return c.text(count.toString());
 });
 app.get("/api/db-dump", (c) => {
-	const dump = db.serialize();
+	const dump = db.$client.serialize();
 	c.res.headers.set("Content-Type", "application/vnd.sqlite3");
 	c.res.headers.set(
 		"Content-Disposition",
