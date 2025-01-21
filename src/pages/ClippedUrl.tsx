@@ -108,6 +108,7 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 
 	return (
 		<BasePage
+			title={`${article.title} | yazzy`}
 			className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-2 lg:gap-4"
 			head={<ClippedPageHead article={article} />}
 		>
