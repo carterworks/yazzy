@@ -19,7 +19,7 @@
 	},
 	"scripts": {
 		"check": "biome check --write",
-		"dev": "bun run css && NODE_ENV=development bun --watch run src/server.tsx",
+		"dev": "NODE_ENV=development bun --watch run src/server.tsx",
 		"css": "tailwindcss --input static/styles.css --output static/styles.min.css --cwd src",
 		"build": "bun run css --minify && NODE_ENV=production bun build src/server.tsx --compile --outfile dist/yazzy"
 	},
