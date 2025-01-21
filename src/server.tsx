@@ -3,11 +3,13 @@ import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
 import { etag } from "hono/etag";
 import { requestId } from "hono/request-id";
+import type { StatusCode } from "hono/utils/http-status";
 import { z } from "zod";
 import AISummaryError from "./components/AISummaryError";
 import RecentArticles from "./components/RecentArticles";
 import { logger } from "./middleware/logger";
 import ClippedUrlPage from "./pages/ClippedUrl";
+import ErrorPage from "./pages/ErrorPage";
 import IndexPage from "./pages/Index";
 import { cache } from "./services/cache";
 import { clip } from "./services/clipper";
@@ -30,7 +32,8 @@ app.use(logger(log));
 app.use("*", etag());
 app.route("/", staticFiles);
 app.get("/", (c) => {
-	return c.html(<IndexPage />);
+	const recentArticles = cache.getRecentArticles();
+	return c.html(<IndexPage recentArticles={recentArticles} />);
 });
 app.get("/api/clip", (c) => {
 	const url = c.req.query("url");
@@ -86,7 +89,11 @@ app.get(
 				return c;
 			}
 			cache.addSummary(url, article.summary);
-			return c.html(article.summary);
+			const proseClasses =
+				"prose dark:prose-invert font-humanist mt-2 prose-p:mt-0 prose-headings:font-transitional prose-headings:my-0 prose-h2:text-lg";
+			return c.html(
+				`<aside class="${proseClasses}"><h2>AI-generated summary</h2>${article.summary}</aside>`,
+			);
 		} catch (err) {
 			c.status(500);
 			let apiErrorMsg: string;
@@ -111,21 +118,37 @@ app.get(
 	),
 	async (c) => {
 		const url = c.req.param("url");
-		let article: ReadablePage | undefined = cache.getArticle(url);
-		if (!article) {
-			article = await clip(new URL(url));
-			cache.insertArticle(article);
+		try {
+			let article: ReadablePage | undefined = cache.getArticle(url);
+			if (!article) {
+				article = await clip(new URL(url));
+				cache.insertArticle(article);
+			}
+			return c.html(<ClippedUrlPage article={article} />);
+		} catch (err) {
+			let message: string;
+			if (err instanceof Error) {
+				message = err.message;
+			} else if (typeof err === "string") {
+				message = err;
+			} else {
+				message = `Unknown error: ${err}`;
+			}
+			log.error(message);
+			// extract error code — space digit digit digit space
+			const errorCode = message.match(/ \d{3} /);
+			c.status(
+				errorCode
+					? (Number.parseInt(errorCode[0].trim(), 10) as StatusCode)
+					: 500,
+			);
+			return c.html(<ErrorPage message={message} />);
 		}
-		return c.html(<ClippedUrlPage article={article} />);
 	},
 );
 app.get("/api/article-count", (c) => {
 	const count = cache.getArticleCount();
 	return c.text(count.toString());
-});
-app.get("/api/recent-articles", (c) => {
-	const recentArticles = cache.getRecentArticles();
-	return c.html(<RecentArticles articles={recentArticles} />);
 });
 app.get("/api/db-dump", (c) => {
 	const dump = db.serialize();

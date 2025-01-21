@@ -1,6 +1,9 @@
 import { type FC, Fragment } from "hono/jsx";
 import Button from "../components/Button";
+import Input from "../components/Input";
+import RecentArticles from "../components/RecentArticles";
 import BasePage from "../layouts/BasePage";
+import type { ReadablePage } from "../types";
 
 const Head: FC = () => (
 	<Fragment>
@@ -18,8 +21,10 @@ const Head: FC = () => (
 	</Fragment>
 );
 
-const IndexPage: FC = () => (
-	<BasePage title="yazzy" head={Head}>
+const IndexPage: FC<{ recentArticles: ReadablePage[] }> = ({
+	recentArticles,
+}) => (
+	<BasePage title="yazzy" head={<Head />}>
 		<header className="mb-4">
 			<p className="">
 				Tired of popups, ads, and other distractions on your page? Just put the
@@ -32,8 +37,7 @@ const IndexPage: FC = () => (
 			method="get"
 			className="flex gap-1 items-center mb-4"
 		>
-			<input
-				className="border focus:border-transparent block w-full rounded-md focus:ring-0 py-1 px-4 transition"
+			<Input
 				type="url"
 				id="url"
 				name="url"
@@ -45,7 +49,7 @@ const IndexPage: FC = () => (
 				Clip{" "}
 			</Button>
 		</form>
-		<div hx-trigger="load" hx-get="/api/recent-articles" hx-swap="outerHTML" />
+		<RecentArticles articles={recentArticles} />
 	</BasePage>
 );
 export default IndexPage;

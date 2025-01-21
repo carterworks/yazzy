@@ -1,11 +1,11 @@
-import type { FC, PropsWithChildren } from "hono/jsx";
+import type { Child, FC, PropsWithChildren } from "hono/jsx";
 import Button from "../components/Button";
 import Settings from "../components/Settings";
 
 interface BasePageProps {
 	title?: string;
 	className?: string;
-	head?: FC;
+	head?: Child;
 }
 
 const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
@@ -22,7 +22,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 			<title>{title}</title>
 			<link rel="manifest" href="/manifest.webmanifest" />
 			<link rel="icon" href="/scissors.svg" type="image/svg+xml" />
-			{Head && <Head />}
+			{Head}
 			<link rel="stylesheet" href="/styles.css" />
 			<script
 				src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js"
@@ -45,7 +45,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 			/>
 		</head>
 
-		<body className="text-base px-4 lg:px-0">
+		<body className="text-base bg-paper font-humanist dark:bg-black text-black dark:text-base-200 px-4 lg:px-0">
 			<div className="m-auto max-w-prose space-y-2">
 				<header
 					className="flex items-center mb-4 gap-4 print:hidden"
@@ -63,13 +63,13 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 					<div
 						popover="auto"
 						id="settings-dialog"
-						className="border p-2 rounded m-auto"
+						className="p-4 rounded m-auto bg-paper dark:bg-black drop-shadow-lg border border-base-100 dark:border-base-900"
 					>
 						<Settings />
 					</div>
 				</header>
 				<div className={className}>{children}</div>
-				<footer className="border-t-2 py-2 border-neutral-400 flex justify-between items-start">
+				<footer className="flex justify-between py-4 my-4 items-start border-t border-base-100 dark:border-base-900">
 					<ul>
 						<li>
 							<a

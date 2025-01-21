@@ -4,7 +4,7 @@ const ArticleMinimap: FC<{ classes?: string; selector: string }> = ({
 	classes = "",
 	selector,
 }) => {
-	return <wc-minimap class={classes} data-article-selector={selector} />;
+	return <wc-minimap className={classes} data-article-selector={selector} />;
 };
 
 export default ArticleMinimap;

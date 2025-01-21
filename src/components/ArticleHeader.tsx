@@ -19,14 +19,22 @@ const ArticleHeader: FC<{ article: ReadablePage; classes?: string }> = ({
 }) => {
 	const metadata = generateMetadataNuggets(article);
 	return (
-		<header className={[classes, "space-y-2"].join(" ")}>
-			<h2 class="text-3xl font-transitional">
+		<header
+			className={[
+				"space-y-2",
+				"mb-4",
+				"pb-4",
+				"border-b border-base-100 dark:border-base-900",
+				classes,
+			].join(" ")}
+		>
+			<h2 class="text-2xl font-transitional">
 				<a href={article.url} class="hover:underline">
 					{article.title}
 				</a>
 			</h2>
 			<p class="text-sm">{metadata.join(" ・ ")}</p>
-			<AISummary url={article.url} />
+			<AISummary url={article.url} summary={article.summary} />
 		</header>
 	);
 };

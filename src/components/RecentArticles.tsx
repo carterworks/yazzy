@@ -9,15 +9,13 @@ const RecentArticle: FC<{ article: ReadablePage }> = ({ article }) => {
 				"md:w-60",
 				"flex-auto",
 				"p-2",
-				"bg-canvas",
 				"overflow-hidden",
 				"transition",
 				"rounded",
 				"border",
-				"hover:brightness-95",
-				"dark:hover:brightness-125",
-				"active:brightness-105",
-				"dark:active:brightness-90",
+				"border-base-100 dark:border-base-900",
+				"bg-paper hover:bg-base-50 ",
+				"dark:bg-black hover:dark:bg-base-950 ",
 			].join(" ")}
 		>
 			<a href={`/${article.url}`}>

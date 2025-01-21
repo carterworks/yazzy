@@ -18,17 +18,15 @@ function isLink(props: Props): props is LinkProps & CommonProps {
 }
 
 const classes = [
-	"border",
-	"py-1",
-	"px-2",
+	"px-2 py-1",
 	"rounded",
 	"transition",
 	"text-center",
-	"bg-canvas",
-	"hover:brightness-95",
-	"dark:hover:brightness-125",
-	"active:brightness-105",
-	"dark:active:brightness-90",
+	"border",
+	"drop-shadow",
+	"cursor-pointer",
+	"bg-paper hover:bg-base-150 active:bg-base-100 border-base-100",
+	"dark:bg-base-900 hover:dark:bg-base-800 active:dark:bg-base-850 dark:border-base-900",
 ] as const;
 
 const Button: FC<PropsWithChildren<Props>> = (props) => {

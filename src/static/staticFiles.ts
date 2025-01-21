@@ -1,3 +1,4 @@
+import { $ } from "bun";
 import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
 import webManifest from "./manifest.webmanifest" with { type: "file" };
@@ -6,6 +7,10 @@ import clientScripts from "./scripts.mjs" with { type: "file" };
 import CSS_OUTPUT_PATH from "./styles.min.css" with { type: "file" };
 
 const staticFiles = new Hono();
+
+if (import.meta.env.NODE_ENV === "development") {
+	await $`bun run css`;
+}
 
 staticFiles.use(
 	"/styles.css",

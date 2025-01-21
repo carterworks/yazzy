@@ -13,7 +13,9 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 		},
 	});
 	if (!response.ok) {
-		throw new Error(`Failed to fetch ${url.toString()}`);
+		throw new Error(
+			`Failed to fetch ${url.toString()}: ${response.status} ${response.statusText}`,
+		);
 	}
 	const contentType = response.headers.get("content-type");
 	if (!contentType || !contentType.includes("text/html")) {

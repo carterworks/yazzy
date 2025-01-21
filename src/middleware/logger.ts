@@ -35,7 +35,10 @@ import type { MiddlewareHandler } from "hono";
  */
 export function getColorEnabled(): boolean {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const { process, Deno } = globalThis as { process?: { env: { NO_COLOR?: unknown } }; Deno?: { noColor?: boolean } };
+	const { process, Deno } = globalThis as {
+		process?: { env: { NO_COLOR?: unknown } };
+		Deno?: { noColor?: boolean };
+	};
 
 	const isNoColor =
 		typeof Deno?.noColor === "boolean"

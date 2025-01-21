@@ -23,6 +23,12 @@ function initSettingsForm() {
 		event.preventDefault();
 		event.stopPropagation();
 		const apiKeyValue = apiKey.value;
+
+		statusText?.classList.toggle("opacity-100");
+		setTimeout(() => {
+			statusText?.classList.toggle("opacity-100");
+		}, 3000);
+
 		if (!apiKeyValue) {
 			// delete the cookie
 			document.cookie = `Authorization=; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Secure; Path=/; Domain=${window.location.hostname};`;
@@ -31,10 +37,6 @@ function initSettingsForm() {
 		}
 		const value = btoa(`${model.value}=${apiKey.value}`);
 		document.cookie = `Authorization=${value}; max-age=31536000; SameSite=Strict; Secure; Path=/; Domain=${window.location.hostname};`;
-		statusText?.classList.toggle("opacity-100");
-		setTimeout(() => {
-			statusText?.classList.toggle("opacity-100");
-		}, 3000);
 	});
 }
 initSettingsForm();
