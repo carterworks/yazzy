@@ -5,7 +5,6 @@ import { etag } from "hono/etag";
 import { requestId } from "hono/request-id";
 import type { StatusCode } from "hono/utils/http-status";
 import { z } from "zod";
-import AISummaryError from "./components/AISummaryError";
 import db from "./db/db";
 import { logger } from "./middleware/logger";
 import ClippedUrlPage from "./pages/ClippedUrl";
@@ -16,6 +15,7 @@ import { clip } from "./services/clipper";
 import log from "./services/log";
 import { summarize } from "./services/summarizer";
 import staticFiles from "./static/staticFiles";
+import AISummary from "./components/AISummary";
 
 const app = new Hono<{ Variables: { requestId: string } }>();
 
@@ -55,13 +55,11 @@ app.get(
 		const url = c.req.query("url");
 		if (!url) {
 			c.status(400);
-			return c.html(
-				<AISummaryError>Value '{url}' is not a valid URL</AISummaryError>,
-			);
+			return c.html(<AISummary url={""} error="URL parameter is required" />);
 		}
 		const authCookie = getCookie(c, "Authorization");
 		if (!authCookie) {
-			c.status(201);
+			c.status(204);
 			return c.text("");
 		}
 		try {
@@ -69,14 +67,14 @@ app.get(
 			if (!model || !apiKey) {
 				c.status(400);
 				return c.html(
-					<AISummaryError>Invalid Authorization cookie</AISummaryError>,
+					<AISummary url={url} error="Invalid Authorization cookie" />,
 				);
 			}
 			const article = await cache.getArticle(url);
 			if (!article || !article.textContent) {
 				c.status(404);
 				return c.html(
-					<AISummaryError>Article not found for URL {url}</AISummaryError>,
+					<AISummary url={url} error={`Article not found for URL ${url}`} />,
 				);
 			}
 
@@ -87,11 +85,7 @@ app.get(
 				return c;
 			}
 			cache.addSummary(url, article.summary);
-			const proseClasses =
-				"prose dark:prose-invert font-humanist mt-2 prose-p:mt-0 prose-headings:font-transitional prose-headings:my-0 prose-h2:text-lg";
-			return c.html(
-				`<aside class="${proseClasses}"><h2>AI-generated summary</h2>${article.summary}</aside>`,
-			);
+			return c.html(<AISummary url={url} summary={article.summary} />);
 		} catch (err) {
 			c.status(500);
 			let apiErrorMsg: string;
@@ -102,7 +96,7 @@ app.get(
 			} else {
 				apiErrorMsg = `Unknown error: ${err}`;
 			}
-			return c.html(<AISummaryError>{apiErrorMsg}</AISummaryError>);
+			return c.html(<AISummary url={url} error={apiErrorMsg} />);
 		}
 	},
 );

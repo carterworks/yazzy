@@ -1,17 +1,40 @@
-import type { FC } from "hono/jsx";
+import type { FC, PropsWithChildren } from "hono/jsx";
+import { CloseCircle, Hourglass } from "./icons/refactoring-ui";
 
-const AISummary: FC<{ url: string; summary?: string | null }> = ({
-	url,
-	summary,
-}) => {
-	const proseClasses =
-		"prose dark:prose-invert font-humanist mt-2 prose-p:mt-0 prose-headings:font-transitional prose-headings:my-0 prose-h2:text-lg";
+const proseClasses =
+	"prose dark:prose-invert font-humanist mt-2 prose-p:mt-0 prose-headings:font-transitional prose-headings:my-0 prose-h2:text-lg";
+
+const AISummaryError: FC<PropsWithChildren> = ({ children }) => (
+	<aside className={proseClasses}>
+		<details>
+			<summary>
+				<h2 className="inline">Failed to retrieve AI summary</h2>
+			</summary>
+			<p className="bg-base-50 dark:bg-base-950 rounded px-4 py-2">
+				{children}
+			</p>
+		</details>
+	</aside>
+);
+
+const AISummary: FC<{
+	url: string;
+	summary?: string | null;
+	error?: string;
+}> = ({ url, summary, error }) => {
+	if (error) {
+		return <AISummaryError>{error}</AISummaryError>;
+	}
 	if (summary) {
 		return (
 			<aside className={proseClasses}>
-				<h2>AI-generated summary</h2>
-				{/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
-				<div dangerouslySetInnerHTML={{ __html: summary }} />
+				<details>
+					<summary>
+						<h2 class="inline">AI-generated summary</h2>
+					</summary>
+					{/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
+					<div dangerouslySetInnerHTML={{ __html: summary }} />
+				</details>
 			</aside>
 		);
 	}
@@ -24,13 +47,20 @@ const AISummary: FC<{ url: string; summary?: string | null }> = ({
 			hx-swap="outerHTML"
 			className={proseClasses}
 		>
-			<div class="flex flex-col gap-1 @container htmx-indicator">
-				<div className="w-[40cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
-				<div className="w-[87cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
-				<div className="w-[93cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
-				<div className="w-[74cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
-				<div className="w-[90cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
-			</div>
+			<details>
+				<summary>
+					<h2 class="inline-block">
+						AI-generated summary <Hourglass className="h-4 inline" />
+					</h2>
+				</summary>
+				<div class="flex flex-col gap-1 @container htmx-indicator">
+					<div className="w-[40cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
+					<div className="w-[87cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
+					<div className="w-[93cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
+					<div className="w-[74cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
+					<div className="w-[90cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
+				</div>
+			</details>
 		</aside>
 	);
 };
