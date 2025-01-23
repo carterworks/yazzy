@@ -1,12 +1,12 @@
 export interface ReadablePage {
-	title: string;
+	title: string | null;
 	url: string;
 	published?: Date;
-	author: string;
+	author: string | null;
 	tags: string[];
-	markdownContent: string;
-	textContent: string;
-	htmlContent: string;
+	markdownContent: string | null;
+	textContent: string | null;
+	htmlContent: string | null;
 	createdAt?: Date;
-	summary?: string;
+	summary?: string | null;
 }

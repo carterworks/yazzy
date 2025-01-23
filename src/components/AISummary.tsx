@@ -1,6 +1,9 @@
 import type { FC } from "hono/jsx";
 
-const AISummary: FC<{ url: string; summary?: string }> = ({ url, summary }) => {
+const AISummary: FC<{ url: string; summary?: string | null }> = ({
+	url,
+	summary,
+}) => {
 	const proseClasses =
 		"prose dark:prose-invert font-humanist mt-2 prose-p:mt-0 prose-headings:font-transitional prose-headings:my-0 prose-h2:text-lg";
 	if (summary) {

@@ -9,6 +9,7 @@
 		"@tailwindcss/typography": "^0.5.16",
 		"ai": "^4.1.2",
 		"dompurify": "^3.1.6",
+		"drizzle-orm": "^0.38.4",
 		"hono": "^4.6.18",
 		"jsdom": "^26.0.0",
 		"tailwindcss": "^4.0.0",
@@ -18,17 +19,19 @@
 	},
 	"scripts": {
 		"check": "biome check --write",
-		"dev": "bun run css && NODE_ENV=development bun --watch run src/server.tsx",
+		"dev": "NODE_ENV=development bun --watch run src/server.tsx",
 		"css": "tailwindcss --input static/styles.css --output static/styles.min.css --cwd src",
-		"build": "bun run css --minify && NODE_ENV=production bun build src/server.tsx --compile --outfile dist/yazzy"
+		"build": "bun run css --minify && NODE_ENV=production bun build src/server.tsx --compile --outfile dist/yazzy && mkdir -p dist/src/db/migrations/meta && cp -r src/db/migrations/ dist/src/db/migrations/"
 	},
 	"type": "module",
 	"devDependencies": {
 		"@biomejs/biome": "^1.8.3",
-		"@types/bun": "^1.1.14",
+		"@libsql/client": "^0.14.0",
+		"@types/bun": "^1.2.0",
 		"@types/dompurify": "^3.0.5",
 		"@types/jsdom": "^21.1.7",
 		"@types/turndown": "^5.0.5",
+		"drizzle-kit": "^0.30.2",
 		"lefthook": "^1.10.10"
 	},
 	"trustedDependencies": [
