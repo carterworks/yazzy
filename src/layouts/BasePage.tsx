@@ -30,13 +30,6 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 				crossorigin="anonymous"
 			/>
 			<script src="/scripts.mjs" type="module" defer async />
-			<script
-				src="https://unpkg.com/wc-minimap@0.1.1/wc-minimap.js"
-				integrity="sha384-/2H4ZWwvl8I+zlaydkj25HA1904mLGlWuniHPBxq+f9G80sL85UTKMYCQz2ADm34"
-				crossorigin="anonymous"
-				defer
-				async
-			/>
 			<meta
 				name="htmx-config"
 				content={JSON.stringify({

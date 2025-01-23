@@ -90,6 +90,13 @@ const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
 			{article.author && (
 				<meta property="og:article:author" content={article.author} />
 			)}
+			<script
+				src="https://unpkg.com/wc-minimap@0.1.2/wc-minimap.js"
+				integrity="sha384-EA0JxPHHreHQ8g+A03IXTobEoMPB3vwPB+ZkhW/a0cVgBf4pc6VEtY57oLxq2A1x"
+				crossorigin="anonymous"
+				defer
+				async
+			/>
 		</>
 	);
 };
