@@ -1,19 +1,18 @@
+import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const articles = sqliteTable("articles", {
-	url: text().primaryKey(),
+	url: text().primaryKey().notNull(),
 	title: text(),
 	author: text(),
-	published: integer(),
+	published: integer({ mode: "timestamp_ms" }),
 	topics: text(),
 	tags: text(),
 	markdownContent: text(),
 	textContent: text(),
 	htmlContent: text(),
-	createdAt: integer(),
+	createdAt: integer({ mode: "timestamp_ms" }).default(
+		sql`(CURRENT_TIMESTAMP)`,
+	),
 	summary: text(),
-});
-
-export const schemaVersion = sqliteTable("schema_version", {
-	version: integer().primaryKey(),
 });

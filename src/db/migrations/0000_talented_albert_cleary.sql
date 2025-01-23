@@ -1,6 +1,5 @@
 -- Current sql file was generated after introspecting the database
 -- If you want to run this migration please uncomment this code before executing migrations
-/*
 CREATE TABLE `articles` (
 	`url` text PRIMARY KEY,
 	`title` text,
@@ -18,5 +17,3 @@ CREATE TABLE `articles` (
 CREATE TABLE `schema_version` (
 	`version` integer PRIMARY KEY
 );
-
-*/
