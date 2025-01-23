@@ -1,6 +1,6 @@
 -- Current sql file was generated after introspecting the database
 -- If you want to run this migration please uncomment this code before executing migrations
-CREATE TABLE `articles` (
+CREATE TABLE IF NOT EXISTS `articles` (
 	`url` text PRIMARY KEY,
 	`title` text,
 	`author` text,
@@ -14,6 +14,6 @@ CREATE TABLE `articles` (
 	`summary` text
 );
 --> statement-breakpoint
-CREATE TABLE `schema_version` (
+CREATE TABLE IF NOT EXISTS `schema_version` (
 	`version` integer PRIMARY KEY
 );
