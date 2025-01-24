@@ -76,12 +76,7 @@ export function convertHtmlToMarkdown(html: string): string {
 	return turndown.turndown(html);
 }
 
-export async function clip(url: URL): Promise<ReadablePage> {
-	const page = await fetchPage(url);
-	if (!page || !page.window.document) {
-		throw new Error(`Failed to fetch page "${url.toString()}"`);
-	}
-
+async function clipArticle(url: URL, page: JSDOM) {
 	const tags = [
 		"clippings",
 		...(
@@ -126,4 +121,17 @@ export async function clip(url: URL): Promise<ReadablePage> {
 		textContent: article.textContent,
 		htmlContent: article.content,
 	};
+}
+
+export async function clip(url: URL): Promise<ReadablePage> {
+	const page = await fetchPage(url);
+	if (!page || !page.window.document) {
+		throw new Error(`Failed to fetch page "${url.toString()}"`);
+	}
+
+	if (url.hostname.includes("youtu")) {
+
+	}
+
+	return clipArticle(url, page);
 }
