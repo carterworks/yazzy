@@ -62,6 +62,14 @@ export class YoutubeTranscriptNotAvailableLanguageError extends YoutubeTranscrip
 	}
 }
 
+export class YoutubeTranscriptBotBlockError extends YoutubeTranscriptError {
+	constructor(videoId: string) {
+		super(
+			`YouTube blocked the request to this video (${videoId}) as part of its bot protections.`,
+		);
+	}
+}
+
 export interface TranscriptConfig {
 	lang?: string;
 }
@@ -135,7 +143,9 @@ export async function fetchTranscript(
 		if (!videoPageBody.includes('"playabilityStatus":')) {
 			throw new YoutubeTranscriptVideoUnavailableError(videoId);
 		}
-		log.error(`Failed to parse YouTube page${videoPageBody}`);
+		if (videoPageBody.includes("Sign in to confirm you’re not a bot")) {
+			throw new YoutubeTranscriptBotBlockError(videoId);
+		}
 		throw new YoutubeTranscriptDisabledError(videoId);
 	}
 
