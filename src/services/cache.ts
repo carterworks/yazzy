@@ -17,8 +17,6 @@ function toReadablePage(article: typeof articles.$inferSelect): ReadablePage {
 function fromReadablePage(article: ReadablePage): typeof articles.$inferInsert {
 	return {
 		...article,
-		published: article.published?.getTime(),
-		createdAt: article.createdAt?.getTime(),
 		tags: article.tags.join(LIST_DELIMITER),
 	};
 }
