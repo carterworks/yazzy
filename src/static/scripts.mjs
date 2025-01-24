@@ -18,16 +18,12 @@ function initSettingsForm() {
 		apiKey.value = apiKeyValue;
 	}
 
-	const statusText = form.querySelector("#status");
 	form.addEventListener("submit", (event) => {
 		event.preventDefault();
 		event.stopPropagation();
 		const apiKeyValue = apiKey.value;
 
-		statusText?.classList.toggle("opacity-100");
-		setTimeout(() => {
-			statusText?.classList.toggle("opacity-100");
-		}, 3000);
+		window.addNotification("Copied to clipboard.");
 
 		if (!apiKeyValue) {
 			// delete the cookie
@@ -47,10 +43,23 @@ window.addNotification = function addNotification(message) {
 	}
 	const $notification = document.createElement("div");
 	$notification.setAttribute("role", "alert");
-	$notification.classList.add("fixed","rounded","bottom-0","right-0","p-4","m-4","drop-shadow","border","bg-paper","border-base-100","dark:bg-base-900","dark:border-base-900")
+	$notification.classList.add(
+		"fixed",
+		"rounded",
+		"bottom-0",
+		"right-0",
+		"p-4",
+		"m-4",
+		"drop-shadow",
+		"border",
+		"bg-paper",
+		"border-base-100",
+		"dark:bg-base-900",
+		"dark:border-base-900",
+	);
 	$notification.textContent = message;
 	$notificationsList.appendChild($notification);
 	setTimeout(() => {
 		$notification.remove();
 	}, 5000);
-}
+};

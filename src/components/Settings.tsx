@@ -21,12 +21,6 @@ const Settings: FC = () => (
 			<span>API key</span>
 			<Input type="text" name="apiKey" />
 		</label>
-		<div
-			id="status"
-			className="h-4 -mt-3 transition-opacity opacity-0 text-green-600 dark:text-green-400"
-		>
-			✔︎ Saved!
-		</div>
 		<div className="flex items-center gap-2">
 			<Button type="submit">Save</Button>
 			<Button type="reset">Reset</Button>
