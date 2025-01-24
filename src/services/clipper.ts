@@ -2,7 +2,9 @@ import { Readability } from "@mozilla/readability";
 import createDomPurify from "dompurify";
 import { JSDOM } from "jsdom";
 import Turndown from "turndown";
+import { YoutubeTranscript } from "youtube-transcript";
 import type { ReadablePage } from "../types";
+import { fetchTranscript } from "./youtubeExtractor";
 
 const DOMPurify = createDomPurify(new JSDOM("<!DOCTYPE html>").window);
 
@@ -76,7 +78,11 @@ export function convertHtmlToMarkdown(html: string): string {
 	return turndown.turndown(html);
 }
 
-async function clipArticle(url: URL, page: JSDOM) {
+async function clipArticle(url: URL): Promise<ReadablePage> {
+	const page = await fetchPage(url);
+	if (!page || !page.window.document) {
+		throw new Error(`Failed to fetch page "${url.toString()}"`);
+	}
 	const tags = [
 		"clippings",
 		...(
@@ -123,15 +129,25 @@ async function clipArticle(url: URL, page: JSDOM) {
 	};
 }
 
+async function clipYoutube(url: URL): Promise<ReadablePage> {
+	const videoInfo = await fetchTranscript(url.toString());
+	const transcriptContent = videoInfo.transcript.map((t) => t.text).join("\n");
+	return {
+		title: videoInfo.title,
+		url: url.toString(),
+		published: videoInfo.published,
+		author: videoInfo.author,
+		tags: ["clippings", "youtube"],
+		markdownContent: transcriptContent,
+		textContent: transcriptContent,
+		htmlContent: videoInfo.transcript.map((t) => `<p>${t.text}</p>`).join("\n"),
+		createdAt: videoInfo.createdAt,
+	};
+}
+
 export async function clip(url: URL): Promise<ReadablePage> {
-	const page = await fetchPage(url);
-	if (!page || !page.window.document) {
-		throw new Error(`Failed to fetch page "${url.toString()}"`);
-	}
-
 	if (url.hostname.includes("youtu")) {
-
+		return clipYoutube(url);
 	}
-
-	return clipArticle(url, page);
+	return clipArticle(url);
 }
