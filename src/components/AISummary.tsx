@@ -1,5 +1,5 @@
 import type { FC, PropsWithChildren } from "hono/jsx";
-import { CloseCircle, Hourglass } from "./icons/refactoring-ui";
+import { Hourglass } from "./icons/refactoring-ui";
 
 const proseClasses =
 	"prose dark:prose-invert font-humanist mt-2 prose-p:mt-0 prose-headings:font-transitional prose-headings:my-0 prose-h2:text-lg";
@@ -50,7 +50,8 @@ const AISummary: FC<{
 			<details>
 				<summary>
 					<h2 class="inline-block">
-						AI-generated summary <Hourglass className="h-4 inline" />
+						AI-generated summary{" "}
+						<Hourglass className="h-4 inline animate-springy-spin" />
 					</h2>
 				</summary>
 				<div class="flex flex-col gap-1 @container htmx-indicator">

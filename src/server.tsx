@@ -5,6 +5,7 @@ import { etag } from "hono/etag";
 import { requestId } from "hono/request-id";
 import type { StatusCode } from "hono/utils/http-status";
 import { z } from "zod";
+import AISummary from "./components/AISummary";
 import db from "./db/db";
 import { logger } from "./middleware/logger";
 import ClippedUrlPage from "./pages/ClippedUrl";
@@ -15,7 +16,6 @@ import { clip } from "./services/clipper";
 import log from "./services/log";
 import { summarize } from "./services/summarizer";
 import staticFiles from "./static/staticFiles";
-import AISummary from "./components/AISummary";
 
 const app = new Hono<{ Variables: { requestId: string } }>();
 
