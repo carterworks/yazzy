@@ -39,6 +39,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 		</head>
 
 		<body className="text-base bg-paper font-humanist dark:bg-black text-black dark:text-base-200 px-4 lg:px-0">
+			<div className="print:hidden" id="notifications" />
 			<div className="m-auto max-w-prose space-y-2">
 				<header
 					className="flex items-center mb-4 gap-4 print:hidden"

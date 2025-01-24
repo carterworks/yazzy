@@ -82,3 +82,51 @@ export const Attach: FC = ({ ...props }) => (
 		/>
 	</svg>
 );
+
+export const Hourglass: FC = ({ ...props }) => (
+	<svg
+		role="img"
+		aria-label="An hour glass"
+		xmlns="http://www.w3.org/2000/svg"
+		viewBox="0 0 24 24"
+		{...props}
+	>
+		<path
+			class="primary"
+			d="M19 20h1a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2h1c0-1.8.68-3.58 2.05-4.95L9 13.1v-2.2L7.05 8.95A6.98 6.98 0 0 1 5 4H4a1 1 0 1 1 0-2h16a1 1 0 0 1 0 2h-1c0 1.8-.68 3.58-2.05 4.95L15 10.9v2.2l1.95 1.95A6.98 6.98 0 0 1 19 20z"
+		/>
+		<path
+			class="secondary"
+			d="M17 20H7l2.83-2.83A4 4 0 0 0 11 14.34v-4.27L8.46 7.54a5 5 0 0 1-.95-1.33c.17-.06.33-.13.49-.21a4.47 4.47 0 0 1 4 0c1.26.63 2.74.63 4 0 .23-.11.46-.2.7-.28a5 5 0 0 1-1.16 1.82L13 10.07v4.27a4 4 0 0 0 1.17 2.83L17 20z"
+		/>
+	</svg>
+);
+
+export const CloseCircle: FC = ({ ...props }) => (
+	<svg
+		role="img"
+		aria-label="A circle with an X in the center"
+		xmlns="http://www.w3.org/2000/svg"
+		viewBox="0 0 24 24"
+		{...props}
+	>
+		<circle cx="12" cy="12" r="10" class="primary" />
+		<path
+			class="secondary"
+			d="M13.41 12l2.83 2.83a1 1 0 0 1-1.41 1.41L12 13.41l-2.83 2.83a1 1 0 1 1-1.41-1.41L10.59 12 7.76 9.17a1 1 0 0 1 1.41-1.41L12 10.59l2.83-2.83a1 1 0 0 1 1.41 1.41L13.41 12z"
+		/>
+	</svg>
+);
+
+export const Duplicate: FC = ({ ...props }) => (
+	<svg
+		role="img"
+		aria-label="Two overlapping squares"
+		xmlns="http://www.w3.org/2000/svg"
+		viewBox="0 0 24 24"
+		{...props}
+	>
+		<rect width="14" height="14" x="3" y="3" class="secondary" rx="2" />
+		<rect width="14" height="14" x="7" y="7" class="primary" rx="2" />
+	</svg>
+);

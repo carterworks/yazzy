@@ -3,7 +3,11 @@ import ArticleHeader from "../components/ArticleHeader";
 import ArticleMinimap from "../components/ArticleMinimap";
 import Button from "../components/Button";
 import DownloadAs from "../components/DownloadAs";
-import { BookClosed, InboxDownload } from "../components/icons/refactoring-ui";
+import {
+	BookClosed,
+	Duplicate,
+	InboxDownload,
+} from "../components/icons/refactoring-ui";
 import { Obsidian } from "../components/icons/simple-icons";
 import BasePage from "../layouts/BasePage";
 import { convertHtmlToMarkdown } from "../services/clipper";
@@ -90,13 +94,23 @@ const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
 			{article.author && (
 				<meta property="og:article:author" content={article.author} />
 			)}
-			<script
-				src="https://unpkg.com/wc-minimap@0.1.2/wc-minimap.js"
-				integrity="sha384-EA0JxPHHreHQ8g+A03IXTobEoMPB3vwPB+ZkhW/a0cVgBf4pc6VEtY57oLxq2A1x"
-				crossorigin="anonymous"
-				defer
-				async
-			/>
+			<script type="module">{`
+function initCopyButton() {
+	const copyButton = document.getElementById(\`copy-markdown\`);
+	if (!copyButton) {
+		return;
+	}
+	const copyText = \`${article.markdownContent}\`;
+	if (!copyText) {
+		return;
+	}
+	copyButton.addEventListener(\`click\`, function() {
+		navigator.clipboard.writeText(copyText);
+		window.addNotification(\`Copied to clipboard.\`);
+	});
+}
+initCopyButton();
+`}</script>
 		</>
 	);
 };
@@ -134,6 +148,13 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 				>
 					<InboxDownload className="h-4" />
 				</DownloadAs>
+				<Button
+					title="Copy Markdown to clipboard"
+					type="button"
+					id="copy-markdown"
+				>
+					<Duplicate className="h-4" />
+				</Button>
 				<ArticleMinimap
 					selector="article"
 					classes="fixed bottom-3 mx-auto px-2 rounded lg:m-0 lg:top-2 lg:sticky bg-paper dark:bg-black"

@@ -226,6 +226,32 @@
  --color-pu-2: light-dark(var(--color-purple-400), var(--color-purple-600));
  --color-ma: light-dark(var(--color-magenta-600), var(--color-magenta-400));
  --color-ma-2: light-dark(var(--color-magenta-400), var(--color-magenta-600)); */
+
+	--spring-easing: linear(
+		0,
+		0.0346 2.07%,
+		0.14066 4.43%,
+		0.93834 16.722%,
+		1.07743 20.432%,
+		1.14934 24.312%,
+		1.16294 26.953%,
+		1.15356 29.933%,
+		1.01677 43.094%,
+		0.9766 50.995%,
+		0.97488 57.056%,
+		1.00329 76.878%,
+		0.99996
+	);
+	/* Custom, springy spin animation */
+	--animate-springy-spin: springy-spin 1.5s var(--spring-easing) infinite;
+	@keyframes springy-spin {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(180deg);
+		}
+	}
 }
 /* Apply Flexoki to Tailwind Typography theme */
 .prose {
