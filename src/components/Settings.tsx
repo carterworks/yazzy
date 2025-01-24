@@ -13,7 +13,12 @@ const Settings: FC = () => (
 				name="model"
 				className="border border-base-100 rounded dark:border-base-900 p-1 bg-paper hover:bg-base-150 active:bg-base-100 dark:bg-base-900 hover:dark:bg-base-800 active:dark:bg-base-850"
 			>
-				<option value="gpt-4o-mini">GPT-4o mini</option>
+				<option value="gpt-4o-mini">GPT 4o-mini</option>
+				<option value="gpt-4o">GPT 4o</option>
+				<option value="deepseek-chat">Deepseek Chat</option>
+				<option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet</option>
+				<option value="claude-3-5-haiku-latest">Claude 3.5 Haiku</option>
+				<option value="claude-3-opus-latest">Claude 3 Opus</option>
 			</select>
 		</label>
 		{/* biome-ignore lint/a11y/noLabelWithoutControl: <explanation> */}

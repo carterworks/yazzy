@@ -1,10 +1,22 @@
+import { createAnthropic } from "@ai-sdk/anthropic";
+import { createDeepSeek } from "@ai-sdk/deepseek";
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import createDomPurify from "dompurify";
 import { JSDOM } from "jsdom";
 
-type ValidModelName = "gpt-4o-mini";
-const validModels: ValidModelName[] = ["gpt-4o-mini"];
+const modelToProvider = {
+	// openai
+	"gpt-4o-mini": createOpenAI,
+	"gpt-4o": createOpenAI,
+	// deepseek
+	"deepseek-chat": createDeepSeek,
+	// anthropic
+	"claude-3-5-sonnet-latest": createAnthropic,
+	"claude-3-5-haiku-latest": createAnthropic,
+	"claude-3-opus-latest": createAnthropic,
+};
+type ValidModelName = keyof typeof modelToProvider;
 const systemPrompt = `You will receive an article. Summarize it. 
 Tone and Style
 Concise and direct: Use clear and straightforward language.
@@ -27,7 +39,7 @@ Example in HTML
 const DOMPurify = createDomPurify(new JSDOM("<!DOCTYPE html>").window);
 
 export function isValidModelName(model: string): model is ValidModelName {
-	return validModels.includes(model as ValidModelName);
+	return model in modelToProvider;
 }
 
 export async function summarize(
@@ -38,9 +50,9 @@ export async function summarize(
 	if (!text || !model || !apiKey || !isValidModelName(model)) {
 		return "";
 	}
-	const openai = createOpenAI({ apiKey });
+	const provider = modelToProvider[model]({ apiKey });
 	const { text: completion } = await generateText({
-		model: openai(model),
+		model: provider(model),
 		system: systemPrompt,
 		prompt: text,
 	});
