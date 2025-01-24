@@ -94,9 +94,9 @@ const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
 			{article.author && (
 				<meta property="og:article:author" content={article.author} />
 			)}
-			<script>{`
+			<script type="module">{`
 function initCopyButton() {
-	const copyButton = document.getElementById(\`copy-button\`);
+	const copyButton = document.getElementById(\`copy-markdown\`);
 	if (!copyButton) {
 		return;
 	}
@@ -106,6 +106,7 @@ function initCopyButton() {
 	}
 	copyButton.addEventListener(\`click\`, function() {
 		navigator.clipboard.writeText(copyText);
+		window.addNotification(\`Copied to clipboard.\`);
 	});
 }
 initCopyButton();
