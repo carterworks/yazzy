@@ -129,12 +129,16 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 	};
 }
 
-function createEmbedElement(videoInfo: VideoInfo): string {
+function createEmbedElementHtml(videoInfo: VideoInfo): string {
 	return `<lite-youtube videoid="${videoInfo.id}" style="background-image: url('${videoInfo.thumbnailUrl}');">
   <a href="${videoInfo.url}" class="lyt-playbtn" title="Play Video">
     <span class="lyt-visually-hidden">${videoInfo.title} | ${videoInfo.author}</span>
   </a>
 </lite-youtube>`;
+}
+
+function createEmbedElementMarkdown(videoInfo: VideoInfo): string {
+	return `[![${videoInfo.title} | ${videoInfo.author}](${videoInfo.thumbnailUrl})](${videoInfo.url})`;
 }
 
 async function clipYoutube(url: URL): Promise<ReadablePage> {
@@ -146,9 +150,9 @@ async function clipYoutube(url: URL): Promise<ReadablePage> {
 		published: videoInfo.published,
 		author: videoInfo.author,
 		tags: ["clippings", "youtube"],
-		markdownContent: transcriptContent,
+		markdownContent: `${createEmbedElementMarkdown(videoInfo)}\n\n---\n\n${transcriptContent}`,
 		textContent: transcriptContent,
-		htmlContent: `<p>${createEmbedElement(videoInfo)}</p>${videoInfo.transcript.map((t) => `<p>${t.text}</p>`).join("\n")}`,
+		htmlContent: `<p>${createEmbedElementHtml(videoInfo)}</p>${videoInfo.transcript.map((t) => `<p>${t.text}</p > `).join("\n")}`,
 		createdAt: videoInfo.createdAt,
 	};
 }
