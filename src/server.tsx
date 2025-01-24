@@ -131,6 +131,8 @@ app.get(
 			} else {
 				message = `Unknown error: ${err}`;
 			}
+			const requestId = c.var.requestId;
+			message = `[requestId=${requestId}] ${message}`;
 			log.error(message);
 			// extract error code — space digit digit digit space
 			const errorCode = message.match(/ \d{3} /);
