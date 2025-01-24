@@ -57,6 +57,10 @@ app.get(
 			c.status(400);
 			return c.html(<AISummary url={""} error="URL parameter is required" />);
 		}
+		const article = await cache.getArticle(url);
+		if (article?.summary) {
+			return c.html(<AISummary url={url} summary={article.summary} />);
+		}
 		const authCookie = getCookie(c, "Authorization");
 		if (!authCookie) {
 			c.status(204);
