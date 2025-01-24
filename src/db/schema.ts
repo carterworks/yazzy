@@ -12,7 +12,7 @@ export const articles = sqliteTable("articles", {
 	textContent: text(),
 	htmlContent: text(),
 	createdAt: integer({ mode: "timestamp_ms" }).default(
-		sql`(CURRENT_TIMESTAMP)`,
+		sql`(unixepoch() * 1000)`,
 	),
 	summary: text(),
 });

@@ -1,9 +1,8 @@
 import { defineConfig } from "drizzle-kit";
-import schema from "./src/db/schema.ts" with { type: "file" };
 
 export default defineConfig({
 	out: "./src/db/migrations",
-	schema,
+	schema: "./src/db/schema.ts",
 	dialect: "sqlite",
 	dbCredentials: {
 		url: process.env.DB_PATH ?? ":memory:",

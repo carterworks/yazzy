@@ -15,6 +15,13 @@
 			"when": 1737504467575,
 			"tag": "0001_awesome_nicolaos",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "6",
+			"when": 1737747823846,
+			"tag": "0002_melted_bushwacker",
+			"breakpoints": true
 		}
 	]
 }
