@@ -43,8 +43,12 @@ class CacheService {
 		return toReadablePage(result);
 	}
 
-	addSummary(url: string, summary: string): Promise<void> {
-		return this.#db.insert(articles).values({ url, summary });
+	addSummary(url: string, summary: string) {
+		return this.#db
+			.update(articles)
+			.set({ summary })
+			.where(eq(articles.url, url))
+			.returning({ updatedUrl: articles.url });
 	}
 
 	getArticleCount(): Promise<number> {

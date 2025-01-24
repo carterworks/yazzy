@@ -88,7 +88,7 @@ app.get(
 				c.status(204);
 				return c;
 			}
-			cache.addSummary(url, article.summary);
+			await cache.addSummary(url, article.summary);
 			return c.html(<AISummary url={url} summary={article.summary} />);
 		} catch (err) {
 			c.status(500);
