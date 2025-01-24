@@ -2,7 +2,6 @@ import { Readability } from "@mozilla/readability";
 import createDomPurify from "dompurify";
 import { JSDOM } from "jsdom";
 import Turndown from "turndown";
-import { YoutubeTranscript } from "youtube-transcript";
 import type { ReadablePage } from "../types";
 import { type VideoInfo, fetchTranscript } from "./youtubeExtractor";
 

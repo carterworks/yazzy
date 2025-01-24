@@ -104,8 +104,6 @@ function objElementToJsObject(schemaObj: Element | null): SchemaObject {
 		const value = child.getAttribute("content") ?? child.getAttribute("href");
 		if (child.children.length > 0 && key !== null) {
 			obj[key] = objElementToJsObject(child);
-		} else if (key && value?.includes(",")) {
-			obj[key] = value.split(",").map((v) => v.trim());
 		} else if (key && value) {
 			obj[key] = value;
 		}
