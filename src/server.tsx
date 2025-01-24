@@ -109,11 +109,16 @@ app.get(
 		}),
 	),
 	async (c) => {
-		const url = c.req.param("url");
+		const searchParams = c.req.query();
+		const url = new URL(c.req.param("url"));
+		for (const [key, value] of Object.entries(searchParams)) {
+			url.searchParams.append(key, value);
+		}
+
 		try {
-			let article = await cache.getArticle(url);
+			let article = await cache.getArticle(url.toString());
 			if (!article) {
-				article = await clip(new URL(url));
+				article = await clip(url);
 				await cache.insertArticle(article);
 			}
 			return c.html(<ClippedUrlPage article={article} />);

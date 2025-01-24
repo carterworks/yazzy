@@ -1,6 +1,12 @@
 import { $ } from "bun";
 import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
+import YtEmbedCss from "../../node_modules/lite-youtube-embed/src/lite-yt-embed.css" with {
+	type: "file",
+};
+import YtEmbedJs from "../../node_modules/lite-youtube-embed/src/lite-yt-embed.js" with {
+	type: "file",
+};
 import webManifest from "./manifest.webmanifest" with { type: "file" };
 import scissorsIcon from "./scissors.svg" with { type: "file" };
 import clientScripts from "./scripts.mjs" with { type: "file" };
@@ -12,6 +18,14 @@ if (import.meta.env.NODE_ENV === "development") {
 	await $`bun run css`;
 }
 
+staticFiles.use(
+	"/lite-yt-embed.css",
+	serveStatic({ path: YtEmbedCss as unknown as string, root: "/" }),
+);
+staticFiles.use(
+	"/lite-yt-embed.js",
+	serveStatic({ path: YtEmbedJs as unknown as string, root: "/" }),
+);
 staticFiles.use(
 	"/styles.css",
 	serveStatic({ path: CSS_OUTPUT_PATH, root: "/" }),
