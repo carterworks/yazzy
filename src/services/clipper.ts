@@ -4,7 +4,7 @@ import { JSDOM } from "jsdom";
 import Turndown from "turndown";
 import { YoutubeTranscript } from "youtube-transcript";
 import type { ReadablePage } from "../types";
-import { fetchTranscript } from "./youtubeExtractor";
+import { type VideoInfo, fetchTranscript } from "./youtubeExtractor";
 
 const DOMPurify = createDomPurify(new JSDOM("<!DOCTYPE html>").window);
 
@@ -129,6 +129,14 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 	};
 }
 
+function createEmbedElement(videoInfo: VideoInfo): string {
+	return `<lite-youtube videoid="${videoInfo.id}" style="background-image: url('${videoInfo.thumbnailUrl}');">
+  <a href="${videoInfo.url}" class="lyt-playbtn" title="Play Video">
+    <span class="lyt-visually-hidden">${videoInfo.title} | ${videoInfo.author}</span>
+  </a>
+</lite-youtube>`;
+}
+
 async function clipYoutube(url: URL): Promise<ReadablePage> {
 	const videoInfo = await fetchTranscript(url.toString());
 	const transcriptContent = videoInfo.transcript.map((t) => t.text).join("\n");
@@ -140,7 +148,7 @@ async function clipYoutube(url: URL): Promise<ReadablePage> {
 		tags: ["clippings", "youtube"],
 		markdownContent: transcriptContent,
 		textContent: transcriptContent,
-		htmlContent: videoInfo.transcript.map((t) => `<p>${t.text}</p>`).join("\n"),
+		htmlContent: `<p>${createEmbedElement(videoInfo)}</p>${videoInfo.transcript.map((t) => `<p>${t.text}</p>`).join("\n")}`,
 		createdAt: videoInfo.createdAt,
 	};
 }

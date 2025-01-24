@@ -12,6 +12,7 @@
 		"drizzle-orm": "^0.38.4",
 		"hono": "^4.6.18",
 		"jsdom": "^26.0.0",
+		"lite-youtube-embed": "^0.3.3",
 		"tailwindcss": "^4.0.0",
 		"turndown": "^7.2.0",
 		"typescript": "^5.5.4",

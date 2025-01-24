@@ -94,6 +94,9 @@ const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
 			{article.author && (
 				<meta property="og:article:author" content={article.author} />
 			)}
+			{/* add the js and css for the lite youtube embed */}
+			<link rel="stylesheet" href="/lite-yt-embed.css" />
+			<script type="module" src="/lite-yt-embed.js" async defer />
 			<script type="module">{`
 function initCopyButton() {
 	const copyButton = document.getElementById(\`copy-markdown\`);
