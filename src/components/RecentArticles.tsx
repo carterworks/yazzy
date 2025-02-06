@@ -31,6 +31,7 @@ const RecentArticles: FC<{ articles: ReadablePage[] }> = ({ articles }) => {
 	const recentArticles = articles.map((article) => {
 		let summary = article.summary
 			?.replace(/<[^>]*>/g, "")
+			.replace(/Generated on \d{2}\/\d{2}\/\d{4} using \w+/, "")
 			.split(/\s+/)
 			.slice(0, 20)
 			.join(" ");
