@@ -4,8 +4,9 @@ import { drizzle } from "drizzle-orm/bun-sqlite";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator";
 import log from "../services/log";
 import * as schema from "./schema";
-
-function initalizeDB(location: string = process.env.DB_PATH || ":memory:") {
+const DB_PATH = process.env.DB_PATH || ":memory:";
+log(`DB path is ${DB_PATH}`);
+function initalizeDB(location: string = DB_PATH) {
 	const client = new Database(location);
 	const db = drizzle({
 		client,

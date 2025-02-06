@@ -1,6 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { getCookie } from "hono/cookie";
 import { etag } from "hono/etag";
 import { requestId } from "hono/request-id";
 import type { StatusCode } from "hono/utils/http-status";
@@ -42,15 +41,9 @@ app.get("/api/clip", (c) => {
 	return c.redirect(`/${url}`);
 });
 
-app.get(
+app.get<string>(
 	"/api/summary",
 	zValidator("query", z.object({ url: z.string().url() })),
-	zValidator("cookie", z.object({ Authorization: z.string() }), (result, c) => {
-		if (!result.success) {
-			c.status(201);
-			return c.html("");
-		}
-	}),
 	async (c) => {
 		const url = c.req.query("url");
 		if (!url) {
@@ -61,19 +54,7 @@ app.get(
 		if (article?.summary) {
 			return c.html(<AISummary url={url} summary={article.summary} />);
 		}
-		const authCookie = getCookie(c, "Authorization");
-		if (!authCookie) {
-			c.status(204);
-			return c.text("");
-		}
 		try {
-			const [model, apiKey] = (atob(authCookie) || "=").split("=");
-			if (!model || !apiKey) {
-				c.status(400);
-				return c.html(
-					<AISummary url={url} error="Invalid Authorization cookie" />,
-				);
-			}
 			const article = await cache.getArticle(url);
 			if (!article || !article.textContent) {
 				c.status(404);
@@ -82,7 +63,7 @@ app.get(
 				);
 			}
 
-			article.summary = await summarize(article.textContent, model, apiKey);
+			article.summary = await summarize(article.textContent);
 			if (!article.summary) {
 				// empty
 				c.status(204);

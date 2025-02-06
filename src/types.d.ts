@@ -10,3 +10,18 @@ export interface ReadablePage {
 	createdAt?: Date;
 	summary?: string | null;
 }
+
+declare module "bun" {
+	interface Env {
+		AI_API_KEY: string;
+		DB_PATH: string;
+		AI_ENDPOINT: string;
+		BASE_URL: string;
+	}
+}
+
+type Env = {
+	Variables: {
+		requestId: string;
+	};
+};

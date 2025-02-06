@@ -1,22 +1,20 @@
-import { createAnthropic } from "@ai-sdk/anthropic";
-import { createDeepSeek } from "@ai-sdk/deepseek";
-import { createOpenAI } from "@ai-sdk/openai";
-import { generateText } from "ai";
 import createDomPurify from "dompurify";
 import { JSDOM } from "jsdom";
+import OpenAI from "openai";
+import log from "./log";
+const AI_ENDPOINT = process.env.AI_ENDPOINT;
+const AI_API_KEY = process.env.AI_API_KEY;
+log(`Using ${AI_ENDPOINT} for AI. Key: ${AI_API_KEY ? "set" : "not set"}`);
 
-const modelToProvider = {
-	// openai
-	"gpt-4o-mini": createOpenAI,
-	"gpt-4o": createOpenAI,
-	// deepseek
-	"deepseek-chat": createDeepSeek,
-	// anthropic
-	"claude-3-5-sonnet-latest": createAnthropic,
-	"claude-3-5-haiku-latest": createAnthropic,
-	"claude-3-opus-latest": createAnthropic,
-};
-type ValidModelName = keyof typeof modelToProvider;
+const openai = new OpenAI({
+	baseURL: AI_ENDPOINT,
+	apiKey: AI_API_KEY,
+	defaultHeaders: {
+		"HTTP-Referer": process.env.BASE_URL, // Optional. Site URL for rankings on openrouter.ai.
+		"X-Title": "yazzy", // Optional. Site title for rankings on openrouter.ai.
+	},
+});
+
 const systemPrompt = `You will receive an article. Summarize it. 
 Tone and Style
 Concise and direct: Use clear and straightforward language.
@@ -38,23 +36,57 @@ Example in HTML
 
 const DOMPurify = createDomPurify(new JSDOM("<!DOCTYPE html>").window);
 
-export function isValidModelName(model: string): model is ValidModelName {
-	return model in modelToProvider;
+async function fetchFromOpenRouter(
+	text: string,
+	model = "google/gemini-2.0-flash-001",
+	fallbackModels = ["openai/gpt-4o-mini", "deepseek/deepseek-chat"],
+) {
+	const params: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
+		model,
+		messages: [
+			{ role: "system", content: systemPrompt },
+			{ role: "user", content: text },
+		],
+	};
+	if (AI_ENDPOINT.includes("openrouter")) {
+		// @ts-expect-error OpenRouter-specific option
+		params.models = fallbackModels;
+	}
+	const completion = await openai.chat.completions.create(params);
+	return completion;
 }
 
-export async function summarize(
-	text: string,
+const addGenerationInformation = (
 	model: string,
-	apiKey: string,
-): Promise<string> {
-	if (!text || !model || !apiKey || !isValidModelName(model)) {
+	date: string,
+	message: string,
+) => {
+	const generationMessage = `<p><em>Generated on ${date} using ${model}</em></p>${message}`;
+	return generationMessage;
+};
+
+export async function summarize(text: string): Promise<string> {
+	if (!text || !AI_API_KEY) {
 		return "";
 	}
-	const provider = modelToProvider[model]({ apiKey });
-	const { text: completion } = await generateText({
-		model: provider(model),
-		system: systemPrompt,
-		prompt: text,
-	});
-	return DOMPurify.sanitize(completion);
+	const response = await fetchFromOpenRouter(text);
+	const message = response.choices[0].message.content;
+	if (!message) {
+		throw new Error("No message returned from OpenRouter");
+	}
+	const generationDate = new Date()
+		.toLocaleString("en-US", {
+			year: "numeric",
+			month: "2-digit",
+			day: "2-digit",
+			hour: "2-digit",
+			minute: "2-digit",
+		})
+		.replace(",", "");
+	const generationMessage = addGenerationInformation(
+		response.model,
+		generationDate,
+		message,
+	);
+	return DOMPurify.sanitize(generationMessage);
 }

@@ -51,16 +51,6 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 						</h1>
 						<p className="text-xs">Plain ol' reading</p>
 					</div>
-					<Button type="button" popovertarget="settings-dialog">
-						Settings
-					</Button>
-					<div
-						popover="auto"
-						id="settings-dialog"
-						className="p-4 rounded m-auto bg-paper dark:bg-black drop-shadow-lg border border-base-100 dark:border-base-900"
-					>
-						<Settings />
-					</div>
 				</header>
 				<div className={className}>{children}</div>
 				<footer className="flex justify-between py-4 my-4 items-start border-t border-base-100 dark:border-base-900">
