@@ -19,8 +19,15 @@ export async function fetchCompletion(
 	systemPrompt: string,
 	userPrompt: string,
 	model = "google/gemini-2.0-flash-001",
-	fallbackModels = ["openai/gpt-4o-mini", "deepseek/deepseek-chat"],
+	fallbackModels = [
+		"openai/gpt-4o-mini",
+		"deepseek/deepseek-chat",
+		"meta-llama/llama-3.2-3b-instruct",
+	],
 ) {
+	if (!AI_ENABLED) {
+		return null;
+	}
 	const params: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
 		model,
 		messages: [

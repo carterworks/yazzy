@@ -37,6 +37,9 @@ export async function summarize(text: string): Promise<string> {
 		return "";
 	}
 	const response = await fetchCompletion(systemPrompt, text);
+	if (!response) {
+		return "";
+	}
 	const message = response.choices[0].message.content;
 	if (!message) {
 		throw new Error("No message returned from OpenRouter");
