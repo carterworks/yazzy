@@ -9,7 +9,7 @@ Neutral and professional: Avoid subjective or emotive language.
 Informative: Clearly convey key points without adding opinions.
 Structure
 Introduction: Begin with a title for the article.
-Key Points: Use a <ul> list in HTML to outline the main points. Start each point with a relevant emoji and a theme of the article. Then summarize the article in a few words around that theme.
+Key Points: Use a <ul> list in HTML to outline the main points. Start each point with a relevant emoji and a theme of the article. Then summarize the article in a few words around that theme. Use only HTML in the response.
 Length
 Brief: Aim for a summary within 30 words, with 5-10 words per point and 3-5 points in total.
 Example in HTML
