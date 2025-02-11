@@ -46,7 +46,7 @@ function generateObsidianContents(article: ReadablePage): string {
 		url: article.url,
 		clipped: new Date(),
 		published: article.published,
-		tags: article,
+		tags: article.tags,
 	};
 	let fileContent = "---\n";
 	for (const [key, value] of Object.entries(frontmatter)) {
@@ -60,6 +60,7 @@ function generateObsidianContents(article: ReadablePage): string {
 		} else if (typeof value === "string") {
 			fileContent += escapeDoubleQuotes(value);
 		} else if (Array.isArray(value)) {
+			fileContent += "\n";
 			fileContent += value
 				.map((v) => `  - ${escapeDoubleQuotes(v)}`)
 				.join("\n");
