@@ -37,8 +37,6 @@ function escapeDoubleQuotes(value: string): string {
 }
 
 function generateObsidianContents(article: ReadablePage): string {
-	const today = formatDate(new Date());
-
 	// Check if there's an author and add brackets
 	const authorBrackets = article.author ? `[[${article.author}]]` : "";
 	const frontmatter = {
@@ -72,6 +70,8 @@ function generateObsidianContents(article: ReadablePage): string {
 		}
 		fileContent += "\n";
 	}
+	// surround wikilinks with quotes
+	fileContent = fileContent.replace(/(\[\[.*?\]\])/g, '"$1"');
 	fileContent += "\n---\n";
 	fileContent += `\n# ${article.title}\n`;
 	if (article.summary) {
