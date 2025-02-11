@@ -27,6 +27,11 @@ function getFilename(title: string): string {
 	);
 }
 
+function generatePlainTextContents(article: ReadablePage): string {
+	const plainTextSummary = getPlainTextSummary(article, 1000);
+	return `${article.title}\n---\nSummary\n\n${plainTextSummary}\n---\n${article.textContent}`;
+}
+
 function generateObsidianContents(article: ReadablePage): string {
 	const today = formatDate(new Date());
 
@@ -70,7 +75,7 @@ function generateObsidianUri(
 }
 
 const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
-	const plainTextSummary = getPlainTextSummary(article, 300);
+	const plainTextSummary = getPlainTextSummary(article, 1000);
 
 	const articleHostname = new URL(article.url).hostname;
 	return (
@@ -117,13 +122,10 @@ initCopyButton();
 };
 
 const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
-	const plainTextSummary = article.summary
-		? article.summary.replace(/<[^>]*>/g, "")
-		: `${(article.textContent ?? "").substring(0, 300)}…`;
 	const markdownContent = generateObsidianContents(article);
 	const title = article.title ?? `${new Date().toISOString()} Clipping`;
 	const obsidianUri = generateObsidianUri(markdownContent, title ?? "");
-	const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\n---\n${article.textContent}`;
+	const plainTextContent = generatePlainTextContents(article);
 
 	return (
 		<BasePage

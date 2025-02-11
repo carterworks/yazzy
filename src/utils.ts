@@ -20,7 +20,12 @@ export function getPlainTextSummary(
 	article: ReadablePage,
 	length = 100,
 ): string {
-	let summary = (article.summary ?? article.textContent ?? article.htmlContent ?? "")
+	const fullSummary =
+		article.summary ??
+		article.textContent?.substring(0, length) ??
+		article.htmlContent ??
+		"";
+	let truncatedSummary = fullSummary
 		?.replace(/<[^>]*>/g, " ")
 		// remove the "Generated on 02/06/2025 08:21 PM using google/gemini-2.0-flash-001"
 		// or "Generated on 2025-02-06T19:48:10.640Z using google/gemini-2.0-flash-001	"
@@ -28,8 +33,8 @@ export function getPlainTextSummary(
 		.split(/\s+/)
 		.slice(0, length)
 		.join(" ");
-	if (summary?.length && summary.length > 0) {
-		summary += "...";
+	if (truncatedSummary.length < fullSummary.length) {
+		truncatedSummary += "...";
 	}
-	return summary;
+	return truncatedSummary;
 }
