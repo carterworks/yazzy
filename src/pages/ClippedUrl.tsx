@@ -12,7 +12,7 @@ import { Obsidian } from "../components/icons/simple-icons";
 import BasePage from "../layouts/BasePage";
 import { convertHtmlToMarkdown } from "../services/clipper";
 import type { ReadablePage } from "../types";
-import { formatDate } from "../utils";
+import { formatDate, getPlainTextSummary } from "../utils";
 
 function getFilename(title: string): string {
 	return (
@@ -27,24 +27,51 @@ function getFilename(title: string): string {
 	);
 }
 
+function generatePlainTextContents(article: ReadablePage): string {
+	const plainTextSummary = getPlainTextSummary(article, 1000);
+	return `${article.title}\n---\nSummary\n\n${plainTextSummary}\n---\n${article.textContent}`;
+}
+
+function escapeDoubleQuotes(value: string): string {
+	return value.replace(/"/g, '\\"');
+}
+
 function generateObsidianContents(article: ReadablePage): string {
 	const today = formatDate(new Date());
 
 	// Check if there's an author and add brackets
-	const authorBrackets = article.author ? `"[[${article.author}]]"` : "";
-	const params = {
-		category: '"[[Clippings]]"',
+	const authorBrackets = article.author ? `[[${article.author}]]` : "";
+	const frontmatter = {
+		category: "[[Clippings]]",
 		author: `${authorBrackets}`,
-		title: `"${article.title}"`,
+		title: `${article.title}`,
 		url: article.url,
-		clipped: `"${today}"`,
-		published: `"${formatDate(article.published)}"`,
-		tags: article.tags.map((t) => `"${t}"`).join(" "),
+		clipped: new Date(),
+		published: article.published,
+		tags: article,
 	};
 	let fileContent = "---\n";
-	fileContent += Object.entries(params)
-		.map(([key, value]) => `${key}: ${value}`)
-		.join("\n");
+	for (const [key, value] of Object.entries(frontmatter)) {
+		fileContent += `${key}: `;
+		if (
+			value === null ||
+			value === undefined ||
+			(typeof value === "string" && value.trim().length === 0)
+		) {
+			// skip empty values
+		} else if (typeof value === "string") {
+			fileContent += escapeDoubleQuotes(value);
+		} else if (Array.isArray(value)) {
+			fileContent += value
+				.map((v) => `  - ${escapeDoubleQuotes(v)}`)
+				.join("\n");
+		} else if (value instanceof Date) {
+			fileContent += formatDate(value);
+		} else {
+			fileContent += `${value}`;
+		}
+		fileContent += "\n";
+	}
 	fileContent += "\n---\n";
 	fileContent += `\n# ${article.title}\n`;
 	if (article.summary) {
@@ -70,9 +97,7 @@ function generateObsidianUri(
 }
 
 const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
-	const plainTextSummary = article.summary
-		? article.summary.replace(/<[^>]*>/g, "")
-		: `${(article.textContent ?? "").trim().substring(0, 300)}…`;
+	const plainTextSummary = getPlainTextSummary(article, 1000);
 
 	const articleHostname = new URL(article.url).hostname;
 	return (
@@ -119,13 +144,10 @@ initCopyButton();
 };
 
 const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
-	const plainTextSummary = article.summary
-		? article.summary.replace(/<[^>]*>/g, "")
-		: `${(article.textContent ?? "").substring(0, 300)}…`;
 	const markdownContent = generateObsidianContents(article);
 	const title = article.title ?? `${new Date().toISOString()} Clipping`;
 	const obsidianUri = generateObsidianUri(markdownContent, title ?? "");
-	const plainTextContent = `${article.title}\n---\nSummary\n\n${plainTextSummary}\n---\n${article.textContent}`;
+	const plainTextContent = generatePlainTextContents(article);
 
 	return (
 		<BasePage

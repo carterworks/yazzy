@@ -1,5 +1,6 @@
 import type { FC } from "hono/jsx";
 import type { ReadablePage } from "../types";
+import { getPlainTextSummary } from "../utils";
 
 const RecentArticle: FC<{ article: ReadablePage }> = ({ article }) => {
 	return (
@@ -29,20 +30,9 @@ const RecentArticle: FC<{ article: ReadablePage }> = ({ article }) => {
 
 const RecentArticles: FC<{ articles: ReadablePage[] }> = ({ articles }) => {
 	const recentArticles = articles.map((article) => {
-		let summary = article.summary
-			?.replace(/<[^>]*>/g, " ")
-			// remove the "Generated on 02/06/2025 08:21 PM using google/gemini-2.0-flash-001"
-			// or "Generated on 2025-02-06T19:48:10.640Z using google/gemini-2.0-flash-001	"
-			.replace(/Generated on .+ using \w+\/[\w-\.]+/, "")
-			.split(/\s+/)
-			.slice(0, 20)
-			.join(" ");
-		if (summary?.length && summary.length > 0) {
-			summary += "...";
-		}
 		return {
 			...article,
-			summary,
+			summary: getPlainTextSummary(article, 30),
 		};
 	});
 	return (
