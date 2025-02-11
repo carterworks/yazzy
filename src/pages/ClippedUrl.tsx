@@ -12,7 +12,7 @@ import { Obsidian } from "../components/icons/simple-icons";
 import BasePage from "../layouts/BasePage";
 import { convertHtmlToMarkdown } from "../services/clipper";
 import type { ReadablePage } from "../types";
-import { formatDate } from "../utils";
+import { formatDate, getPlainTextSummary } from "../utils";
 
 function getFilename(title: string): string {
 	return (
@@ -70,9 +70,7 @@ function generateObsidianUri(
 }
 
 const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
-	const plainTextSummary = article.summary
-		? article.summary.replace(/<[^>]*>/g, "")
-		: `${(article.textContent ?? "").trim().substring(0, 300)}…`;
+	const plainTextSummary = getPlainTextSummary(article, 300);
 
 	const articleHostname = new URL(article.url).hostname;
 	return (
