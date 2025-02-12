@@ -7,6 +7,18 @@ import { type VideoInfo, fetchTranscript } from "./youtubeExtractor";
 
 const DOMPurify = createDomPurify(new JSDOM("<!DOCTYPE html>").window);
 
+const supportedContentTypes = [
+	"text/html",
+	"application/xhtml+xml",
+	"text/plain",
+	"application/xml", // XML that might contain HTML
+	"text/xml", // XML that might contain HTML
+	// text/plain is already included and handles:
+	// - text/markdown
+	// - text/csv
+	// - other text formats
+];
+
 async function fetchPage(url: URL): Promise<JSDOM> {
 	const response = await fetch(url.toString(), {
 		headers: {
@@ -19,8 +31,15 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 		);
 	}
 	const contentType = response.headers.get("content-type");
-	if (!contentType || !contentType.includes("text/html")) {
-		throw new Error(`URL "${url.toString()}" is not an HTML page`);
+	if (!contentType) {
+		throw new Error(`No content type specified for ${url.toString()}`);
+	}
+	// Extract the base content type without parameters
+	const baseContentType = contentType.split(";")[0].trim().toLowerCase();
+	if (!supportedContentTypes.includes(baseContentType)) {
+		throw new Error(
+			`URL "${url.toString()}" has unsupported content type: ${baseContentType}`,
+		);
 	}
 	const page = new JSDOM(await response.text(), { url: url.toString() });
 	// force lazy-loaded images to load
