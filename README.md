@@ -1,10 +1,21 @@
 # yazzy
 
-[![Built with Astro](https://astro.badg.es/v2/built-with-astro/tiny.svg)](https://astro.build)
-
-Website → Markdown/plain text, for archival purposes.
+Article → Markdown/plain text, for easy-reading archival purposes.
 
 Named after [Jasnah Kholin](https://coppermind.net/wiki/Jasnah_Kholin), famous historian/archivist in Brandon Sanderson's [The Stormlight Archive](https://coppermind.net/wiki/The_Stormlight_Archive).
+
+## Features
+
+* Extracts the main content from any web article using [Mozilla's Readability](https://github.com/mozilla/readability)
+* Converts web content to clean Markdown, HTML, or plain text format.
+* Simple URL pattern - just prepend the yazzy URL: "yazzy.fly.dev/https://example.com".
+* Download articles as Markdown, plain text, or copy to clipboard.
+* Export in Obsidian-compatible format with frontmatter metadata.
+* Dark mode support for comfortable reading.
+* AI-powered article summarization.
+* Easily self-hostable.
+* Database dumps for backing up your article collection.
+* Minimalist, distraction-free reading experience.
 
 ## 🧞 Commands
 
@@ -12,27 +23,18 @@ All commands are run from the root of the project, from a terminal:
 
 | Command                   | Action                                           |
 | :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run check`           | Format and lint the project                      |
+| `bun install`             | Installs dependencies                            |
+| `bun run dev`             | Builds the css and starts a reloading dev server |
+| `bun run css`             | Builds just the css                              |
+| `bun run build`           | Builds a production-ready archive into ./dist    |
+| `bun run check`           | Format and lint the project                      |
 
 ## TODO
 
-- Similar to [txtify.it](https://txtify.it/) or [Steph Ango's Obsidian Web Clipper](https://github.com/obsidianmd/obsidian-clipper), but server-side.
-- [x] A mobile share target via [PWA `share_target`](https://developer.mozilla.org/en-US/docs/Web/Manifest/share_target).
-- [x] Do the  "prepend the yazzy url" thing, like "yazzy.fly.dev/https://example.com". 
-- [x] Can download the markdown file or copy the text to clipboard.
-- [x] Caches text to an sqlite db
-- [x] Uses Mozilla's [Readability](https://github.com/mozilla/readability).
-- [ ] Has a job queue for processing?
-- [ ] Caching headers to static resources
-- [x] Bring-your-own OpenAI key for summaries
-- [x] Deployed on [Fly.io](https://fly.io/).
-- [x] Dark mode
-- [ ] Remember which mode (html/markdown/text) was used
-- [ ] recognize the language from codeblocks
-- [x] Download db dumps
-- [x] Recently clipped articles on the homepage
-- [ ] A device-centric history
+- [ ] Local history
+- [ ] Update to the new Obsidian URI format (content in clipboard)
+- [ ] A service worker for speed and offline work.
+- [ ] Reader mode preferences (font size, line spacing, font family)
+- [ ] Custom CSS themes support for personalized reading experience
+- [ ] Reading time estimation for articles
+- [ ] Social sharing with preview cards
