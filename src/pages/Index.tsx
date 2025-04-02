@@ -44,9 +44,8 @@ const IndexPage: FC<{ recentArticles: ReadablePage[] }> = ({
 				required
 				placeholder="https://paulgraham.com/submarine.html"
 			/>
-			<Button type="submit" classes="px-4">
-				{" "}
-				Clip{" "}
+			<Button type="submit" classes="px-4" variant="primary">
+				Clip
 			</Button>
 		</form>
 		<RecentArticles articles={recentArticles} />
