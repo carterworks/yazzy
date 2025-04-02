@@ -1,8 +1,8 @@
 import { Defuddle } from "defuddle/node";
 import createDomPurify from "dompurify";
 import { JSDOM, VirtualConsole } from "jsdom";
-import Turndown from "turndown";
 import type { ReadablePage } from "../types";
+import convertHtmlToMarkdown from "./markdown";
 import { type VideoInfo, fetchTranscript } from "./youtubeExtractor";
 
 const supportedContentTypes = [
@@ -84,33 +84,6 @@ function getMetaContent(
 		return "";
 	}
 	return content.trim();
-}
-
-/**
- * Convert HTML to Markdown
- * @param html - The HTML to convert
- * @returns The Markdown
- */
-export function convertHtmlToMarkdown(html: string): string {
-	const turndown = new Turndown({
-		headingStyle: "atx",
-		hr: "---",
-		bulletListMarker: "-",
-		codeBlockStyle: "fenced",
-		emDelimiter: "*",
-		preformattedCode: true,
-	});
-	turndown.keep([
-		"iframe",
-		"sub",
-		"sup",
-		"u",
-		"ins",
-		"del",
-		"small",
-		"big" as keyof HTMLElementTagNameMap,
-	]);
-	return turndown.turndown(html);
 }
 
 function convertMarkdownToPlainText(markdown: string): string {
