@@ -1,11 +1,9 @@
-import { Readability } from "@mozilla/readability";
+import { Defuddle } from "defuddle/node";
 import createDomPurify from "dompurify";
-import { JSDOM } from "jsdom";
-import Turndown from "turndown";
+import { JSDOM, VirtualConsole } from "jsdom";
 import type { ReadablePage } from "../types";
+import convertHtmlToMarkdown from "./markdown";
 import { type VideoInfo, fetchTranscript } from "./youtubeExtractor";
-
-const DOMPurify = createDomPurify(new JSDOM("<!DOCTYPE html>").window);
 
 const supportedContentTypes = [
 	"text/html",
@@ -41,7 +39,17 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 			`URL "${url.toString()}" has unsupported content type: ${baseContentType}`,
 		);
 	}
-	const page = new JSDOM(await response.text(), { url: url.toString() });
+	const page = new JSDOM(await response.text(), {
+		url: url.toString(),
+		resources: "usable",
+		pretendToBeVisual: true,
+		includeNodeLocations: true,
+		storageQuota: 10000000,
+		virtualConsole: new VirtualConsole().sendTo(console, {
+			omitJSDOMErrors: true,
+		}),
+	});
+	const DOMPurify = createDomPurify(page.window);
 	// force lazy-loaded images to load
 	const LAZY_DATA_ATTRS = [
 		"data-src",
@@ -58,6 +66,9 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 			}
 		}
 	}
+	page.window.document.body.innerHTML = DOMPurify.sanitize(
+		page.window.document.body.innerHTML,
+	);
 	return page;
 }
 
@@ -75,25 +86,48 @@ function getMetaContent(
 	return content.trim();
 }
 
-export function convertHtmlToMarkdown(html: string): string {
-	const turndown = new Turndown({
-		headingStyle: "atx",
-		hr: "---",
-		bulletListMarker: "-",
-		codeBlockStyle: "fenced",
-		emDelimiter: "*",
-	});
-	turndown.keep([
-		"iframe",
-		"sub",
-		"sup",
-		"u",
-		"ins",
-		"del",
-		"small",
-		"big" as keyof HTMLElementTagNameMap,
-	]);
-	return turndown.turndown(html);
+function convertMarkdownToPlainText(markdown: string): string {
+	const rules = [
+		// Headers
+		{ filter: /^\s*#+\s+/gm, replacement: "" },
+		// Horizontal rules
+		{ filter: /^\s*[-*_]{3,}\s*$/gm, replacement: "" },
+		// Code blocks
+		{ filter: /^\s*```[\s\S]*?```\s*$/gm, replacement: "" },
+		{ filter: /^\s*`[\s\S]*?`\s*$/g, replacement: "" },
+		// Links and images
+		{ filter: /\[([^\]]+)\]\([^)]+\)/g, replacement: "$1" },
+		{ filter: /!\[([^\]]*)\]\([^)]+\)/g, replacement: "" },
+		// HTML tags
+		{ filter: /<[^>]+>/g, replacement: "" },
+		// Bold and italic
+		{ filter: /(\*\*|__)(.*?)\1/g, replacement: "$2" },
+		{ filter: /(\*|_)(.*?)\1/g, replacement: "$2" },
+		// Strikethrough
+		{ filter: /~~(.*?)~~/g, replacement: "$1" },
+		// Blockquotes
+		{ filter: /^\s*>\s*/gm, replacement: "" },
+		// Lists
+		{ filter: /^\s*[-*+]\s+/gm, replacement: "" },
+		{ filter: /^\s*\d+\.\s+/gm, replacement: "" },
+		// Tables
+		{ filter: /\|.*\|/g, replacement: "" },
+		{ filter: /^\s*\|[-|]+\|\s*$/gm, replacement: "" },
+		// Line breaks
+		{ filter: /\s{2,}$/gm, replacement: " " },
+		{ filter: /\\\n/g, replacement: " " },
+		// Escaped characters
+		{ filter: /\\([\\`*_{}[\]()#+\-.!])/g, replacement: "$1" },
+		// Clean up extra whitespace
+		{ filter: /\n{3,}/g, replacement: "\n\n" },
+		{ filter: /^\s+|\s+$/g, replacement: "" },
+	];
+
+	let plainText = markdown;
+	for (const rule of rules) {
+		plainText = plainText.replace(rule.filter, rule.replacement);
+	}
+	return plainText;
 }
 
 async function clipArticle(url: URL): Promise<ReadablePage> {
@@ -101,6 +135,22 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 	if (!page || !page.window.document) {
 		throw new Error(`Failed to fetch page "${url.toString()}"`);
 	}
+
+	const article = await Defuddle(page);
+
+	if (!article) {
+		throw new Error(`Failed to parse article contents of "${url.toString()}"`);
+	}
+
+	const markdownBody = convertHtmlToMarkdown(article.content);
+
+	// Fetch byline, meta author, property author, or site name
+	const author =
+		article.author ||
+		getMetaContent(page.window.document, "name", "author") ||
+		getMetaContent(page.window.document, "property", "author") ||
+		getMetaContent(page.window.document, "property", "og:site_name");
+
 	const tags = [
 		"clippings",
 		...(
@@ -109,40 +159,31 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 				?.getAttribute("content")
 				?.split(",") ?? []
 		).map((keyword) => keyword.split(" ").join("")),
+		...(article.schemaOrgData?.articleSection ?? []),
 	];
-
-	const article = new Readability(page.window.document, {
-		keepClasses: true,
-	}).parse();
-	if (!article) {
-		throw new Error(`Failed to parse article contents of "${url.toString()}"`);
-	}
-
-	article.content = DOMPurify.sanitize(article.content);
-
-	const markdownBody = convertHtmlToMarkdown(article.content);
-	// Fetch byline, meta author, property author, or site name
-	const author =
-		article.byline ||
-		getMetaContent(page.window.document, "name", "author") ||
-		getMetaContent(page.window.document, "property", "author") ||
-		getMetaContent(page.window.document, "property", "og:site_name");
 
 	/* Try to get published date */
 	const publishedDate =
-		article.publishedTime ??
+		article.published ||
+		article.schemaOrgData?.datePublished ||
 		page.window.document.querySelector("time")?.getAttribute("datetime");
 	const published = publishedDate ? new Date(publishedDate) : undefined;
 
+	const title =
+		article.title ||
+		article.schemaOrgData.headline ||
+		article.schemaOrgData.name ||
+		page.window.document.title;
+
 	return {
-		title: article.title,
+		title,
 		url: url.toString(),
 		published,
 		createdAt: new Date(),
 		author,
 		tags,
 		markdownContent: markdownBody,
-		textContent: article.textContent,
+		textContent: convertMarkdownToPlainText(markdownBody),
 		htmlContent: article.content,
 	};
 }

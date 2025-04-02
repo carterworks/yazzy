@@ -10,7 +10,7 @@ import {
 } from "../components/icons/refactoring-ui";
 import { Obsidian } from "../components/icons/simple-icons";
 import BasePage from "../layouts/BasePage";
-import { convertHtmlToMarkdown } from "../services/clipper";
+import convertHtmlToMarkdown from "../services/markdown";
 import type { ReadablePage } from "../types";
 import { formatDate, getPlainTextSummary } from "../utils";
 
