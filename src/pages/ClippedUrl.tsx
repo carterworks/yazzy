@@ -64,7 +64,7 @@ function generateObsidianContents(article: ReadablePage): string {
 			fileContent += value
 				.map((v) => `  - ${escapeDoubleQuotes(v)}`)
 				.join("\n");
-		} else if (value instanceof Date) {
+		} else if (value && value instanceof Date) {
 			fileContent += formatDate(value);
 		} else {
 			fileContent += `${value}`;
