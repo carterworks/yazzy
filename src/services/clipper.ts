@@ -163,11 +163,16 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 	];
 
 	/* Try to get published date */
-	const publishedDate =
+	let published =
 		article.published ||
 		article.schemaOrgData?.datePublished ||
 		page.window.document.querySelector("time")?.getAttribute("datetime");
-	const published = publishedDate ? new Date(publishedDate) : undefined;
+	if (typeof published === "string") {
+		published = published.trim().split(/,\s+/gi)[0];
+	}
+	if (published) {
+		published = new Date(published);
+	}
 
 	const title =
 		article.title ||
