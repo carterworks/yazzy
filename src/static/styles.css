@@ -305,6 +305,9 @@
 	* + * {
 		@apply mt-[1lh];
 	}
+	:is(h2, h3, h4) + * {
+		@apply mt-[0.3lh];
+	}
 	img {
 		@apply mx-auto rounded max-w-lg;
 	}
