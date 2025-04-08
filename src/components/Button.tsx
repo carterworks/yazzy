@@ -9,14 +9,14 @@ interface ButtonProps {
 	type: "button" | "submit" | "reset";
 }
 interface CommonProps {
-	classes?: string;
+	extraClasses?: string;
 	variant?: Variant;
 	[key: string]: unknown;
 }
 type Props = (LinkProps | ButtonProps) & CommonProps;
 
 function isLink(props: Props): props is LinkProps & CommonProps {
-	return props.type === "link";
+	return "href" in props;
 }
 
 const classes = [
@@ -36,14 +36,14 @@ const variantClasses: Record<Variant, string> = {
 };
 
 const Button: FC<PropsWithChildren<Props>> = (props) => {
-	const variant = props.variant ?? "secondary";
-	if (isLink(props)) {
+	const { variant = "secondary", extraClasses, ...rest } = props;
+	if (isLink(rest)) {
 		return (
 			<a
-				className={[...classes, props.classes, variantClasses[variant]].join(
+				className={[...classes, variantClasses[variant], extraClasses].join(
 					" ",
 				)}
-				{...props}
+				{...rest}
 			>
 				{props.children}
 			</a>
@@ -51,8 +51,8 @@ const Button: FC<PropsWithChildren<Props>> = (props) => {
 	}
 	return (
 		<button
-			className={[...classes, props.classes, variantClasses[variant]].join(" ")}
-			{...props}
+			className={[...classes, variantClasses[variant], extraClasses].join(" ")}
+			{...(rest as Partial<ButtonProps>)}
 		>
 			{props.children}
 		</button>

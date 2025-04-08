@@ -20,7 +20,7 @@ const RecentArticle: FC<{ article: ReadablePage }> = ({ article }) => {
 			].join(" ")}
 		>
 			<a href={`/${article.url}`}>
-				<h3 class="font-transitional">{article.title}</h3>
+				<h3 class="font-didone">{article.title}</h3>
 				<p class="text-xs my-1 truncate">{new URL(article.url).hostname}</p>
 				<p class="text-xs">{article.summary}</p>
 			</a>
@@ -37,7 +37,7 @@ const RecentArticles: FC<{ articles: ReadablePage[] }> = ({ articles }) => {
 	});
 	return (
 		<section>
-			<h2 class="text-lg font-transitional mb-2">What people are reading.</h2>
+			<h2 class="text-lg font-didone mb-2">What people are reading.</h2>
 			<ol class="flex flex-column lg:flex-row flex-wrap gap-2 justify-between">
 				{recentArticles.map((article) => (
 					<RecentArticle article={article} key={article.url} />

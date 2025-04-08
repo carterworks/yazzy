@@ -14,7 +14,7 @@
 		"'URW Palladio L'", "P052", "serif";
 	--font-humanist: "Seravek", "'Gill Sans Nova'", "Ubuntu", "Calibri",
 		"'DejaVu Sans'", "source-sans-pro", "sans-serif";
-	--font-gemoetric-humanist: "Avenir", "Montserrat", "Corbel", "'URW Gothic'",
+	--font-geometric-humanist: "Avenir", "Montserrat", "Corbel", "'URW Gothic'",
 		"source-sans-pro", "sans-serif";
 	--font-classical-humanist: "Optima", "Candara", "'Noto Sans'",
 		"source-sans-pro", "sans-serif";
@@ -253,7 +253,10 @@
 	}
 }
 .prose {
-	@apply leading-relaxed max-w-prose;
+	@apply leading-normal max-w-prose;
+	@variant lg {
+		@apply text-lg;
+	}
 
 	h1,
 	h2,
@@ -261,16 +264,28 @@
 	h4,
 	h5,
 	h6 {
-		@apply font-transitional scroll-mt-32 font-bold text-balance;
+		@apply font-didone scroll-mt-32 font-bold text-balance;
 		@variant lg {
 			@apply scroll-mt-18;
 		}
 	}
 	h2 {
 		@apply text-lg;
+		@variant lg {
+			@apply text-2xl;
+		}
+	}
+	h3 {
+		@apply text-base;
+		@variant lg {
+			@apply text-lg;
+		}
 	}
 	h4 {
 		@apply text-sm;
+		@variant lg {
+			@apply text-base;
+		}
 	}
 	header,
 	main,
