@@ -1,6 +1,5 @@
 import type { FC } from "hono/jsx";
 import ArticleHeader from "../components/ArticleHeader";
-import ArticleMinimap from "../components/ArticleMinimap";
 import Button from "../components/Button";
 import DownloadAs from "../components/DownloadAs";
 import {
@@ -181,10 +180,6 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 				>
 					<Duplicate className="h-4" />
 				</Button>
-				<ArticleMinimap
-					selector="article"
-					classes="fixed bottom-3 mx-auto px-2 rounded lg:m-0 lg:top-2 lg:sticky bg-paper dark:bg-black"
-				/>
 			</aside>
 			<div className="lg:col-start-2 max-w-prose space-x-2">
 				<main>
