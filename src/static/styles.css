@@ -288,7 +288,7 @@
 		}
 	}
 	* + * {
-		@apply mt-4;
+		@apply mt-[1lh];
 	}
 	img {
 		@apply mx-auto rounded max-w-lg;
