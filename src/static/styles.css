@@ -389,3 +389,11 @@
 .secondary {
 	fill: light-dark(var(--color-base-600), var(--color-base-500));
 }
+.js-only {
+	display: none;
+}
+@media (scripting: enabled) {
+	.js-only {
+		display: revert;
+	}
+}
