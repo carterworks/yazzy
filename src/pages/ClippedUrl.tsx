@@ -191,21 +191,9 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 					<article>
 						<ArticleHeader article={article} />
 						<div
-							className={[
-								"prose dark:prose-invert",
-								"font-humanist",
-								"prose-headings:font-transitional",
-								"prose-a:break-words",
-								"prose-hr:my-4",
-								"prose-headings:mt-6",
-								"prose-headings:mb-0",
-								"!prose-img:max-w-lg",
-								"prose-img:mx-auto",
-								"prose-img:rounded",
-							].join(" ")}
-							hx-disable
+							className="prose"
 							// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-							dangerouslySetInnerHTML={{ __html: article.htmlContent }}
+							dangerouslySetInnerHTML={{ __html: article.htmlContent ?? "" }}
 						/>
 					</article>
 				</main>

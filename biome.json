@@ -9,6 +9,10 @@
 			"recommended": true
 		}
 	},
+	"formatter": {
+		"enabled": true,
+		"formatWithErrors": true
+	},
 	"css": {
 		"formatter": {
 			"enabled": true
