@@ -1,6 +1,4 @@
 import type { Child, FC, PropsWithChildren } from "hono/jsx";
-import Button from "../components/Button";
-import Settings from "../components/Settings";
 
 interface BasePageProps {
 	title?: string;
@@ -38,16 +36,20 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 			/>
 		</head>
 
-		<body className="text-base bg-paper font-humanist dark:bg-black text-black dark:text-base-200 px-4 lg:px-0">
-			<div className="print:hidden" id="notifications" />
+		<body className="text-base bg-paper font-geometric-humanist dark:bg-black text-black dark:text-base-200 px-4 lg:px-0">
 			<div className="m-auto max-w-prose space-y-2">
 				<header
 					className="flex items-center mb-4 gap-4 print:hidden"
 					transition:animate="slide"
 				>
 					<div className="mr-auto">
-						<h1 className="text-2xl font-transitional">
-							<a href="/">yazzy</a>
+						<h1 className="text-2xl font-didone">
+							<a
+								href="/"
+								className="transition-colors rounded hover:bg-base-100 dark:hover:bg-base-800"
+							>
+								yazzy
+							</a>
 						</h1>
 						<p className="text-xs">Plain ol' reading</p>
 					</div>

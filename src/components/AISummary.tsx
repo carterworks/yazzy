@@ -1,13 +1,12 @@
 import type { FC, PropsWithChildren } from "hono/jsx";
 import { Hourglass } from "./icons/refactoring-ui";
 
-const proseClasses =
-	"prose dark:prose-invert font-humanist mt-2 prose-p:mt-0 prose-headings:font-transitional prose-headings:my-0 prose-h2:text-lg";
+const proseClasses = "prose mt-2";
 
 const AISummaryError: FC<PropsWithChildren> = ({ children }) => (
 	<aside className={proseClasses}>
 		<details>
-			<summary>
+			<summary className="cursor-pointer select-none">
 				<h2 className="inline">Failed to retrieve AI summary</h2>
 			</summary>
 			<p className="bg-base-50 dark:bg-base-950 rounded px-4 py-2">
@@ -25,11 +24,12 @@ const AISummary: FC<{
 	if (error) {
 		return <AISummaryError>{error}</AISummaryError>;
 	}
+
 	if (summary) {
 		return (
 			<aside className={proseClasses}>
 				<details>
-					<summary>
+					<summary className="cursor-pointer select-none">
 						<h2 class="inline">AI-generated summary</h2>
 					</summary>
 					{/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
@@ -45,10 +45,10 @@ const AISummary: FC<{
 			hx-get="/api/summary"
 			hx-vals={JSON.stringify({ url })}
 			hx-swap="outerHTML"
-			className={proseClasses}
+			className={`${proseClasses} js-only`}
 		>
 			<details>
-				<summary>
+				<summary className="cursor-pointer select-none">
 					<h2 class="inline-block">
 						AI-generated summary{" "}
 						<Hourglass className="h-4 inline animate-springy-spin" />

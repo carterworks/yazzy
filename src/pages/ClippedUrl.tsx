@@ -1,6 +1,5 @@
 import type { FC } from "hono/jsx";
 import ArticleHeader from "../components/ArticleHeader";
-import ArticleMinimap from "../components/ArticleMinimap";
 import Button from "../components/Button";
 import DownloadAs from "../components/DownloadAs";
 import {
@@ -93,12 +92,23 @@ function generateObsidianUri(
 	vault = "",
 ): string {
 	const fileName = getFilename(title);
-	const vaultName = vault ? `&vault=${encodeURIComponent(vault)}` : "";
-	return `obsidian://new?file=${encodeURIComponent(folder + fileName)}&content=${encodeURIComponent(fileContent)}${vaultName}`;
+	const params = new URLSearchParams();
+	if (fileContent !== "") {
+		params.set("content", fileContent);
+	} else {
+		params.set("clipboard", "true");
+	}
+	params.set("file", folder + fileName);
+	if (vault !== "") {
+		params.set("vault", vault);
+	}
+	params.set("overwrite", "true");
+	return `obsidian://new?${params.toString()}`;
 }
 
 const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
 	const plainTextSummary = getPlainTextSummary(article, 1000);
+	const markdownContent = generateObsidianContents(article);
 
 	const articleHostname = new URL(article.url).hostname;
 	return (
@@ -120,26 +130,16 @@ const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
 			{article.author && (
 				<meta property="og:article:author" content={article.author} />
 			)}
-			{/* add the js and css for the lite youtube embed */}
 			<link rel="stylesheet" href="/lite-yt-embed.css" />
 			<script type="module" src="/lite-yt-embed.js" async defer />
-			<script type="module">{`
-function initCopyButton() {
-	const copyButton = document.getElementById(\`copy-markdown\`);
-	if (!copyButton) {
-		return;
-	}
-	const copyText = \`${article.markdownContent}\`;
-	if (!copyText) {
-		return;
-	}
-	copyButton.addEventListener(\`click\`, function() {
-		navigator.clipboard.writeText(copyText);
-		window.addNotification(\`Copied to clipboard.\`);
-	});
-}
-initCopyButton();
-`}</script>
+			<script
+				type="module"
+				id="obsidian-script"
+				data-markdown-content={JSON.stringify(markdownContent)}
+				data-obsidian-uri={JSON.stringify(
+					generateObsidianUri("", article.title ?? ""),
+				)}
+			/>
 		</>
 	);
 };
@@ -157,9 +157,6 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 			head={<ClippedPageHead article={article} />}
 		>
 			<aside className="flex lg:flex-col gap-3 items-center lg:col-start-1 lg:row-span-2 print:hidden">
-				<Button href={obsidianUri} title="Save to Obsidian" type="link">
-					<Obsidian className="h-4" />
-				</Button>
 				<DownloadAs
 					contents={markdownContent}
 					filename={`${getFilename(title)}.md`}
@@ -175,37 +172,31 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 					<InboxDownload className="h-4" />
 				</DownloadAs>
 				<Button
+					href={obsidianUri}
+					title="Save to Obsidian"
+					type="link"
+					extraClasses="js-only"
+					id="save-to-obsidian"
+				>
+					<Obsidian className="h-4" />
+				</Button>
+				<Button
 					title="Copy Markdown to clipboard"
 					type="button"
 					id="copy-markdown"
+					extraClasses="js-only"
 				>
 					<Duplicate className="h-4" />
 				</Button>
-				<ArticleMinimap
-					selector="article"
-					classes="fixed bottom-3 mx-auto px-2 rounded lg:m-0 lg:top-2 lg:sticky bg-paper dark:bg-black"
-				/>
 			</aside>
 			<div className="lg:col-start-2 max-w-prose space-x-2">
 				<main>
 					<article>
 						<ArticleHeader article={article} />
 						<div
-							className={[
-								"prose dark:prose-invert",
-								"font-humanist",
-								"prose-headings:font-transitional",
-								"prose-a:break-words",
-								"prose-hr:my-4",
-								"prose-headings:mt-6",
-								"prose-headings:mb-0",
-								"!prose-img:max-w-lg",
-								"prose-img:mx-auto",
-								"prose-img:rounded",
-							].join(" ")}
-							hx-disable
+							className="prose"
 							// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-							dangerouslySetInnerHTML={{ __html: article.htmlContent }}
+							dangerouslySetInnerHTML={{ __html: article.htmlContent ?? "" }}
 						/>
 					</article>
 				</main>

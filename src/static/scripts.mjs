@@ -1,27 +1,61 @@
-window.addNotification = function addNotification(message) {
-	const $notificationsList = document.getElementById("notifications");
-	if (!$notificationsList) {
+window.addEventListener("DOMContentLoaded", () => {
+	const $jsOnly = document.querySelectorAll(".js-only");
+	for (const $element of $jsOnly) {
+		$element.classList.remove("js-only");
+	}
+});
+
+function initCopyButton() {
+	const copyButton = document.getElementById("copy-markdown");
+	const markdownContent =
+		document.getElementById("obsidian-script").dataset.markdownContent;
+	if (!markdownContent) {
+		throw new Error("Missing markdown content or obsidian uri");
+	}
+	if (!copyButton) {
 		return;
 	}
-	const $notification = document.createElement("div");
-	$notification.setAttribute("role", "alert");
-	$notification.classList.add(
-		"fixed",
-		"rounded",
-		"bottom-0",
-		"right-0",
-		"p-4",
-		"m-4",
-		"drop-shadow",
-		"border",
-		"bg-paper",
-		"border-base-100",
-		"dark:bg-base-900",
-		"dark:border-base-900",
-	);
-	$notification.textContent = message;
-	$notificationsList.appendChild($notification);
-	setTimeout(() => {
-		$notification.remove();
-	}, 5000);
-};
+	copyButton.addEventListener("click", () => {
+		navigator.clipboard.writeText(markdownContent);
+	});
+}
+
+function initSaveToObsidian() {
+	const obsidianButton = document.getElementById("save-to-obsidian");
+	const markdownContent =
+		document.getElementById("obsidian-script").dataset.markdownContent;
+	const obsidianUri =
+		document.getElementById("obsidian-script").dataset.obsidianUri;
+	if (!markdownContent || !obsidianUri) {
+		throw new Error("Missing markdown content or obsidian uri");
+	}
+	if (!obsidianButton) {
+		return;
+	}
+
+	// Create a new button element
+	const newButton = document.createElement("button");
+
+	// Copy all attributes from the anchor to the button except href
+	for (const attr of obsidianButton.attributes) {
+		if (attr.name !== "href") {
+			newButton.setAttribute(attr.name, attr.value);
+		}
+	}
+
+	// Copy the inner content
+	newButton.innerHTML = obsidianButton.innerHTML;
+
+	// Replace the anchor with the button
+	obsidianButton.parentNode.replaceChild(newButton, obsidianButton);
+
+	// Update our reference to point to the new button
+	newButton.addEventListener("click", (e) => {
+		e.preventDefault();
+		navigator.clipboard.writeText(markdownContent);
+		window.open(obsidianUri, "_blank");
+	});
+}
+
+initCopyButton();
+initSaveToObsidian();
