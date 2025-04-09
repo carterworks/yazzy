@@ -6,7 +6,7 @@ const proseClasses = "prose mt-2";
 const AISummaryError: FC<PropsWithChildren> = ({ children }) => (
 	<aside className={proseClasses}>
 		<details>
-			<summary>
+			<summary className="cursor-pointer select-none">
 				<h2 className="inline">Failed to retrieve AI summary</h2>
 			</summary>
 			<p className="bg-base-50 dark:bg-base-950 rounded px-4 py-2">
@@ -29,7 +29,7 @@ const AISummary: FC<{
 		return (
 			<aside className={proseClasses}>
 				<details>
-					<summary>
+					<summary className="cursor-pointer select-none">
 						<h2 class="inline">AI-generated summary</h2>
 					</summary>
 					{/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
@@ -48,7 +48,7 @@ const AISummary: FC<{
 			className={`${proseClasses} js-only`}
 		>
 			<details>
-				<summary>
+				<summary className="cursor-pointer select-none">
 					<h2 class="inline-block">
 						AI-generated summary{" "}
 						<Hourglass className="h-4 inline animate-springy-spin" />

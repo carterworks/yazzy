@@ -44,7 +44,12 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 				>
 					<div className="mr-auto">
 						<h1 className="text-2xl font-didone">
-							<a href="/">yazzy</a>
+							<a
+								href="/"
+								className="transition-colors rounded hover:bg-base-100 dark:hover:bg-base-800"
+							>
+								yazzy
+							</a>
 						</h1>
 						<p className="text-xs">Plain ol' reading</p>
 					</div>

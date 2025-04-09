@@ -29,7 +29,10 @@ const ArticleHeader: FC<{ article: ReadablePage; classes?: string }> = ({
 			].join(" ")}
 		>
 			<h2 class="text-2xl font-didone">
-				<a href={article.url} class="hover:underline">
+				<a
+					href={article.url}
+					class="transition-colors rounded hover:bg-base-100 dark:hover:bg-base-800"
+				>
 					{article.title}
 				</a>
 			</h2>
