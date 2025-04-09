@@ -296,10 +296,14 @@
 	div {
 		@apply contents;
 	}
-	a:not(:where(:is(h2, h3, h4) *)) {
-		@apply break-words font-bold underline underline-offset-2 decoration-1;
+	a {
+		@apply break-words transition-colors rounded;
 		&:hover {
-			@apply decoration-2;
+			@apply bg-base-100 dark:bg-base-800;
+		}
+		&::after {
+			content: "*";
+			@apply text-blue-600 dark:text-blue-300 relative -top-0.25;
 		}
 	}
 	* + * {
