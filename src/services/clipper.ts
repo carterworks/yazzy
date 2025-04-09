@@ -72,22 +72,24 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 		}
 	}
 	// make all images and videos absolute referencers
-	const mediaElements = page.window.document.querySelectorAll("img, video");
-	const mediaElementsToMakeAbsolute = Array.from(mediaElements).filter(element => {
-		const src = element.getAttribute("src");
-		if (!src) {
-			return false;
-		}
-		// Only make relative URLs absolute. If the src starts with http://, https://, or //, it's already absolute.
-		return !(src.startsWith("http://") || src.startsWith("https://") || src.startsWith("//"));
-	});
-	// @example https://www.example.com/
-	const baseUrl = url.origin;
-	for (const element of mediaElementsToMakeAbsolute) {
+	for (const element of page.window.document.querySelectorAll("img, video")) {
 		const src = element.getAttribute("src") as string;
 		// Convert the relative URL to an absolute URL using the provided url as the base
 		const absoluteSrc = new URL(src, url).href;
 		element.setAttribute("src", absoluteSrc);
+	}
+	for (const link of page.window.document.querySelectorAll("a")) {
+		const href = link.getAttribute("href") as string;
+		if (
+			href.startsWith("http://") ||
+			href.startsWith("https://") ||
+			href.startsWith("//")
+		) {
+			continue;
+		}
+		// Convert the relative URL to an absolute URL using the provided url as the base
+		const absoluteHref = new URL(href, url).href;
+		link.setAttribute("href", absoluteHref);
 	}
 	return page;
 }
