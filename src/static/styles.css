@@ -301,7 +301,7 @@
 		@apply mt-[0.3lh];
 	}
 	img {
-		@apply mx-auto rounded max-w-lg;
+		@apply mx-auto rounded;
 	}
 	p {
 		@apply text-pretty hyphens-auto;
