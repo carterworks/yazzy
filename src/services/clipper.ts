@@ -49,7 +49,12 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 			omitJSDOMErrors: true,
 		}),
 	});
+
 	const DOMPurify = createDomPurify(page.window);
+	page.window.document.body.innerHTML = DOMPurify.sanitize(
+		page.window.document.body.innerHTML,
+	);
+
 	// force lazy-loaded images to load
 	const LAZY_DATA_ATTRS = [
 		"data-src",
@@ -66,10 +71,80 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 			}
 		}
 	}
-	page.window.document.body.innerHTML = DOMPurify.sanitize(
-		page.window.document.body.innerHTML,
-	);
+	// make all images and videos absolute referencers
+	const selectorsToNormalize = [
+		["img", "src"],
+		["video", "src"],
+		["a", "href"],
+		["img", "srcset"],
+		["video", "poster"],
+		["source", "src"],
+		["object", "data"],
+		["iframe", "src"],
+		["input", "src"],
+		["track", "src"],
+		["embed", "src"],
+	];
+	for (const [selector, attribute] of selectorsToNormalize) {
+		normalizeResourceUrls(page.window.document, url, selector, attribute);
+	}
+
 	return page;
+}
+
+function normalizeResourceUrls(
+	document: Document,
+	url: URL,
+	selector: string,
+	attribute: string,
+) {
+	for (const element of document.querySelectorAll(selector)) {
+		const value = element.getAttribute(attribute);
+		if (!value) {
+			continue;
+		}
+
+		if (attribute === "srcset") {
+			// Handle srcset which can have multiple URLs and descriptors
+			const newSrcset = value
+				.split(",")
+				.map((part) => {
+					const trimmedPart = part.trim();
+					const urlMatch = trimmedPart.match(/^(\S+)(\s+.*)?$/);
+					if (urlMatch?.[1]) {
+						try {
+							const absoluteUrl = new URL(urlMatch[1], url.href).href;
+							return absoluteUrl + (urlMatch[2] || "");
+						} catch (e) {
+							// Ignore invalid URLs in srcset
+							console.warn(`Skipping invalid URL in srcset: ${urlMatch[1]}`);
+							return "";
+						}
+					}
+					return ""; // Return empty for parts that don't match expected format
+				})
+				.filter((part) => part !== "") // Remove parts that were invalid or empty
+				.join(", ");
+			if (newSrcset) {
+				element.setAttribute(attribute, newSrcset);
+			} else {
+				// If all parts were invalid, remove the attribute
+				element.removeAttribute(attribute);
+			}
+		} else {
+			// Handle single URL attributes like src, href, poster
+			try {
+				const absoluteUrl = new URL(value, url.href).href;
+				element.setAttribute(attribute, absoluteUrl);
+			} catch (e) {
+				// Ignore invalid URLs
+				console.warn(
+					`Skipping invalid URL for attribute ${attribute}: ${value}`,
+				);
+				element.removeAttribute(attribute); // Optionally remove attribute if URL is invalid
+			}
+		}
+	}
 }
 
 // Utility function to get meta content by name or property
