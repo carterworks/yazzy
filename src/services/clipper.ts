@@ -49,7 +49,12 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 			omitJSDOMErrors: true,
 		}),
 	});
+
 	const DOMPurify = createDomPurify(page.window);
+	page.window.document.body.innerHTML = DOMPurify.sanitize(
+		page.window.document.body.innerHTML,
+	);
+
 	// force lazy-loaded images to load
 	const LAZY_DATA_ATTRS = [
 		"data-src",
@@ -66,9 +71,24 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 			}
 		}
 	}
-	page.window.document.body.innerHTML = DOMPurify.sanitize(
-		page.window.document.body.innerHTML,
-	);
+	// make all images and videos absolute referencers
+	const mediaElements = page.window.document.querySelectorAll("img, video");
+	const mediaElementsToMakeAbsolute = Array.from(mediaElements).filter(element => {
+		const src = element.getAttribute("src");
+		if (!src) {
+			return false;
+		}
+		// Only make relative URLs absolute. If the src starts with http://, https://, or //, it's already absolute.
+		return !(src.startsWith("http://") || src.startsWith("https://") || src.startsWith("//"));
+	});
+	// @example https://www.example.com/
+	const baseUrl = url.origin;
+	for (const element of mediaElementsToMakeAbsolute) {
+		const src = element.getAttribute("src") as string;
+		// Convert the relative URL to an absolute URL using the provided url as the base
+		const absoluteSrc = new URL(src, url).href;
+		element.setAttribute("src", absoluteSrc);
+	}
 	return page;
 }
 
