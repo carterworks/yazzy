@@ -254,9 +254,6 @@
 }
 .prose {
 	@apply leading-normal max-w-prose;
-	@variant lg {
-		@apply text-lg;
-	}
 
 	h1,
 	h2,
@@ -271,21 +268,12 @@
 	}
 	h2 {
 		@apply text-lg;
-		@variant lg {
-			@apply text-2xl;
-		}
 	}
 	h3 {
 		@apply text-base;
-		@variant lg {
-			@apply text-lg;
-		}
 	}
 	h4 {
 		@apply text-sm;
-		@variant lg {
-			@apply text-base;
-		}
 	}
 	header,
 	main,
