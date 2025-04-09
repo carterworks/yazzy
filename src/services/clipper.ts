@@ -72,26 +72,79 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 		}
 	}
 	// make all images and videos absolute referencers
-	for (const element of page.window.document.querySelectorAll("img, video")) {
-		const src = element.getAttribute("src") as string;
-		// Convert the relative URL to an absolute URL using the provided url as the base
-		const absoluteSrc = new URL(src, url).href;
-		element.setAttribute("src", absoluteSrc);
+	const selectorsToNormalize = [
+		["img", "src"],
+		["video", "src"],
+		["a", "href"],
+		["img", "srcset"],
+		["video", "poster"],
+		["source", "src"],
+		["object", "data"],
+		["iframe", "src"],
+		["input", "src"],
+		["track", "src"],
+		["embed", "src"],
+	];
+	for (const [selector, attribute] of selectorsToNormalize) {
+		normalizeResourceUrls(page.window.document, url, selector, attribute);
 	}
-	for (const link of page.window.document.querySelectorAll("a")) {
-		const href = link.getAttribute("href") as string;
-		if (
-			href.startsWith("http://") ||
-			href.startsWith("https://") ||
-			href.startsWith("//")
-		) {
+
+	return page;
+}
+
+function normalizeResourceUrls(
+	document: Document,
+	url: URL,
+	selector: string,
+	attribute: string,
+) {
+	for (const element of document.querySelectorAll(selector)) {
+		const value = element.getAttribute(attribute);
+		if (!value) {
 			continue;
 		}
-		// Convert the relative URL to an absolute URL using the provided url as the base
-		const absoluteHref = new URL(href, url).href;
-		link.setAttribute("href", absoluteHref);
+
+		if (attribute === "srcset") {
+			// Handle srcset which can have multiple URLs and descriptors
+			const newSrcset = value
+				.split(",")
+				.map((part) => {
+					const trimmedPart = part.trim();
+					const urlMatch = trimmedPart.match(/^(\S+)(\s+.*)?$/);
+					if (urlMatch?.[1]) {
+						try {
+							const absoluteUrl = new URL(urlMatch[1], url.href).href;
+							return absoluteUrl + (urlMatch[2] || "");
+						} catch (e) {
+							// Ignore invalid URLs in srcset
+							console.warn(`Skipping invalid URL in srcset: ${urlMatch[1]}`);
+							return "";
+						}
+					}
+					return ""; // Return empty for parts that don't match expected format
+				})
+				.filter((part) => part !== "") // Remove parts that were invalid or empty
+				.join(", ");
+			if (newSrcset) {
+				element.setAttribute(attribute, newSrcset);
+			} else {
+				// If all parts were invalid, remove the attribute
+				element.removeAttribute(attribute);
+			}
+		} else {
+			// Handle single URL attributes like src, href, poster
+			try {
+				const absoluteUrl = new URL(value, url.href).href;
+				element.setAttribute(attribute, absoluteUrl);
+			} catch (e) {
+				// Ignore invalid URLs
+				console.warn(
+					`Skipping invalid URL for attribute ${attribute}: ${value}`,
+				);
+				element.removeAttribute(attribute); // Optionally remove attribute if URL is invalid
+			}
+		}
 	}
-	return page;
 }
 
 // Utility function to get meta content by name or property
