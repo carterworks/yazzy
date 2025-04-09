@@ -136,7 +136,7 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 		throw new Error(`Failed to fetch page "${url.toString()}"`);
 	}
 
-	const article = await Defuddle(page);
+	const article = await Defuddle(page, url.toString());
 
 	if (!article) {
 		throw new Error(`Failed to parse article contents of "${url.toString()}"`);
