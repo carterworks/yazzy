@@ -254,6 +254,7 @@
 }
 .prose {
 	@apply leading-normal max-w-prose;
+	tab-size: 2;
 
 	h1,
 	h2,
@@ -275,16 +276,7 @@
 	h4 {
 		@apply text-sm;
 	}
-	header,
-	main,
-	article,
-	section,
-	aside,
-	footer,
-	div {
-		@apply contents;
-	}
-	a {
+	a:not(:is(code, pre) *) {
 		@apply break-words transition-colors rounded;
 		&:hover {
 			@apply bg-base-100 dark:bg-base-800;
