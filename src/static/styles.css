@@ -189,14 +189,14 @@
  * - 3 interface values: normal, hover, active
  * - 2 background values: primary, secondary
  */
-	/* --color-tx: light-dark(var(--color-black), var(--color-base-200));
- --color-tx-2: light-dark(var(--color-base-600), var(--color-base-500));
- --color-tx-3: light-dark(var(--color-base-300), var(--color-base-700));
- --color-ui-3: light-dark(var(--color-base-200), var(--color-base-800));
- --color-ui-2: light-dark(var(--color-base-150), var(--color-base-850));
- --color-ui: light-dark(var(--color-base-100), var(--color-base-900));
- --color-bg-2: light-dark(var(--color-base-50), var(--color-base-950));
- --color-bg: light-dark(var(--color-paper), var(--color-black)); */
+	--color-tx: light-dark(var(--color-black), var(--color-base-200));
+	--color-tx-2: light-dark(var(--color-base-600), var(--color-base-500));
+	--color-tx-3: light-dark(var(--color-base-300), var(--color-base-700));
+	--color-ui-3: light-dark(var(--color-base-200), var(--color-base-800));
+	--color-ui-2: light-dark(var(--color-base-150), var(--color-base-850));
+	--color-ui: light-dark(var(--color-base-100), var(--color-base-900));
+	--color-bg-2: light-dark(var(--color-base-50), var(--color-base-950));
+	--color-bg: light-dark(var(--color-paper), var(--color-black));
 
 	/*
  * Accent colors
@@ -209,22 +209,22 @@
  * highlighting and interface elements like buttons and links. Light themes
  * should use 600 for syntax highlighted text, dark themes should use 400.
  */
-	/* --color-re: light-dark(var(--color-red-600), var(--color-red-400));
- --color-re-2: light-dark(var(--color-red-400), var(--color-red-600));
- --color-or: light-dark(var(--color-orange-600), var(--color-orange-400));
- --color-or-2: light-dark(var(--color-orange-400), var(--color-orange-600));
- --color-ye: light-dark(var(--color-yellow-600), var(--color-yellow-400));
- --color-ye-2: light-dark(var(--color-yellow-400), var(--color-yellow-600));
- --color-gr: light-dark(var(--color-green-600), var(--color-green-400));
- --color-gr-2: light-dark(var(--color-green-400), var(--color-green-600));
- --color-cy: light-dark(var(--color-cyan-600), var(--color-cyan-400));
- --color-cy-2: light-dark(var(--color-cyan-400), var(--color-cyan-600));
- --color-bl: light-dark(var(--color-blue-600), var(--color-blue-400));
- --color-bl-2: light-dark(var(--color-blue-400), var(--color-blue-600));
- --color-pu: light-dark(var(--color-purple-600), var(--color-purple-400));
- --color-pu-2: light-dark(var(--color-purple-400), var(--color-purple-600));
- --color-ma: light-dark(var(--color-magenta-600), var(--color-magenta-400));
- --color-ma-2: light-dark(var(--color-magenta-400), var(--color-magenta-600)); */
+	--color-re: light-dark(var(--color-red-600), var(--color-red-400));
+	--color-re-2: light-dark(var(--color-red-400), var(--color-red-600));
+	--color-or: light-dark(var(--color-orange-600), var(--color-orange-400));
+	--color-or-2: light-dark(var(--color-orange-400), var(--color-orange-600));
+	--color-ye: light-dark(var(--color-yellow-600), var(--color-yellow-400));
+	--color-ye-2: light-dark(var(--color-yellow-400), var(--color-yellow-600));
+	--color-gr: light-dark(var(--color-green-600), var(--color-green-400));
+	--color-gr-2: light-dark(var(--color-green-400), var(--color-green-600));
+	--color-cy: light-dark(var(--color-cyan-600), var(--color-cyan-400));
+	--color-cy-2: light-dark(var(--color-cyan-400), var(--color-cyan-600));
+	--color-bl: light-dark(var(--color-blue-600), var(--color-blue-400));
+	--color-bl-2: light-dark(var(--color-blue-400), var(--color-blue-600));
+	--color-pu: light-dark(var(--color-purple-600), var(--color-purple-400));
+	--color-pu-2: light-dark(var(--color-purple-400), var(--color-purple-600));
+	--color-ma: light-dark(var(--color-magenta-600), var(--color-magenta-400));
+	--color-ma-2: light-dark(var(--color-magenta-400), var(--color-magenta-600));
 
 	--spring-easing: linear(
 		0,
@@ -254,6 +254,9 @@
 }
 .prose {
 	@apply leading-normal max-w-prose;
+	* {
+		@apply max-w-prose;
+	}
 	tab-size: 2;
 
 	h1,
@@ -286,7 +289,7 @@
 			@apply text-blue-600 dark:text-blue-300 relative -top-0.25;
 		}
 	}
-	* + * {
+	* + *:not(:is(code, pre, h1, h2, h3, h4, h5, h6) *) {
 		@apply mt-[1lh];
 	}
 	:is(h2, h3, h4) + * {
@@ -378,6 +381,121 @@
 	}
 	:last-child {
 		@apply mb-0;
+	}
+
+	/* Syntax highlighting */
+	pre code.hljs {
+		@apply block overflow-x-auto p-4 border border-ui rounded border-solid;
+	}
+	code.hljs {
+		@apply px-2 py-1;
+	}
+
+	.hljs {
+		@apply bg-bg text-tx;
+	}
+
+	/* --color-tx: -3 (Comments) */
+	.hljs-comment,
+	.hljs-code,
+	.hljs-formula {
+		@apply text-tx-3;
+	}
+
+	/* --color-tx: -2 (Punctuation) */
+	.hljs-punctuation,
+	.hljs-operator {
+		@apply text-tx-2;
+	}
+
+	/* --color-re: (Invalid, imports) */
+	.hljs-meta,
+	.hljs-meta .hljs-keyword,
+	.hljs-meta .hljs-string,
+	.hljs-subst,
+	.hljs-deletion {
+		@apply text-re;
+	}
+
+	/* --color-or: (Functions) */
+	.hljs-title.function_,
+	.hljs-title.function_.invoke__ {
+		/* .invoke is hypothetical based on docs, might not exist */
+		@apply text-or;
+	}
+
+	/* --color-ye: (Constants) */
+	.hljs-literal,
+	.hljs-variable.constant_,
+	.hljs-symbol,
+	.hljs-built_in {
+		@apply text-ye;
+	}
+
+	/* --color-gr: (Keywords) */
+	.hljs-keyword,
+	.hljs-type,
+	.hljs-selector-tag,
+	.hljs-selector-pseudo,
+	.hljs-name,
+	.hljs-addition {
+		@apply text-gr;
+	}
+
+	/* --color-cy: (Strings) */
+	.hljs-string,
+	.hljs-regexp,
+	.hljs-char.escape_ {
+		@apply text-cy;
+	}
+
+	/* --color-bl: (Variables, attributes) */
+	.hljs-variable,
+	.hljs-variable.language_,
+	.hljs-attr,
+	.hljs-attribute,
+	.hljs-property,
+	.hljs-selector-attr,
+	.hljs-selector-class,
+	.hljs-selector-id {
+		@apply text-bl;
+	}
+
+	/* --color-pu: (Numbers) */
+	.hljs-number {
+		@apply text-pu;
+	}
+
+	/* --color-ma: (Language features, Titles, Markup) */
+	.hljs-doctag,
+	.hljs-template-tag,
+	.hljs-template-variable,
+	.hljs-title,
+	.hljs-title.class_,
+	.hljs-title.class_.inherited__,
+	.hljs-section,
+	.hljs-bullet,
+	.hljs-link,
+	.hljs-quote,
+	.hljs-emphasis {
+		/* Emphasis (italic) */
+		@apply text-ma;
+		font-style: italic;
+	}
+	.hljs-strong {
+		/* Strong (bold) */
+		@apply text-ma;
+		font-weight: bold;
+	}
+	.hljs-section {
+		/* Section (bold) */
+		font-weight: bold;
+	}
+
+	/* Ignored / Default Styling */
+	.hljs-params,
+	.hljs-tag {
+		/* Keeping these default/unstyled */
 	}
 }
 :root {
