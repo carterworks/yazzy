@@ -1,5 +1,6 @@
 import { Defuddle } from "defuddle/node";
 import createDomPurify from "dompurify";
+import hljs from "highlight.js";
 import { JSDOM, VirtualConsole } from "jsdom";
 import type { ReadablePage } from "../types";
 import convertHtmlToMarkdown from "./markdown";
@@ -87,6 +88,11 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 	];
 	for (const [selector, attribute] of selectorsToNormalize) {
 		normalizeResourceUrls(page.window.document, url, selector, attribute);
+	}
+
+	const codeElements = page.window.document.querySelectorAll("pre code");
+	for (const codeElement of codeElements) {
+		hljs.highlightElement(codeElement as HTMLElement);
 	}
 
 	return page;

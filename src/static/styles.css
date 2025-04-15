@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "highlight.js/styles/base16/solarized-light.css";
 
 @theme {
 	--color-button: ButtonFace;
