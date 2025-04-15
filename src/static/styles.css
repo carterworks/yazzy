@@ -254,6 +254,9 @@
 }
 .prose {
 	@apply leading-normal max-w-prose;
+	* {
+		@apply max-w-prose;
+	}
 	tab-size: 2;
 
 	h1,
@@ -286,7 +289,7 @@
 			@apply text-blue-600 dark:text-blue-300 relative -top-0.25;
 		}
 	}
-	* + * {
+	* + *:not(:is(code, pre, h1, h2, h3, h4, h5, h6) *) {
 		@apply mt-[1lh];
 	}
 	:is(h2, h3, h4) + * {
