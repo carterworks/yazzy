@@ -1,4 +1,5 @@
 import type { Child, FC, PropsWithChildren } from "hono/jsx";
+import { version } from "../../package.json" with { type: "json" };
 
 interface BasePageProps {
 	title?: string;
@@ -74,10 +75,13 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 						</li>
 					</ul>
 					<div className="text-right">
-						Article count:{" "}
-						<span hx-trigger="load" hx-get="/api/article-count">
-							0
-						</span>
+						<div>
+							Article count:{" "}
+							<span hx-trigger="load" hx-get="/api/article-count">
+								0
+							</span>
+						</div>
+						<div>v{version}</div>
 					</div>
 				</footer>
 			</div>

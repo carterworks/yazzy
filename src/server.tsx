@@ -4,6 +4,7 @@ import { etag } from "hono/etag";
 import { requestId } from "hono/request-id";
 import type { StatusCode } from "hono/utils/http-status";
 import { z } from "zod";
+import { version } from "../package.json" with { type: "json" };
 import AISummary from "./components/AISummary";
 import db from "./db/db";
 import { logger } from "./middleware/logger";
@@ -24,6 +25,10 @@ app.use(async (c, next) => {
 	await next();
 	const end = performance.now();
 	c.res.headers.set("X-Response-Time", `${end - start}`);
+});
+app.use(async (c, next) => {
+	c.res.headers.set("X-Yazzy-Version", version);
+	await next();
 });
 app.use(logger(log));
 app.use("*", etag());

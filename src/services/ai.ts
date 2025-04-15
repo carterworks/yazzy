@@ -20,9 +20,9 @@ export async function fetchCompletion(
 	userPrompt: string,
 	model = "google/gemini-2.0-flash-001",
 	fallbackModels = [
+		"openai/gpt-4.1-nano",
 		"openai/gpt-4o-mini",
-		"deepseek/deepseek-chat",
-		"meta-llama/llama-3.2-3b-instruct",
+		"meta-llama/llama-3.1-8b-instruct",
 	],
 ) {
 	if (!AI_ENABLED) {
