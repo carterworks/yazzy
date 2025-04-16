@@ -223,7 +223,7 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 		throw new Error(`Failed to parse article contents of "${url.toString()}"`);
 	}
 
-	const markdownBody = convertHtmlToMarkdown(article.content);
+	const markdownBody = convertHtmlToMarkdown(article.content, url.toString());
 
 	// Fetch byline, meta author, property author, or site name
 	const author =

@@ -77,7 +77,7 @@ function generateObsidianContents(article: ReadablePage): string {
 	if (article.summary) {
 		fileContent += "\n---\n";
 		fileContent += "\n## Summary\n";
-		fileContent += `\n${convertHtmlToMarkdown(article.summary)}\n`;
+		fileContent += `\n${convertHtmlToMarkdown(article.summary, article.url)}\n`;
 		fileContent += "\n---\n";
 	}
 	fileContent += `\n${article.markdownContent}\n`;

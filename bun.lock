@@ -6,7 +6,7 @@
       "dependencies": {
         "@hono/zod-validator": "^0.4.3",
         "@tailwindcss/cli": "^4.1.4",
-        "defuddle": "^0.6.1",
+        "defuddle": "^0.6.2",
         "dompurify": "^3.2.5",
         "drizzle-orm": "^0.42.0",
         "highlight.js": "^11.11.1",
@@ -229,7 +229,7 @@
 
     "decimal.js": ["decimal.js@10.5.0", "", {}, "sha512-8vDa8Qxvr/+d94hSh5P3IJwI5t8/c0KsMp+g8bNw9cY2icONa5aPfvKeieW1WlG0WQYwwhJ7mjui2xtiePQSXw=="],
 
-    "defuddle": ["defuddle@0.6.1", "", { "optionalDependencies": { "mathml-to-latex": "^1.4.3", "temml": "^0.11.2", "turndown": "^7.2.0" }, "peerDependencies": { "jsdom": "^24.0.0" } }, "sha512-jicsqVSKIJJ+wUaZ//6+EqPO36pxLguHeNOjaSRBWWvd83F1THnsAZXUUuumgRQwFZPJq22u1Cy7S+NIMzzcCg=="],
+    "defuddle": ["defuddle@0.6.2", "", { "optionalDependencies": { "mathml-to-latex": "^1.4.3", "temml": "^0.11.2", "turndown": "^7.2.0" }, "peerDependencies": { "jsdom": "^24.0.0" } }, "sha512-zhPxIMCm3SFB8gFQsVDqUGo45IIeWfGgdPN5Wc7NxznafhIsR0fqV7luHIeSFACs750QFKvt1BoSr3hcqs2Mig=="],
 
     "delayed-stream": ["delayed-stream@1.0.0", "", {}, "sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ=="],
 
