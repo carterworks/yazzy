@@ -31,10 +31,8 @@ All commands are run from the root of the project, from a terminal:
 
 ## TODO
 
-- [ ] Local history
-- [ ] Update to the new Obsidian URI format (content in clipboard)
-- [ ] A service worker for speed and offline work.
-- [ ] Reader mode preferences (font size, line spacing, font family)
-- [ ] Custom CSS themes support for personalized reading experience
-- [ ] Reading time estimation for articles
-- [ ] Social sharing with preview cards
+- Local history
+- A service worker for speed and offline work.
+- Reader mode preferences (font size, line spacing, font family)
+- Custom CSS themes support for personalized reading experience
+- Social sharing with preview cards

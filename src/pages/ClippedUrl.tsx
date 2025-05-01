@@ -148,10 +148,10 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 	return (
 		<BasePage
 			title={`${article.title} | yazzy`}
-			classes="space-y-2 md:flex md:justify-center md:gap-2"
+			classes="space-y-2"
 			head={<ClippedPageHead article={article} />}
 		>
-			<aside className="flex md:flex-col md:self-safe-end gap-2 items-center order-last print:hidden">
+			<aside className="flex gap-2 items-center order-last print:hidden">
 				<DownloadAs
 					contents={markdownContent}
 					filename={`${getFilename(title)}.md`}
@@ -178,18 +178,16 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 					<Duplicate className="h-4" />
 				</Button>
 			</aside>
-			<div className="max-w-prose">
-				<main>
-					<article className="space-y-2">
-						<ArticleHeader article={article} classes="" />
-						<div
-							className="prose"
-							// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-							dangerouslySetInnerHTML={{ __html: article.htmlContent ?? "" }}
-						/>
-					</article>
-				</main>
-			</div>
+			<main>
+				<article className="space-y-2">
+					<ArticleHeader article={article} classes="" />
+					<div
+						className="prose"
+						// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+						dangerouslySetInnerHTML={{ __html: article.htmlContent ?? "" }}
+					/>
+				</article>
+			</main>
 		</BasePage>
 	);
 };

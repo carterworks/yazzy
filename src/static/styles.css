@@ -279,7 +279,7 @@
 	h4 {
 		@apply text-sm;
 	}
-	a:not(:is(code, pre, h1, h2, h3, h4, h5, h6) *) {
+	a:not(:is(code, pre, h1, h2, h3, h4, h5, h6) *):not(:has(img)):not(:empty) {
 		@apply break-words transition-colors rounded;
 		&:hover {
 			@apply bg-base-100 dark:bg-base-800;
@@ -288,6 +288,14 @@
 			content: "*";
 			@apply text-blue-600 dark:text-blue-300 relative -top-0.25;
 		}
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6 {
+			display: inline;
+		}
 	}
 	* + *:not(:is(code, pre, h1, h2, h3, h4, h5, h6, details) *) {
 		@apply mt-[1lh];
@@ -295,17 +303,12 @@
 	:is(h2, h3, h4) + * {
 		@apply mt-[0.3lh];
 	}
+	img,
 	figure {
-		@apply mx-auto max-w-[95%];
-		> * {
-			@apply max-w-full;
-		}
+		@apply mx-auto max-w-full rounded;
 		figcaption {
 			@apply text-center text-pretty hyphens-auto text-sm italic opacity-75 mt-1;
 		}
-	}
-	img {
-		@apply rounded;
 	}
 	p {
 		@apply text-pretty hyphens-auto;
