@@ -40,7 +40,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 		<body className="text-base bg-paper font-geometric-humanist dark:bg-black text-black dark:text-base-200 px-4 py-2 space-y-2 max-w-prose mx-auto">
 			<header
 				className="flex items-center gap-4 print:hidden"
-				transition:animate="slide"
+				style={{ viewTransitionName: "header" }}
 			>
 				<div className="mr-auto">
 					<h1 className="text-2xl font-didone">
@@ -55,7 +55,10 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 				</div>
 			</header>
 			<div className={classes}>{children}</div>
-			<footer className="flex justify-between items-start print:hidden">
+			<footer
+				className="flex justify-between items-start print:hidden"
+				style={{ viewTransitionName: "footer" }}
+			>
 				<ul>
 					<li>
 						<a

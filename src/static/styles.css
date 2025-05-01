@@ -522,3 +522,7 @@
 		display: revert;
 	}
 }
+@view-transition {
+	/* biome-ignore lint/correctness/noUnknownProperty: supported in Chrome and Safari */
+	navigation: auto;
+}
