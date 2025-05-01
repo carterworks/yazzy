@@ -178,18 +178,16 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 					<Duplicate className="h-4" />
 				</Button>
 			</aside>
-			<div className="max-w-prose">
-				<main>
-					<article className="space-y-2">
-						<ArticleHeader article={article} classes="" />
-						<div
-							className="prose"
-							// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-							dangerouslySetInnerHTML={{ __html: article.htmlContent ?? "" }}
-						/>
-					</article>
-				</main>
-			</div>
+			<main>
+				<article className="space-y-2">
+					<ArticleHeader article={article} classes="" />
+					<div
+						className="prose"
+						// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+						dangerouslySetInnerHTML={{ __html: article.htmlContent ?? "" }}
+					/>
+				</article>
+			</main>
 		</BasePage>
 	);
 };
