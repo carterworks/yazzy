@@ -55,7 +55,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 				</div>
 			</header>
 			<div className={classes}>{children}</div>
-			<footer className="flex justify-between items-start">
+			<footer className="flex justify-between items-start print:hidden">
 				<ul>
 					<li>
 						<a
