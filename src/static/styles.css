@@ -289,14 +289,23 @@
 			@apply text-blue-600 dark:text-blue-300 relative -top-0.25;
 		}
 	}
-	* + *:not(:is(code, pre, h1, h2, h3, h4, h5, h6) *) {
+	* + *:not(:is(code, pre, h1, h2, h3, h4, h5, h6, details) *) {
 		@apply mt-[1lh];
 	}
 	:is(h2, h3, h4) + * {
 		@apply mt-[0.3lh];
 	}
+	figure {
+		@apply mx-auto max-w-[95%];
+		> * {
+			@apply max-w-full;
+		}
+		figcaption {
+			@apply text-center text-pretty hyphens-auto text-sm italic opacity-75 mt-1;
+		}
+	}
 	img {
-		@apply mx-auto rounded;
+		@apply rounded;
 	}
 	p {
 		@apply text-pretty hyphens-auto;
@@ -363,7 +372,6 @@
 			}
 		}
 	}
-
 	blockquote {
 		@apply italic border-l-2 border-l-base-300 pl-1;
 		p:first-of-type::before {
@@ -372,9 +380,6 @@
 		p:last-of-type::after {
 			content: close-quote;
 		}
-	}
-	figure figcaption {
-		@apply text-center text-sm italic opacity-75 mt-3;
 	}
 	:first-child {
 		@apply mt-0;

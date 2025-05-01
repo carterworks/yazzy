@@ -19,15 +19,7 @@ const ArticleHeader: FC<{ article: ReadablePage; classes?: string }> = ({
 }) => {
 	const metadata = generateMetadataNuggets(article);
 	return (
-		<header
-			className={[
-				"space-y-2",
-				"mb-4",
-				"pb-4",
-				"border-b border-base-100 dark:border-base-900",
-				classes,
-			].join(" ")}
-		>
+		<header className={["space-y-1", classes].join(" ")}>
 			<h2 class="text-2xl font-didone">
 				<a
 					href={article.url}

@@ -24,19 +24,15 @@ const Head: FC = () => (
 const IndexPage: FC<{ recentArticles: ReadablePage[] }> = ({
 	recentArticles,
 }) => (
-	<BasePage title="yazzy" head={<Head />}>
-		<header className="mb-4">
+	<BasePage title="yazzy" head={<Head />} classes="space-y-2">
+		<header className="">
 			<p className="">
 				Tired of popups, ads, and other distractions on your page? Just put the
 				URL in the box below and yazzy will clean it up so you can focus. You
 				can even save it as a Markdown file to keep forever.
 			</p>
 		</header>
-		<form
-			action="/api/clip"
-			method="get"
-			className="flex gap-1 items-center mb-4"
-		>
+		<form action="/api/clip" method="get" className="flex gap-1 items-center">
 			<Input
 				type="url"
 				id="url"
