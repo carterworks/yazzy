@@ -279,7 +279,7 @@
 	h4 {
 		@apply text-sm;
 	}
-	a:not(:is(code, pre, h1, h2, h3, h4, h5, h6) *) {
+	a:not(:is(code, pre, h1, h2, h3, h4, h5, h6) *):not(:has(img)) {
 		@apply break-words transition-colors rounded;
 		&:hover {
 			@apply bg-base-100 dark:bg-base-800;
