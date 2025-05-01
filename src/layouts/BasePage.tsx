@@ -13,7 +13,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 	head: Head,
 	children,
 }) => (
-	<html lang="en" class="lg:text-lg">
+	<html lang="en" className="md:text-lg">
 		<head>
 			<meta charset="UTF-8" />
 			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -37,7 +37,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 			/>
 		</head>
 
-		<body className="text-base bg-paper font-geometric-humanist dark:bg-black text-black dark:text-base-200 px-4 lg:px-0 space-y-2">
+		<body className="text-base bg-paper font-geometric-humanist dark:bg-black text-black dark:text-base-200 px-4 py-2 space-y-2 max-w-prose mx-auto">
 			<header
 				className="flex items-center gap-4 print:hidden"
 				transition:animate="slide"
