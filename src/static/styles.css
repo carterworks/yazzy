@@ -279,7 +279,7 @@
 	h4 {
 		@apply text-sm;
 	}
-	a:not(:is(code, pre, h1, h2, h3, h4, h5, h6) *):not(:has(img)) {
+	a:not(:is(code, pre, h1, h2, h3, h4, h5, h6) *):not(:has(img)):not(:empty) {
 		@apply break-words transition-colors rounded;
 		&:hover {
 			@apply bg-base-100 dark:bg-base-800;
@@ -287,6 +287,14 @@
 		&::after {
 			content: "*";
 			@apply text-blue-600 dark:text-blue-300 relative -top-0.25;
+		}
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6 {
+			display: inline;
 		}
 	}
 	* + *:not(:is(code, pre, h1, h2, h3, h4, h5, h6, details) *) {
