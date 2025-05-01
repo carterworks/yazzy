@@ -156,7 +156,7 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 			classes="space-y-2 md:flex md:justify-center md:gap-2"
 			head={<ClippedPageHead article={article} />}
 		>
-			<aside className="flex md:flex-col gap-2 items-center print:hidden">
+			<aside className="flex md:flex-col md:self-safe-end gap-2 items-center order-last print:hidden">
 				<DownloadAs
 					contents={markdownContent}
 					filename={`${getFilename(title)}.md`}
