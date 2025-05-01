@@ -63,25 +63,28 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 								href="https://github.com/carterworks/yazzy"
 								target="_blank"
 								rel="noreferrer"
-								className="underline"
+								className="underline transition-colors rounded hover:bg-base-100 dark:hover:bg-base-800"
 							>
 								Github
 							</a>
 						</li>
 						<li>
-							<a href="/api/db-dump" className="underline">
+							<a
+								href="/api/db-dump"
+								className="underline transition-colors rounded hover:bg-base-100 dark:hover:bg-base-800"
+							>
 								Download db dump
 							</a>
 						</li>
 					</ul>
 					<div className="text-right">
+						<div>v{version}</div>
 						<div>
 							Article count:{" "}
 							<span hx-trigger="load" hx-get="/api/article-count">
 								0
 							</span>
 						</div>
-						<div>v{version}</div>
 					</div>
 				</footer>
 			</div>
