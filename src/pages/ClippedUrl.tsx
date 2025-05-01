@@ -91,19 +91,14 @@ function generateObsidianUri(
 	folder = "Clippings/",
 	vault = "",
 ): string {
-	const fileName = getFilename(title);
-	const params = new URLSearchParams();
-	if (fileContent !== "") {
-		params.set("content", fileContent);
-	} else {
-		params.set("clipboard", "true");
-	}
-	params.set("file", folder + fileName);
-	if (vault !== "") {
-		params.set("vault", vault);
-	}
-	params.set("overwrite", "true");
-	return `obsidian://new?${params.toString()}`;
+	let obsidianUri = `obsidian://new?file=${encodeURIComponent(
+		`${folder}${getFilename(title)}`,
+	)}`;
+	const vaultParam = vault ? `&vault=${encodeURIComponent(vault)}` : "";
+	obsidianUri += vaultParam;
+	obsidianUri += `&content=${encodeURIComponent(fileContent)}`;
+	obsidianUri += "&overwrite=true";
+	return obsidianUri;
 }
 
 const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
@@ -171,13 +166,7 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 				>
 					<InboxDownload className="h-4" />
 				</DownloadAs>
-				<Button
-					href={obsidianUri}
-					title="Save to Obsidian"
-					type="link"
-					extraClasses="js-only"
-					id="save-to-obsidian"
-				>
+				<Button href={obsidianUri} title="Save to Obsidian" type="link">
 					<Obsidian className="h-4" />
 				</Button>
 				<Button
