@@ -3,17 +3,17 @@ import { version } from "../../package.json" with { type: "json" };
 
 interface BasePageProps {
 	title?: string;
-	className?: string;
+	classes?: string;
 	head?: Child;
 }
 
 const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 	title = "",
-	className = "",
+	classes = "",
 	head: Head,
 	children,
 }) => (
-	<html lang="en" class="lg:text-lg">
+	<html lang="en" className="md:text-lg">
 		<head>
 			<meta charset="UTF-8" />
 			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -37,54 +37,58 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 			/>
 		</head>
 
-		<body className="text-base bg-paper font-geometric-humanist dark:bg-black text-black dark:text-base-200 px-4 lg:px-0">
-			<div className="m-auto max-w-prose space-y-2">
-				<header
-					className="flex items-center mb-4 gap-4 print:hidden"
-					transition:animate="slide"
-				>
-					<div className="mr-auto">
-						<h1 className="text-2xl font-didone">
-							<a
-								href="/"
-								className="transition-colors rounded hover:bg-base-100 dark:hover:bg-base-800"
-							>
-								yazzy
-							</a>
-						</h1>
-						<p className="text-xs">Plain ol' reading</p>
+		<body className="text-base bg-paper font-geometric-humanist dark:bg-black text-black dark:text-base-200 px-4 py-2 space-y-2 max-w-prose mx-auto">
+			<header
+				className="flex items-center gap-4 print:hidden"
+				style={{ viewTransitionName: "header" }}
+			>
+				<div className="mr-auto">
+					<h1 className="text-2xl font-didone">
+						<a
+							href="/"
+							className="transition-colors rounded hover:bg-base-100 dark:hover:bg-base-800"
+						>
+							yazzy
+						</a>
+					</h1>
+					<p className="text-xs">Plain ol' reading</p>
+				</div>
+			</header>
+			<div className={classes}>{children}</div>
+			<footer
+				className="flex justify-between items-start print:hidden"
+				style={{ viewTransitionName: "footer" }}
+			>
+				<ul>
+					<li>
+						<a
+							href="https://github.com/carterworks/yazzy"
+							target="_blank"
+							rel="noreferrer"
+							className="underline transition-colors rounded hover:bg-base-100 dark:hover:bg-base-800"
+						>
+							Github
+						</a>
+					</li>
+					<li>
+						<a
+							href="/api/db-dump"
+							className="underline transition-colors rounded hover:bg-base-100 dark:hover:bg-base-800"
+						>
+							Download db dump
+						</a>
+					</li>
+				</ul>
+				<div className="text-right">
+					<div>v{version}</div>
+					<div>
+						Article count:{" "}
+						<span hx-trigger="load" hx-get="/api/article-count">
+							0
+						</span>
 					</div>
-				</header>
-				<div className={className}>{children}</div>
-				<footer className="flex justify-between py-4 my-4 items-start border-t border-base-100 dark:border-base-900">
-					<ul>
-						<li>
-							<a
-								href="https://github.com/carterworks/yazzy"
-								target="_blank"
-								rel="noreferrer"
-								className="underline"
-							>
-								Github
-							</a>
-						</li>
-						<li>
-							<a href="/api/db-dump" className="underline">
-								Download db dump
-							</a>
-						</li>
-					</ul>
-					<div className="text-right">
-						<div>
-							Article count:{" "}
-							<span hx-trigger="load" hx-get="/api/article-count">
-								0
-							</span>
-						</div>
-						<div>v{version}</div>
-					</div>
-				</footer>
-			</div>
+				</div>
+			</footer>
 		</body>
 	</html>
 );

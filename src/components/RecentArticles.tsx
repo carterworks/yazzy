@@ -36,9 +36,9 @@ const RecentArticles: FC<{ articles: ReadablePage[] }> = ({ articles }) => {
 		};
 	});
 	return (
-		<section>
-			<h2 class="text-lg font-didone mb-2">What people are reading.</h2>
-			<ol class="flex flex-column lg:flex-row flex-wrap gap-2 justify-between">
+		<section className="space-y-2">
+			<h2 class="text-lg font-didone">What people are reading.</h2>
+			<ol class="flex flex-column md:flex-row flex-wrap gap-2 justify-between">
 				{recentArticles.map((article) => (
 					<RecentArticle article={article} key={article.url} />
 				))}

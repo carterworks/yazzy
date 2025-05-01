@@ -91,19 +91,14 @@ function generateObsidianUri(
 	folder = "Clippings/",
 	vault = "",
 ): string {
-	const fileName = getFilename(title);
-	const params = new URLSearchParams();
-	if (fileContent !== "") {
-		params.set("content", fileContent);
-	} else {
-		params.set("clipboard", "true");
-	}
-	params.set("file", folder + fileName);
-	if (vault !== "") {
-		params.set("vault", vault);
-	}
-	params.set("overwrite", "true");
-	return `obsidian://new?${params.toString()}`;
+	let obsidianUri = `obsidian://new?file=${encodeURIComponent(
+		`${folder}${getFilename(title)}`,
+	)}`;
+	const vaultParam = vault ? `&vault=${encodeURIComponent(vault)}` : "";
+	obsidianUri += vaultParam;
+	obsidianUri += `&content=${encodeURIComponent(fileContent)}`;
+	obsidianUri += "&overwrite=true";
+	return obsidianUri;
 }
 
 const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
@@ -153,10 +148,10 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 	return (
 		<BasePage
 			title={`${article.title} | yazzy`}
-			className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-2 lg:gap-4"
+			classes="space-y-2 md:flex md:justify-center md:gap-2"
 			head={<ClippedPageHead article={article} />}
 		>
-			<aside className="flex lg:flex-col gap-3 items-center lg:col-start-1 lg:row-span-2 print:hidden">
+			<aside className="flex md:flex-col md:self-safe-end gap-2 items-center order-last print:hidden">
 				<DownloadAs
 					contents={markdownContent}
 					filename={`${getFilename(title)}.md`}
@@ -171,13 +166,7 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 				>
 					<InboxDownload className="h-4" />
 				</DownloadAs>
-				<Button
-					href={obsidianUri}
-					title="Save to Obsidian"
-					type="link"
-					extraClasses="js-only"
-					id="save-to-obsidian"
-				>
+				<Button href={obsidianUri} title="Save to Obsidian" type="link">
 					<Obsidian className="h-4" />
 				</Button>
 				<Button
@@ -189,10 +178,10 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 					<Duplicate className="h-4" />
 				</Button>
 			</aside>
-			<div className="lg:col-start-2 max-w-prose space-x-2">
+			<div className="max-w-prose">
 				<main>
-					<article>
-						<ArticleHeader article={article} />
+					<article className="space-y-2">
+						<ArticleHeader article={article} classes="" />
 						<div
 							className="prose"
 							// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
