@@ -42,7 +42,7 @@ export async function summarize(text: string): Promise<string> {
 	}
 	const message = response.choices[0].message.content;
 	if (!message) {
-		throw new Error("No message returned from OpenRouter");
+		throw new Error("No message returned from AI endpoint");
 	}
 	const generationDate = new Date()
 		.toLocaleString("en-US", {
