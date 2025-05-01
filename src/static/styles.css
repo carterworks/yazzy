@@ -390,6 +390,10 @@
 	:last-child {
 		@apply mb-0;
 	}
+	/* It's 2025, I don't respect the <center> tag */
+	center {
+		@apply text-left;
+	}
 
 	/* Syntax highlighting */
 	pre code.hljs {
