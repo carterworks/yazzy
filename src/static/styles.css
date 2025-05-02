@@ -327,6 +327,9 @@
 		@apply font-mono font-medium;
 		font-variant-ligatures: none;
 	}
+	pre:has(code) {
+		@apply overflow-x-auto text-xs max-w-full rounded;
+	}
 	table {
 		@apply w-full my-8 leading-6 text-sm;
 		thead {
