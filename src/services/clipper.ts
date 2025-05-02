@@ -90,11 +90,6 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 		normalizeResourceUrls(page.window.document, url, selector, attribute);
 	}
 
-	const codeElements = page.window.document.querySelectorAll("pre code");
-	for (const codeElement of codeElements) {
-		hljs.highlightElement(codeElement as HTMLElement);
-	}
-
 	return page;
 }
 
@@ -223,6 +218,22 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 		throw new Error(`Failed to parse article contents of "${url.toString()}"`);
 	}
 
+	// Create a temporary JSDOM instance to manipulate the article content
+	const contentDom = new JSDOM(article.content);
+	const contentDocument = contentDom.window.document;
+
+	// Highlight code blocks
+	const codeBlocks = contentDocument.querySelectorAll("pre code");
+	for (const block of codeBlocks) {
+		// We need to cast the Node to HTMLElement for highlightElement
+		if (block instanceof contentDom.window.HTMLElement) {
+			hljs.highlightElement(block);
+		}
+	}
+
+	// Get the updated HTML content with highlighted code
+	const highlightedHtmlContent = contentDocument.body.innerHTML;
+
 	const markdownBody = convertHtmlToMarkdown(article.content, url.toString());
 
 	// Fetch byline, meta author, property author, or site name
@@ -270,7 +281,7 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 		tags,
 		markdownContent: markdownBody,
 		textContent: convertMarkdownToPlainText(markdownBody),
-		htmlContent: article.content,
+		htmlContent: highlightedHtmlContent,
 	};
 }
 
