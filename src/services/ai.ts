@@ -23,7 +23,6 @@ export async function fetchCompletion(
 		"google/gemini-2.0-flash-001",
 		"openai/gpt-4.1-nano",
 		"openai/gpt-4o-mini",
-		"meta-llama/llama-3.1-8b-instruct",
 	],
 ) {
 	if (!AI_ENABLED) {
