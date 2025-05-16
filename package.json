@@ -1,6 +1,6 @@
 {
 	"name": "yazzy",
-	"version": "0.1.6",
+	"version": "0.1.7",
 	"dependencies": {
 		"@hono/zod-validator": "^0.5.0",
 		"@tailwindcss/cli": "^4.1.6",
