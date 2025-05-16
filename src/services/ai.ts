@@ -18,8 +18,9 @@ const openai = new OpenAI({
 export async function fetchCompletion(
 	systemPrompt: string,
 	userPrompt: string,
-	model = "google/gemini-2.0-flash-001",
+	model = "google/gemini-2.5-flash-preview-04-17",
 	fallbackModels = [
+		"google/gemini-2.0-flash-001",
 		"openai/gpt-4.1-nano",
 		"openai/gpt-4o-mini",
 		"meta-llama/llama-3.1-8b-instruct",
