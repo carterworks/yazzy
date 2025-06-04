@@ -8,7 +8,7 @@ Named after [Jasnah Kholin](https://coppermind.net/wiki/Jasnah_Kholin), famous h
 
 * Extracts the main content from any web article using [Mozilla's Readability](https://github.com/mozilla/readability)
 * Converts web content to clean Markdown, HTML, or plain text format.
-* Simple URL pattern - just prepend the yazzy URL: "yazzy.fly.dev/https://example.com".
+* Simple URL pattern - just prepend the yazzy URL: "https://yazzy.carter.works/https://example.com".
 * Download articles as Markdown, plain text, or copy to clipboard.
 * Export in Obsidian-compatible format with frontmatter metadata.
 * Dark mode support for comfortable reading.
