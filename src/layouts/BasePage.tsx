@@ -5,12 +5,14 @@ interface BasePageProps {
 	title?: string;
 	classes?: string;
 	head?: Child;
+	additionalHeaderContent?: Child;
 }
 
 const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 	title = "",
 	classes = "",
 	head: Head,
+	additionalHeaderContent: AdditionalHeaderContent,
 	children,
 }) => (
 	<html lang="en" className="md:text-lg">
@@ -37,7 +39,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 			/>
 		</head>
 
-		<body className="text-base bg-paper font-geometric-humanist dark:bg-black text-black dark:text-base-200 px-4 py-2 space-y-2 max-w-prose mx-auto">
+		<body className="text-base bg-paper font-geometric-humanist dark:bg-black text-black dark:text-base-200 px-4 py-2 space-y-8 max-w-prose mx-auto">
 			<header
 				className="flex items-center gap-4 print:hidden"
 				style={{ viewTransitionName: "header" }}
@@ -53,6 +55,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 					</h1>
 					<p className="text-xs">Plain ol' reading</p>
 				</div>
+				{AdditionalHeaderContent}
 			</header>
 			<div className={classes}>{children}</div>
 			<footer

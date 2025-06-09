@@ -139,18 +139,13 @@ const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
 	);
 };
 
-const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
+const ClippedUrlHeader: FC<{ article: ReadablePage }> = ({ article }) => {
 	const markdownContent = generateObsidianContents(article);
 	const title = article.title ?? `${new Date().toISOString()} Clipping`;
 	const obsidianUri = generateObsidianUri(markdownContent, title ?? "");
 	const plainTextContent = generatePlainTextContents(article);
-
 	return (
-		<BasePage
-			title={`${article.title} | yazzy`}
-			classes="space-y-2"
-			head={<ClippedPageHead article={article} />}
-		>
+		<>
 			<aside className="flex gap-2 items-center order-last print:hidden">
 				<DownloadAs
 					contents={markdownContent}
@@ -178,8 +173,19 @@ const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 					<Duplicate className="h-4" />
 				</Button>
 			</aside>
+		</>
+	);
+};
+
+const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
+	return (
+		<BasePage
+			title={`${article.title} | yazzy`}
+			head={<ClippedPageHead article={article} />}
+			additionalHeaderContent={<ClippedUrlHeader article={article} />}
+		>
 			<main>
-				<article className="space-y-2">
+				<article className="space-y-8">
 					<ArticleHeader article={article} classes="" />
 					<div
 						className="prose"
