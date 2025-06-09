@@ -1,10 +1,9 @@
 import type { FC, PropsWithChildren } from "hono/jsx";
 import { Hourglass } from "./icons/refactoring-ui";
 
-const proseClasses = "prose mt-2";
 
 const AISummaryError: FC<PropsWithChildren> = ({ children }) => (
-	<aside className={proseClasses}>
+	<aside className="prose">
 		<details>
 			<summary className="cursor-pointer select-none">
 				<h2 className="inline">Failed to retrieve AI summary</h2>
@@ -27,7 +26,7 @@ const AISummary: FC<{
 
 	if (summary) {
 		return (
-			<aside className={proseClasses}>
+			<aside className="prose">
 				<details>
 					<summary className="cursor-pointer select-none">
 						<h2 class="inline">AI-generated summary</h2>
@@ -45,7 +44,7 @@ const AISummary: FC<{
 			hx-get="/api/summary"
 			hx-vals={JSON.stringify({ url })}
 			hx-swap="outerHTML"
-			className={`${proseClasses} js-only`}
+			className="prose js-only"
 		>
 			<details>
 				<summary className="cursor-pointer select-none">

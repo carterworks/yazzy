@@ -25,7 +25,7 @@ const IndexPage: FC<{ recentArticles: ReadablePage[] }> = ({
 	recentArticles,
 }) => (
 	<BasePage title="yazzy" head={<Head />} classes="space-y-2">
-		<header className="">
+		<header className="space-y-2">
 			<p className="">
 				Tired of popups, ads, and other distractions on your page? Just put the
 				URL in the box below and yazzy will clean it up so you can focus. You
