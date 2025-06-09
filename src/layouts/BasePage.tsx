@@ -37,7 +37,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 			/>
 		</head>
 
-		<body className="text-base bg-paper font-geometric-humanist dark:bg-black text-black dark:text-base-200 px-4 py-2 space-y-2 max-w-prose mx-auto">
+		<body className="text-base bg-paper font-geometric-humanist dark:bg-black text-black dark:text-base-200 px-4 py-2 space-y-8 max-w-prose mx-auto">
 			<header
 				className="flex items-center gap-4 print:hidden"
 				style={{ viewTransitionName: "header" }}
