@@ -1,5 +1,13 @@
 import type { FC } from "hono/jsx";
 import ArticleHeader from "../components/ArticleHeader";
+import Button from "../components/Button";
+import DownloadAs from "../components/DownloadAs";
+import {
+	BookClosed,
+	Duplicate,
+	InboxDownload,
+} from "../components/icons/refactoring-ui";
+import { Obsidian } from "../components/icons/simple-icons";
 import BasePage from "../layouts/BasePage";
 import convertHtmlToMarkdown from "../services/markdown";
 import type { ReadablePage } from "../types";
@@ -16,6 +24,11 @@ function getFilename(title: string): string {
 			// lowercase is bestcase
 			.toLocaleLowerCase()
 	);
+}
+
+function generatePlainTextContents(article: ReadablePage): string {
+	const plainTextSummary = getPlainTextSummary(article, 1000);
+	return `${article.title}\n---\nSummary\n\n${plainTextSummary}\n---\n${article.textContent}`;
 }
 
 function escapeDoubleQuotes(value: string): string {
@@ -126,12 +139,50 @@ const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
 	);
 };
 
-const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
+const ClippedUrlHeader: FC<{ article: ReadablePage }> = ({ article }) => {
+	const markdownContent = generateObsidianContents(article);
+	const title = article.title ?? `${new Date().toISOString()} Clipping`;
+	const obsidianUri = generateObsidianUri(markdownContent, title ?? "");
+	const plainTextContent = generatePlainTextContents(article);
+	return (
+		<>
+			<aside className="flex gap-2 items-center order-last print:hidden">
+				<DownloadAs
+					contents={markdownContent}
+					filename={`${getFilename(title)}.md`}
+					title="Download as Markdown"
+				>
+					<BookClosed className="h-4" />
+				</DownloadAs>
+				<DownloadAs
+					contents={plainTextContent}
+					filename={`${getFilename(title)}.txt`}
+					title="Download as plain text"
+				>
+					<InboxDownload className="h-4" />
+				</DownloadAs>
+				<Button href={obsidianUri} title="Save to Obsidian" type="link">
+					<Obsidian className="h-4" />
+				</Button>
+				<Button
+					title="Copy Markdown to clipboard"
+					type="button"
+					id="copy-markdown"
+					extraClasses="js-only"
+				>
+					<Duplicate className="h-4" />
+				</Button>
+			</aside>
+		</>
+	);
+};
 
+const ClippedUrlPage: FC<{ article: ReadablePage }> = ({ article }) => {
 	return (
 		<BasePage
 			title={`${article.title} | yazzy`}
 			head={<ClippedPageHead article={article} />}
+			additionalHeaderContent={<ClippedUrlHeader article={article} />}
 		>
 			<main>
 				<article className="space-y-8">

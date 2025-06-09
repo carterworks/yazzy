@@ -5,12 +5,14 @@ interface BasePageProps {
 	title?: string;
 	classes?: string;
 	head?: Child;
+	additionalHeaderContent?: Child;
 }
 
 const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 	title = "",
 	classes = "",
 	head: Head,
+	additionalHeaderContent: AdditionalHeaderContent,
 	children,
 }) => (
 	<html lang="en" className="md:text-lg">
@@ -53,6 +55,7 @@ const BasePage: FC<PropsWithChildren<BasePageProps>> = ({
 					</h1>
 					<p className="text-xs">Plain ol' reading</p>
 				</div>
+				{AdditionalHeaderContent}
 			</header>
 			<div className={classes}>{children}</div>
 			<footer

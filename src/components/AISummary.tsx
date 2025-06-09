@@ -1,7 +1,6 @@
 import type { FC, PropsWithChildren } from "hono/jsx";
 import { Hourglass } from "./icons/refactoring-ui";
 
-
 const AISummaryError: FC<PropsWithChildren> = ({ children }) => (
 	<aside className="prose">
 		<details>
