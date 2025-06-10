@@ -231,6 +231,17 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 		}
 	}
 
+	// Turn all headers into links, if they are not already.
+	let headerId = 0;
+	const headers = contentDocument.querySelectorAll("h1, h2, h3, h4, h5, h6");
+	for (const header of headers) {
+		if (header instanceof contentDom.window.HTMLElement) {
+			const id = header.id ? header.id : `h${headerId++}`;
+			header.id = id;
+			header.innerHTML = `<a href="#${id}">${header.innerHTML}</a>`;
+		}
+	}
+
 	// Get the updated HTML content with highlighted code
 	const highlightedHtmlContent = contentDocument.body.innerHTML;
 
