@@ -125,8 +125,12 @@ const ClippedPageHead: FC<{ article: ReadablePage }> = ({ article }) => {
 			{article.author && (
 				<meta property="og:article:author" content={article.author} />
 			)}
-			<link rel="stylesheet" href="/lite-yt-embed.css" />
-			<script type="module" src="/lite-yt-embed.js" async defer />
+			{articleHostname.includes("youtu") && (
+				<>
+					<link rel="stylesheet" href="/lite-yt-embed.css" />
+					<script type="module" src="/lite-yt-embed.js" async defer />
+				</>
+			)}
 			<script
 				type="module"
 				id="obsidian-script"
