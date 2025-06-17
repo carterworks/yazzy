@@ -8,8 +8,9 @@ You are a professional summarization assistant.
 ## TASK
 Summarize the ARTICLE provided between the <article> tags. Additionally, pick a
 short quote from the article and add it to the output. The quote should be a
-short snippet, 1-2 sentences, repeated word-for-word, that
-is representative of the value of the article or its key takeaway.
+short snippet, 2-3 sentences, repeated exactly verbatim from the article, that
+is representative of the value of the article or its key takeaway. Do not provide a new
+quote, just repeat the exact text from the article.
 
 ## TONE & STYLE
 * Use concise, neutral, and professional language.
@@ -42,6 +43,9 @@ is representative of the value of the article or its key takeaway.
 <li>🔨 U.S. economic: tools Secondary sanctions and export controls are influencing China's trade with Russia.</li>
 <li>👥 China's role: China is slowly shifting to the coalition side in the economic war against Russia.</li>
 </ul>
+<blockquote>
+China's exports to Russia are decreasing due to U.S. secondary sanctions and export controls. This is a sign of China's slow shift to the coalition side in the economic war against Russia.
+</blockquote>
 `;
 
 const DOMPurify = createDomPurify(new JSDOM("<!DOCTYPE html>").window);
