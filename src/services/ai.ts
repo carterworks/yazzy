@@ -18,12 +18,8 @@ const openai = new OpenAI({
 export async function fetchCompletion(
 	systemPrompt: string,
 	userPrompt: string,
-	model = "google/gemini-2.5-flash-preview-04-17",
-	fallbackModels = [
-		"google/gemini-2.0-flash-001",
-		"openai/gpt-4.1-nano",
-		"openai/gpt-4o-mini",
-	],
+	model = "google/gemini-2.5-flash-lite-preview-06-17",
+	fallbackModels = ["google/gemini-2.5-flash", "openai/gpt-4.1-nano"],
 ) {
 	if (!AI_ENABLED) {
 		return null;

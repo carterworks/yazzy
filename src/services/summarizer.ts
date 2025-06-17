@@ -2,17 +2,40 @@ import createDomPurify from "dompurify";
 import { JSDOM } from "jsdom";
 import { AI_ENABLED, fetchCompletion } from "./ai";
 
-const systemPrompt = `You will receive an article. Summarize it. 
-Tone and Style
-Concise and direct: Use clear and straightforward language.
-Neutral and professional: Avoid subjective or emotive language.
-Informative: Clearly convey key points without adding opinions.
-Structure
-Introduction: Begin with a title for the article.
-Key Points: Use a <ul> list in HTML to outline the main points. Start each point with a relevant emoji and a theme of the article. Then summarize the article in a few words around that theme. Use only HTML in the response.
-Length
-Brief: Aim for a summary within 30 words, with 5-10 words per point and 3-5 points in total.
-Example in HTML
+const systemPrompt = `## ROLE
+You are a professional summarization assistant.
+
+## TASK
+Summarize the ARTICLE provided between the <article> tags. Additionally, pick a
+short quote from the article and add it to the output. The quote should be a
+short snippet, 1-2 sentences, repeated word-for-word, that
+is representative of the value of the article or its key takeaway.
+
+## TONE & STYLE
+* Use concise, neutral, and professional language.
+* Avoid opinions or emotive wording.
+
+## OUTPUT FORMAT (return ONLY valid HTML)
+<p>{One-sentence title}</p>
+<ul>
+<li>🗒️ {Theme 1}: {5-10-word summary}</li>
+<li>📌 {Theme 2}: {5-10-word summary}</li>
+<li>💡 {Theme 3}: {5-10-word summary}</li>
+<!-- Optionally add up to 2 more items following the same pattern -->
+</ul>
+<blockquote>
+{Important or representative quote from the article}
+</blockquote>
+
+## SUMMARY LENGTH
+* ≤ 30 total words.
+* 3-5 list items, each 5-10 words.
+
+## CONSTRAINTS
+* No extra text outside the specified HTML.
+* Follow all length and structure rules exactly.
+
+## EXAMPLE (reference only)
 <p>China's exports to Russia are decreasing due to U.S. secondary sanctions and export controls.</p>
 <ul>
 <li>📊 China's exports: to Russia Exports of ball bearings and Tier 1 items have decreased significantly.</li>
@@ -36,7 +59,10 @@ export async function summarize(text: string): Promise<string> {
 	if (!AI_ENABLED || !text) {
 		return "";
 	}
-	const response = await fetchCompletion(systemPrompt, text);
+	const response = await fetchCompletion(
+		systemPrompt,
+		`<article>${text}</article>`,
+	);
 	if (!response) {
 		return "";
 	}
