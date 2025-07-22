@@ -10,7 +10,8 @@ Summarize the ARTICLE provided between the <article> tags. Additionally, pick a
 short quote from the article and add it to the output. The quote should be a
 short snippet, 2-3 sentences, repeated exactly verbatim from the article, that
 is representative of the value of the article or its key takeaway. Do not provide a new
-quote, just repeat the exact text from the article.
+quote, just repeat the exact text from the article. The summary and quote should be
+in the same language as the article.
 
 ## TONE & STYLE
 * Use concise, neutral, and professional language.
