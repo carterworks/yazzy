@@ -15,11 +15,29 @@ const openai = new OpenAI({
 	},
 });
 
+const models = Object.freeze({
+	openai: {
+		gpt5: {
+			nano: "openai/gpt-5-nano", // $0.05/1M input, $0.40/1M output,
+			mini: "openai/gpt-5-mini", // $0.25/1M input, $2.00/1M output,
+		},
+	},
+	google: {
+		gemini2dot5: {
+			flash: "google/gemini-2.5-flash", // $0.30/1M input, $2.50/1M output
+			flashLite: "google/gemini-2.5-flash-lite", // $0.10/1M input, $0.40/1M output
+		},
+	},
+});
+
 export async function fetchCompletion(
 	systemPrompt: string,
 	userPrompt: string,
-	model = "google/gemini-2.5-flash-lite-preview-06-17",
-	fallbackModels = ["google/gemini-2.5-flash", "openai/gpt-4.1-nano"],
+	model = models.openai.gpt5.nano,
+	fallbackModels = [
+		models.google.gemini2dot5.flashLite,
+		models.openai.gpt5.mini,
+	],
 ) {
 	if (!AI_ENABLED) {
 		return null;
