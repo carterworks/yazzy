@@ -33,6 +33,7 @@ const models = Object.freeze({
 export async function fetchCompletion(
 	systemPrompt: string,
 	userPrompt: string,
+	reasoning: "minimal" | "low" | "medium" | "high" = "medium",
 	model = models.openai.gpt5.nano,
 	fallbackModels = [
 		models.google.gemini2dot5.flashLite,
@@ -48,6 +49,7 @@ export async function fetchCompletion(
 			{ role: "system", content: systemPrompt },
 			{ role: "user", content: userPrompt },
 		],
+		reasoning_effort: reasoning,
 	};
 	if (AI_ENDPOINT.includes("openrouter")) {
 		// @ts-expect-error OpenRouter-specific option

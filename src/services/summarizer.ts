@@ -67,6 +67,7 @@ export async function summarize(text: string): Promise<string> {
 	const response = await fetchCompletion(
 		systemPrompt,
 		`<article>${text}</article>`,
+		"minimal",
 	);
 	if (!response) {
 		return "";
