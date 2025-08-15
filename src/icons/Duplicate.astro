@@ -1,0 +1,23 @@
+---
+/**
+ * Copyright (c) Refactoring UI Inc.
+ * Licensed for use in this project under their license terms.
+ */
+
+interface Props {
+	[key: string]: unknown;
+}
+
+const { ...props } = Astro.props;
+---
+
+<svg
+	role="img"
+	aria-label="Two overlapping squares"
+	xmlns="http://www.w3.org/2000/svg"
+	viewBox="0 0 24 24"
+	{...props}
+>
+	<rect width="14" height="14" x="3" y="3" class="secondary" rx="2" />
+	<rect width="14" height="14" x="7" y="7" class="primary" rx="2" />
+</svg>
