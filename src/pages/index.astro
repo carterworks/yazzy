@@ -3,8 +3,9 @@ import Button from "../components/Button.astro";
 import Input from "../components/Input.astro";
 import RecentArticles from "../components/RecentArticles.astro";
 import BasePage from "../layouts/BasePage.astro";
+import type {ReadablePage} from "../types";
 
-const recentArticles = [];
+const recentArticles: ReadablePage[] = [];
 ---
 
 <BasePage title="yazzy" class="space-y-2">
