@@ -1,0 +1,78 @@
+---
+import "../styles/global.css";
+import { version } from "../../package.json" with { type: "json" };
+
+interface Props {
+  title?: string;
+  class?: string;
+}
+
+const { title, class: classes } = Astro.props;
+---
+
+<html lang="en" class="md:text-lg">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>{title}</title>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/scissors.svg" type="image/svg+xml" />
+    <slot name="head" />
+  </head>
+
+  <body
+    class="mx-auto max-w-prose space-y-8 bg-paper px-4 py-2 font-geometric-humanist text-base text-black dark:bg-black dark:text-base-200"
+  >
+    <header
+      class="flex items-center gap-4 print:hidden"
+      style={{ viewTransitionName: "header" }}
+    >
+      <div class="mr-auto">
+        <h1 class="font-didone text-2xl">
+          <a
+            href="/"
+            class="rounded transition-colors hover:bg-base-100 dark:hover:bg-base-800"
+          >
+            yazzy
+          </a>
+        </h1>
+        <p class="text-xs">Plain ol' reading</p>
+      </div>
+      <slot name="header" />
+    </header>
+    <div class={classes}><slot /></div>
+    <footer
+      class="flex items-start justify-between print:hidden"
+      style={{ viewTransitionName: "footer" }}
+    >
+      <ul>
+        <li>
+          <a
+            href="https://github.com/carterworks/yazzy"
+            target="_blank"
+            rel="noreferrer"
+            class="rounded underline transition-colors hover:bg-base-100 dark:hover:bg-base-800"
+          >
+            Github
+          </a>
+        </li>
+        <li>
+          <a
+            href="/api/db-dump"
+            class="rounded underline transition-colors hover:bg-base-100 dark:hover:bg-base-800"
+          >
+            Download db dump
+          </a>
+        </li>
+      </ul>
+      <div class="text-right">
+        <div>v{version}</div>
+        <div>
+          Article count:{" "}
+          <span hx-trigger="load" hx-get="/api/article-count"> 0 </span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

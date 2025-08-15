@@ -1,9 +1,9 @@
 {
-	"recommendations": [
-		"bradlc.vscode-tailwindcss",
-		"biomejs.biome",
-		"editorconfig.editorconfig",
-		"oven.bun-vscode"
-	],
-	"unwantedRecommendations": []
+  "recommendations": [
+    "bradlc.vscode-tailwindcss",
+    "biomejs.biome",
+    "editorconfig.editorconfig",
+    "oven.bun-vscode"
+  ],
+  "unwantedRecommendations": []
 }

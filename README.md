@@ -6,28 +6,28 @@ Named after [Jasnah Kholin](https://coppermind.net/wiki/Jasnah_Kholin), famous h
 
 ## Features
 
-* Extracts the main content from any web article using [Mozilla's Readability](https://github.com/mozilla/readability)
-* Converts web content to clean Markdown, HTML, or plain text format.
-* Simple URL pattern - just prepend the yazzy URL: "https://yazzy.carter.works/https://example.com".
-* Download articles as Markdown, plain text, or copy to clipboard.
-* Export in Obsidian-compatible format with frontmatter metadata.
-* Dark mode support for comfortable reading.
-* AI-powered article summarization.
-* Easily self-hostable.
-* Database dumps for backing up your article collection.
-* Minimalist, distraction-free reading experience.
+- Extracts the main content from any web article using [Mozilla's Readability](https://github.com/mozilla/readability)
+- Converts web content to clean Markdown, HTML, or plain text format.
+- Simple URL pattern - just prepend the yazzy URL: "https://yazzy.carter.works/https://example.com".
+- Download articles as Markdown, plain text, or copy to clipboard.
+- Export in Obsidian-compatible format with frontmatter metadata.
+- Dark mode support for comfortable reading.
+- AI-powered article summarization.
+- Easily self-hostable.
+- Database dumps for backing up your article collection.
+- Minimalist, distraction-free reading experience.
 
 ## 🧞 Commands
 
 All commands are run from the root of the project, from a terminal:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `bun install`             | Installs dependencies                            |
-| `bun run dev`             | Builds the css and starts a reloading dev server |
-| `bun run css`             | Builds just the css                              |
-| `bun run build`           | Builds a production-ready archive into ./dist    |
-| `bun run check`           | Format and lint the project                      |
+| Command         | Action                                           |
+| :-------------- | :----------------------------------------------- |
+| `bun install`   | Installs dependencies                            |
+| `bun run dev`   | Builds the css and starts a reloading dev server |
+| `bun run css`   | Builds just the css                              |
+| `bun run build` | Builds a production-ready archive into ./dist    |
+| `bun run check` | Format and lint the project                      |
 
 ## TODO
 

@@ -3,32 +3,32 @@ import type { ReadablePage } from "../types";
 import { getPlainTextSummary } from "../utils";
 
 interface Props {
-	articles: ReadablePage[];
+  articles: ReadablePage[];
 }
 
 const { articles } = Astro.props;
 
 const recentArticles = articles.map((article) => {
-	return {
-		...article,
-		summary: getPlainTextSummary(article, 30),
-	};
+  return {
+    ...article,
+    summary: getPlainTextSummary(article, 30),
+  };
 });
 ---
 
 <section class="space-y-2">
-	<h2 class="text-lg font-didone">What people are reading.</h2>
-	<ol class="flex flex-column md:flex-row flex-wrap gap-2 justify-between">
-		{recentArticles.map((article) => (
-			<li
-				class="lg:w-40 md:w-60 flex-auto p-2 overflow-hidden transition rounded border border-base-100 dark:border-base-900 bg-paper hover:bg-base-50 dark:bg-black hover:dark:bg-base-950"
-			>
-				<a href={`/${article.url}`}>
-					<h3 class="font-didone">{article.title}</h3>
-					<p class="text-xs my-1 truncate">{new URL(article.url).hostname}</p>
-					<p class="text-xs">{article.summary}</p>
-				</a>
-			</li>
-		))}
-	</ol>
+  <h2 class="font-didone text-lg">What people are reading.</h2>
+  <ol class="flex-column flex flex-wrap justify-between gap-2 md:flex-row">
+    {
+      recentArticles.map((article) => (
+        <li class="flex-auto overflow-hidden rounded border border-base-100 bg-paper p-2 transition hover:bg-base-50 md:w-60 lg:w-40 dark:border-base-900 dark:bg-black hover:dark:bg-base-950">
+          <a href={`/${article.url}`}>
+            <h3 class="font-didone">{article.title}</h3>
+            <p class="my-1 truncate text-xs">{new URL(article.url).hostname}</p>
+            <p class="text-xs">{article.summary}</p>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
 </section>

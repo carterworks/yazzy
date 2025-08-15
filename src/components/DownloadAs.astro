@@ -2,19 +2,19 @@
 import Button from "./Button.astro";
 
 interface Props {
-	contents: string;
-	filename: string;
-	[key: string]: unknown;
+  contents: string;
+  filename: string;
+  [key: string]: unknown;
 }
 
 const { contents, filename, ...otherProps } = Astro.props;
 
 function stringToBase64(str: string): string {
-	const bytes = new TextEncoder().encode(str);
-	const binString = Array.from(bytes, (byte) =>
-		String.fromCodePoint(byte),
-	).join("");
-	return btoa(binString);
+  const bytes = new TextEncoder().encode(str);
+  const binString = Array.from(bytes, (byte) =>
+    String.fromCodePoint(byte),
+  ).join("");
+  return btoa(binString);
 }
 
 const type = `text/${filename.endsWith(".md") ? "markdown" : "plain"};charset=utf-8`;
@@ -22,5 +22,5 @@ const url = `data:${type};base64,${stringToBase64(contents)}`;
 ---
 
 <Button {...otherProps} download={filename} type="link" href={url}>
-	<slot />
+  <slot />
 </Button>
