@@ -1,0 +1,61 @@
+---
+import Hourglass from "../icons/Hourglass.astro";
+
+interface Props {
+	url: string;
+	summary?: string | null;
+	error?: string;
+}
+
+const { url, summary, error } = Astro.props;
+---
+
+{error && (
+	<aside class="prose">
+		<details>
+			<summary class="cursor-pointer select-none">
+				<h2 class="inline">Failed to retrieve AI summary</h2>
+			</summary>
+			<p class="bg-base-50 dark:bg-base-950 rounded px-4 py-2">
+				{error}
+			</p>
+		</details>
+	</aside>
+)}
+
+{!error && summary && (
+	<aside class="prose">
+		<details>
+			<summary class="cursor-pointer select-none">
+				<h2 class="inline">AI-generated summary</h2>
+			</summary>
+			<div set:html={summary} />
+		</details>
+	</aside>
+)}
+
+{!error && !summary && (
+	<aside
+		hx-trigger="load"
+		hx-get="/api/summary"
+		hx-vals={JSON.stringify({ url })}
+		hx-swap="outerHTML"
+		class="prose js-only"
+	>
+		<details>
+			<summary class="cursor-pointer select-none">
+				<h2 class="inline-block">
+					AI-generated summary{" "}
+					<Hourglass class="h-4 inline animate-springy-spin" />
+				</h2>
+			</summary>
+			<div class="flex flex-col gap-1 @container htmx-indicator">
+				<div class="w-[40cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
+				<div class="w-[87cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
+				<div class="w-[93cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
+				<div class="w-[74cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
+				<div class="w-[90cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse" />
+			</div>
+		</details>
+	</aside>
+)}
