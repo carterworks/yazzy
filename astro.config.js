@@ -1,4 +1,4 @@
-import tailwind from "@astrojs/tailwind";
+import tailwind from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
 export default defineConfig({
