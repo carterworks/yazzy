@@ -3,7 +3,8 @@
 	"version": "0.2.2",
 	"dependencies": {
 		"@hono/zod-validator": "^0.7.2",
-		"@tailwindcss/cli": "^4.1.12",
+		"@tailwindcss/vite": "^4.1.12",
+		"astro": "^5.13.0",
 		"defuddle": "^0.6.5",
 		"dompurify": "^3.2.6",
 		"drizzle-orm": "^0.44.4",
@@ -19,8 +20,7 @@
 	},
 	"scripts": {
 		"check": "biome check --write",
-		"dev": "NODE_ENV=development bun --watch run src/server.tsx",
-		"css": "tailwindcss --input static/styles.css --output static/styles.min.css --cwd src",
+		"dev": "NODE_ENV=development astro dev",
 		"build": "bun run css --minify && NODE_ENV=production bun build src/server.tsx --compile --outfile dist/yazzy && mkdir -p dist/src/db/migrations/meta && cp -r src/db/migrations/ dist/src/db/migrations/"
 	},
 	"type": "module",

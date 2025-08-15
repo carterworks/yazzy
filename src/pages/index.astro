@@ -1,0 +1,37 @@
+---
+
+---
+
+<BasePage title="yazzy" class="space-y-2">
+	<Fragment slot="head">
+		<meta
+			name="description"
+			content="A simple tool to clip web pages to plain text."
+		/>
+		<meta name="keywords" content="clipping, markdown, web pages, plain text" />
+		<meta
+			property="og:description"
+			content="A simple tool to clip web pages to plain text."
+		/>
+		<meta property="og:title" content="yazzy" />
+		<meta property="og:type" content="website" />
+	</Fragment>
+	<header class="space-y-2">
+		<p class="">
+			Tired of popups, ads, and other distractions on your page? Just put the
+			URL in the box below and yazzy will clean it up so you can focus. You can
+			even save it as a Markdown file to keep forever.
+		</p>
+	</header>
+	<form action="/api/clip" method="get" class="flex gap-1 items-center">
+		<Input
+			type="url"
+			id="url"
+			name="url"
+			required
+			placeholder="https://paulgraham.com/submarine.html"
+		/>
+		<Button type="submit" classes="px-4" variant="primary"> Clip </Button>
+	</form>
+	<RecentArticles articles={recentArticles} />
+</BasePage>
