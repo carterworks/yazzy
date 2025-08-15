@@ -2,6 +2,7 @@
 	"name": "yazzy",
 	"version": "0.2.2",
 	"dependencies": {
+		"@astrojs/tailwind": "^6.0.2",
 		"@hono/zod-validator": "^0.7.2",
 		"@tailwindcss/vite": "^4.1.12",
 		"astro": "^5.13.0",

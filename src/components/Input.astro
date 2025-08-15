@@ -1,0 +1,36 @@
+---
+interface Props {
+	type?: string;
+	id?: string;
+	name?: string;
+	required?: boolean;
+	placeholder?: string;
+	value?: string;
+	classes?: string;
+	[key: string]: unknown;
+}
+
+const {
+	type = "text",
+	id,
+	name,
+	required,
+	placeholder,
+	value,
+	classes = "",
+	...rest
+} = Astro.props;
+
+const className = `border border-base-100 dark:border-base-900 rounded block w-full py-1 px-4 transition ${classes}`;
+---
+
+<input
+	type={type}
+	id={id}
+	name={name}
+	required={required}
+	placeholder={placeholder}
+	value={value}
+	class={className}
+	{...rest}
+/>

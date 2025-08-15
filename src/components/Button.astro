@@ -1,0 +1,37 @@
+---
+interface Props {
+	type?: "button" | "submit" | "reset";
+	variant?: "primary" | "secondary";
+	classes?: string;
+	disabled?: boolean;
+}
+
+const {
+	type = "button",
+	variant = "secondary",
+	classes,
+	disabled,
+} = Astro.props;
+
+const baseClasses =
+	"px-2 py-1 rounded transition text-center border cursor-pointer";
+
+const variantClasses = {
+	primary:
+		"bg-base-900 hover:bg-base-800 active:bg-base-850 border-base-900 text-paper dark:bg-base-900 dark:hover:bg-base-800 dark:active:bg-base-850 dark:border-base-900",
+	secondary:
+		"bg-paper hover:bg-base-150 active:bg-base-100 border-base-100 dark:bg-base-900 dark:hover:bg-base-800 dark:active:bg-base-850 dark:border-base-900",
+};
+
+const disabledClasses = "opacity-50 cursor-not-allowed";
+
+const buttonClasses = `${baseClasses} ${variantClasses[variant]} ${disabled ? disabledClasses : ""} ${classes || ""}`;
+---
+
+<button
+	type={type}
+	class={buttonClasses}
+	disabled={disabled}
+>
+	<slot />
+</button>
