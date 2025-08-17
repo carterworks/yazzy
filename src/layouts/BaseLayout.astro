@@ -1,6 +1,9 @@
 ---
 import "../styles/global.css";
 import { version } from "../../package.json" with { type: "json" };
+import ArticleCount from "../components/ArticleCount.astro";
+import { articleRepository } from "../services/ArticleRepository";
+const buildTimeArticleCount = await articleRepository.getArticleCount();
 
 interface Props {
   title?: string;
@@ -70,7 +73,12 @@ const { title, class: classes } = Astro.props;
         <div>v{version}</div>
         <div>
           Article count:{" "}
-          <span hx-trigger="load" hx-get="/api/article-count"> 0 </span>
+          <span hx-trigger="load" hx-get="/api/article-count"
+            ><ArticleCount server:defer
+              ><Fragment slot="fallback">{buildTimeArticleCount}</Fragment
+              ></ArticleCount
+            ></span
+          >
         </div>
       </div>
     </footer>

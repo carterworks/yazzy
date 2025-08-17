@@ -1,0 +1,7 @@
+---
+export const prerender = false;
+import { articleRepository } from "../services/ArticleRepository";
+const count = await articleRepository.getArticleCount();
+---
+
+<Fragment>{count}</Fragment>
