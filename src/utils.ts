@@ -16,6 +16,10 @@ export function formatDate(date: Date | undefined): string {
   return date.toISOString().split("T")[0];
 }
 
+export function escapeDoubleQuotes(value: string): string {
+  return value.replace(/"/g, '\\"');
+}
+
 export function getPlainTextSummary(
   article: ReadablePage,
   length = 100,

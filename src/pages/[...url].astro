@@ -1,0 +1,24 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { articleRepository } from "../services/ArticleRepository";
+
+export const prerender = false;
+const { url } = Astro.params;
+if (!url) {
+  return Astro.redirect("/404");
+}
+let urlObject: URL;
+try {
+  urlObject = new URL(url, Astro.site);
+} catch (error) {
+  return Astro.redirect("/400?url=" + encodeURIComponent(url));
+}
+
+const article = await (async () => {
+  let a = articleRepository.getArticle(url);
+})();
+---
+
+<BaseLayout>
+  <h1>{url}</h1>
+</BaseLayout>
