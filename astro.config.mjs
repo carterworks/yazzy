@@ -1,22 +1,15 @@
 import node from "@astrojs/node";
-import { defineConfig } from "astro/config";
-
 import tailwind from "@astrojs/tailwind";
-
-import icon from "astro-icon";
+import { defineConfig } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
+	output: "server", // Full SSR
 	adapter: node({
 		mode: "standalone",
 	}),
-	integrations: [
-		tailwind(),
-		icon({
-			include: {
-				lucide: ["notebook-text", "file-type"],
-				local: ["inbox-download", "attach"],
-			},
-		}),
-	],
+	integrations: [tailwind()],
+	server: {
+		host: true,
+	},
 });
