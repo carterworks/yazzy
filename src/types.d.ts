@@ -13,9 +13,9 @@ export interface ReadablePage {
 
 declare module "bun" {
 	interface Env {
-		AI_API_KEY: string;
+		AI_API_KEY?: string;
 		DB_PATH: string;
-		AI_ENDPOINT: string;
+		AI_ENDPOINT?: string;
 		BASE_URL: string;
 	}
 }

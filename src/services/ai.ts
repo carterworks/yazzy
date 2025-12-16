@@ -60,7 +60,7 @@ export async function fetchCompletion(
 		],
 		reasoning_effort: reasoning,
 	};
-	if (AI_ENDPOINT.includes("openrouter")) {
+	if (AI_ENDPOINT?.includes("openrouter")) {
 		// @ts-expect-error OpenRouter-specific option
 		params.models = fallbackModels;
 	}
