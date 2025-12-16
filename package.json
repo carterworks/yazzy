@@ -2,9 +2,9 @@
 	"name": "yazzy",
 	"version": "0.2.2",
 	"dependencies": {
-		"@astrojs/node": "^5.1.0",
+		"@astrojs/node": "^9.0.0",
 		"@tailwindcss/cli": "^4.1.12",
-		"astro": "^5.0.0",
+		"astro": "^5.16.6",
 		"defuddle": "^0.6.5",
 		"dompurify": "^3.2.6",
 		"drizzle-orm": "^0.44.4",
