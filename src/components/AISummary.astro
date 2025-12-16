@@ -13,7 +13,7 @@ let error: string | null = null;
 
 try {
 	const article = await cache.getArticle(url);
-	
+
 	if (!article) {
 		error = `Article not found for URL ${url}`;
 	} else if (article.summary) {
