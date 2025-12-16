@@ -22,7 +22,7 @@
 	"scripts": {
 		"check": "biome check --write",
 		"dev": "astro dev",
-		"css": "tailwindcss --input src/static/styles.css --output public/styles.min.css --minify",
+		"css": "tailwindcss --input src/static/styles.css --output public/styles.min.css --minify --cwd src",
 		"build": "astro build && mkdir -p dist/src/db/migrations/meta && cp -r src/db/migrations/ dist/src/db/migrations/",
 		"preview": "astro preview"
 	},
