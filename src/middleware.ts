@@ -36,7 +36,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
 	const response = await next();
 
 	const elapsed = (performance.now() - start).toFixed(2);
-	log(`--> ${requestId} ${context.request.method} ${path} ${response.status} ${elapsed}ms`);
+	log(
+		`--> ${requestId} ${context.request.method} ${path} ${response.status} ${elapsed}ms`,
+	);
 
 	response.headers.set("X-Request-Id", requestId);
 	response.headers.set("X-Response-Time", `${elapsed}ms`);
@@ -44,4 +46,3 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
 	return response;
 });
-
