@@ -20,8 +20,8 @@ declare module "bun" {
 	}
 }
 
-type Env = {
-	Variables: {
+declare namespace App {
+	interface Locals {
 		requestId: string;
-	};
-};
+	}
+}
