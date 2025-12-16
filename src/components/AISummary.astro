@@ -1,0 +1,58 @@
+---
+import { cache } from "../services/cache";
+import { summarize } from "../services/summarizer";
+
+interface Props {
+	url: string;
+}
+
+const { url } = Astro.props;
+
+let summary: string | null = null;
+let error: string | null = null;
+
+try {
+	const article = await cache.getArticle(url);
+	
+	if (!article) {
+		error = `Article not found for URL ${url}`;
+	} else if (article.summary) {
+		summary = article.summary;
+	} else if (article.textContent) {
+		// Generate summary if we have text content
+		summary = await summarize(article.textContent);
+		if (summary) {
+			await cache.addSummary(url, summary);
+		}
+	}
+} catch (err) {
+	if (err instanceof Error) {
+		error = err.message;
+	} else if (typeof err === "string") {
+		error = err;
+	} else {
+		error = `Unknown error: ${err}`;
+	}
+}
+---
+
+{error ? (
+	<aside class="prose">
+		<details>
+			<summary class="cursor-pointer select-none">
+				<h2 class="inline">Failed to retrieve AI summary</h2>
+			</summary>
+			<p class="bg-base-50 dark:bg-base-950 rounded px-4 py-2">{error}</p>
+		</details>
+	</aside>
+) : summary ? (
+	<aside class="prose">
+		<details>
+			<summary class="cursor-pointer select-none">
+				<h2 class="inline">AI-generated summary</h2>
+			</summary>
+			<div set:html={summary} />
+		</details>
+	</aside>
+) : null}
+
