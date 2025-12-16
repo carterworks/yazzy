@@ -1,18 +1,18 @@
 ---
-import BasePage from "../layouts/BasePage.astro";
 import ArticleHeader from "../components/ArticleHeader.astro";
 import Button from "../components/Button.astro";
 import DownloadAs from "../components/DownloadAs.astro";
 import BookClosed from "../components/icons/BookClosed.astro";
+import Duplicate from "../components/icons/Duplicate.astro";
 import InboxDownload from "../components/icons/InboxDownload.astro";
 import Obsidian from "../components/icons/Obsidian.astro";
-import Duplicate from "../components/icons/Duplicate.astro";
+import BasePage from "../layouts/BasePage.astro";
 import { cache } from "../services/cache";
 import { clip } from "../services/clipper";
+import log from "../services/log";
 import convertHtmlToMarkdown from "../services/markdown";
 import type { ReadablePage } from "../types";
 import { formatDate, getPlainTextSummary } from "../utils";
-import log from "../services/log";
 
 function getFilename(title: string): string {
 	return title
@@ -55,7 +55,9 @@ function generateObsidianContents(article: ReadablePage): string {
 			fileContent += escapeDoubleQuotes(value);
 		} else if (Array.isArray(value)) {
 			fileContent += "\n";
-			fileContent += value.map((v) => `  - ${escapeDoubleQuotes(v)}`).join("\n");
+			fileContent += value
+				.map((v) => `  - ${escapeDoubleQuotes(v)}`)
+				.join("\n");
 		} else if (value && value instanceof Date) {
 			fileContent += formatDate(value);
 		} else {
@@ -136,13 +138,13 @@ try {
 	const requestId = Astro.locals.requestId || "unknown";
 	message = `[requestId=${requestId}] ${message}`;
 	log.error(message);
-	
+
 	// Extract error code from message
 	const errorCode = message.match(/ \d{3} /);
 	const status = errorCode
 		? (Number.parseInt(errorCode[0].trim(), 10) as 400 | 404 | 500)
 		: 500;
-	
+
 	return Astro.redirect(`/error?message=${encodeURIComponent(message)}`);
 }
 
