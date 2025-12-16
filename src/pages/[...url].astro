@@ -1,0 +1,248 @@
+---
+import BasePage from "../layouts/BasePage.astro";
+import ArticleHeader from "../components/ArticleHeader.astro";
+import Button from "../components/Button.astro";
+import DownloadAs from "../components/DownloadAs.astro";
+import BookClosed from "../components/icons/BookClosed.astro";
+import InboxDownload from "../components/icons/InboxDownload.astro";
+import Obsidian from "../components/icons/Obsidian.astro";
+import Duplicate from "../components/icons/Duplicate.astro";
+import { cache } from "../services/cache";
+import { clip } from "../services/clipper";
+import convertHtmlToMarkdown from "../services/markdown";
+import type { ReadablePage } from "../types";
+import { formatDate, getPlainTextSummary } from "../utils";
+import log from "../services/log";
+
+function getFilename(title: string): string {
+	return title
+		.replace(":", "")
+		.replace(/[/\\?%*|"<>]/g, "-")
+		.replace(/\s+/g, "-")
+		.toLocaleLowerCase();
+}
+
+function generatePlainTextContents(article: ReadablePage): string {
+	const plainTextSummary = getPlainTextSummary(article, 1000);
+	return `${article.title}\n---\nSummary\n\n${plainTextSummary}\n---\n${article.textContent}`;
+}
+
+function escapeDoubleQuotes(value: string): string {
+	return value.replace(/"/g, '\\"');
+}
+
+function generateObsidianContents(article: ReadablePage): string {
+	const authorBrackets = article.author ? `[[${article.author}]]` : "";
+	const frontmatter = {
+		category: "[[Clippings]]",
+		author: `${authorBrackets}`,
+		title: `${article.title}`,
+		url: article.url,
+		clipped: new Date(),
+		published: article.published,
+		tags: article.tags,
+	};
+	let fileContent = "---\n";
+	for (const [key, value] of Object.entries(frontmatter)) {
+		fileContent += `${key}: `;
+		if (
+			value === null ||
+			value === undefined ||
+			(typeof value === "string" && value.trim().length === 0)
+		) {
+			// skip empty values
+		} else if (typeof value === "string") {
+			fileContent += escapeDoubleQuotes(value);
+		} else if (Array.isArray(value)) {
+			fileContent += "\n";
+			fileContent += value.map((v) => `  - ${escapeDoubleQuotes(v)}`).join("\n");
+		} else if (value && value instanceof Date) {
+			fileContent += formatDate(value);
+		} else {
+			fileContent += `${value}`;
+		}
+		fileContent += "\n";
+	}
+	fileContent = fileContent.replace(/(\[\[.*?\]\])/g, '"$1"');
+	fileContent += "\n---\n";
+	fileContent += `\n# ${article.title}\n`;
+	if (article.summary) {
+		fileContent += "\n---\n";
+		fileContent += "\n## Summary\n";
+		fileContent += `\n${convertHtmlToMarkdown(article.summary, article.url)}\n`;
+		fileContent += "\n---\n";
+	}
+	fileContent += `\n${article.markdownContent}\n`;
+
+	return fileContent;
+}
+
+function generateObsidianUri(
+	fileContent: string,
+	title: string,
+	folder = "Clippings/",
+	vault = "",
+): string {
+	let obsidianUri = `obsidian://new?file=${encodeURIComponent(
+		`${folder}${getFilename(title)}`,
+	)}`;
+	const vaultParam = vault ? `&vault=${encodeURIComponent(vault)}` : "";
+	obsidianUri += vaultParam;
+	obsidianUri += `&content=${encodeURIComponent(fileContent)}`;
+	obsidianUri += "&overwrite=true";
+	return obsidianUri;
+}
+
+const { url: urlParam } = Astro.params;
+const searchParams = Astro.url.searchParams;
+
+if (!urlParam) {
+	return Astro.redirect("/");
+}
+
+// Reconstruct the full URL from the path parameter and query params
+let urlString = urlParam;
+if (!urlString.startsWith("http://") && !urlString.startsWith("https://")) {
+	urlString = `https://${urlString}`;
+}
+
+let url: URL;
+try {
+	url = new URL(urlString);
+	// Append any query params from the request
+	for (const [key, value] of searchParams.entries()) {
+		url.searchParams.append(key, value);
+	}
+} catch {
+	return Astro.redirect("/");
+}
+
+let article: ReadablePage | undefined;
+try {
+	article = await cache.getArticle(url.toString());
+	if (!article) {
+		article = await clip(url);
+		await cache.insertArticle(article);
+	}
+} catch (err) {
+	let message: string;
+	if (err instanceof Error) {
+		message = err.message;
+	} else if (typeof err === "string") {
+		message = err;
+	} else {
+		message = `Unknown error: ${err}`;
+	}
+	const requestId = Astro.locals.requestId || "unknown";
+	message = `[requestId=${requestId}] ${message}`;
+	log.error(message);
+	
+	// Extract error code from message
+	const errorCode = message.match(/ \d{3} /);
+	const status = errorCode
+		? (Number.parseInt(errorCode[0].trim(), 10) as 400 | 404 | 500)
+		: 500;
+	
+	return Astro.redirect(`/error?message=${encodeURIComponent(message)}`);
+}
+
+const plainTextSummary = getPlainTextSummary(article, 1000);
+const markdownContent = generateObsidianContents(article);
+const articleHostname = new URL(article.url).hostname;
+const title = article.title ?? `${new Date().toISOString()} Clipping`;
+const obsidianUri = generateObsidianUri(markdownContent, title);
+const plainTextContent = generatePlainTextContents(article);
+---
+
+<BasePage title={`${article.title} | yazzy`} classes="">
+	<Fragment slot="head">
+		<meta name="description" content={plainTextSummary} />
+		<meta
+			property="og:title"
+			content={`${article.title} | ${articleHostname} | yazzy`}
+		/>
+		<meta property="og:description" content={plainTextSummary} />
+		<meta property="og:url" content={article.url} />
+		<meta property="og:type" content="article" />
+		{article.published && (
+			<meta
+				property="og:article:published_time"
+				content={formatDate(article.published)}
+			/>
+		)}
+		{article.author && (
+			<meta property="og:article:author" content={article.author} />
+		)}
+		{articleHostname.includes("youtu") && (
+			<>
+				<link rel="stylesheet" href="/lite-yt-embed.css" />
+				<script type="module" src="/lite-yt-embed.js" async defer />
+			</>
+		)}
+		<script
+			type="module"
+			id="obsidian-script"
+			data-markdown-content={JSON.stringify(markdownContent)}
+			data-obsidian-uri={JSON.stringify(generateObsidianUri("", title))}
+		/>
+	</Fragment>
+
+	<aside slot="header" class="flex gap-2 items-center order-last print:hidden">
+		<DownloadAs
+			contents={markdownContent}
+			filename={`${getFilename(title)}.md`}
+			title="Download as Markdown"
+		>
+			<BookClosed class="h-4" />
+		</DownloadAs>
+		<DownloadAs
+			contents={plainTextContent}
+			filename={`${getFilename(title)}.txt`}
+			title="Download as plain text"
+		>
+			<InboxDownload class="h-4" />
+		</DownloadAs>
+		<Button href={obsidianUri} title="Save to Obsidian" type="link">
+			<Obsidian class="h-4" />
+		</Button>
+		<Button
+			title="Copy Markdown to clipboard"
+			type="button"
+			id="copy-markdown"
+			extraClasses="js-only"
+		>
+			<Duplicate class="h-4" />
+		</Button>
+	</aside>
+
+	<main>
+		<article class="space-y-8">
+			<ArticleHeader article={article} classes="" />
+			<div class="prose" set:html={article.htmlContent ?? ""} />
+		</article>
+	</main>
+</BasePage>
+
+<script>
+	// Copy markdown to clipboard functionality
+	window.addEventListener("DOMContentLoaded", () => {
+		const $jsOnly = document.querySelectorAll(".js-only");
+		for (const $element of $jsOnly) {
+			$element.classList.remove("js-only");
+		}
+
+		const copyButton = document.getElementById("copy-markdown");
+		const markdownContent =
+			document.getElementById("obsidian-script")?.dataset.markdownContent;
+		if (!markdownContent) {
+			return;
+		}
+		if (!copyButton) {
+			return;
+		}
+		copyButton.addEventListener("click", () => {
+			navigator.clipboard.writeText(markdownContent);
+		});
+	});
+</script>
+

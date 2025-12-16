@@ -1,0 +1,11 @@
+---
+import BasePage from "../layouts/BasePage.astro";
+
+const message = Astro.url.searchParams.get("message") || "An error occurred";
+---
+
+<BasePage title="Failure to clip | yazzy">
+	<h1 class="text-2xl font-didone">Failure to clip</h1>
+	<p>{message}</p>
+</BasePage>
+

@@ -1,0 +1,41 @@
+---
+import AISummary from "./AISummary.astro";
+import AISummaryFallback from "./AISummaryFallback.astro";
+import type { ReadablePage } from "../types";
+import { formatDate } from "../utils";
+
+interface Props {
+	article: ReadablePage;
+	classes?: string;
+}
+
+const { article, classes = "" } = Astro.props;
+
+function generateMetadataNuggets(article: ReadablePage): string[] {
+	const articleHostname = new URL(article.url).hostname;
+	const metadata = [
+		article.author,
+		article.published && formatDate(article.published),
+		articleHostname,
+	].filter((nugget) => !!nugget) as string[];
+	return metadata;
+}
+
+const metadata = generateMetadataNuggets(article);
+---
+
+<header class={classes}>
+	<h2 class="text-2xl font-didone">
+		<a
+			href={article.url}
+			class="transition-colors rounded hover:bg-base-100 dark:hover:bg-base-800"
+		>
+			{article.title}
+		</a>
+	</h2>
+	<p class="text-sm">{metadata.join(" ・ ")}</p>
+	<AISummary server:defer url={article.url}>
+		<AISummaryFallback slot="fallback" />
+	</AISummary>
+</header>
+
