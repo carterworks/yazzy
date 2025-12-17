@@ -6,7 +6,10 @@ import BookClosed from "../components/icons/BookClosed.astro";
 import Duplicate from "../components/icons/Duplicate.astro";
 import Hourglass from "../components/icons/Hourglass.astro";
 import InboxDownload from "../components/icons/InboxDownload.astro";
+import Moon from "../components/icons/Moon.astro";
 import Obsidian from "../components/icons/Obsidian.astro";
+import Sun from "../components/icons/Sun.astro";
+import SunFog from "../components/icons/SunFog.astro";
 import BasePage from "../layouts/BasePage.astro";
 ---
 
@@ -107,6 +110,33 @@ import BasePage from "../layouts/BasePage.astro";
 				</DownloadAs>
 			</div>
 		</div>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Theme Toggle
+			</h3>
+			<div class="flex flex-wrap gap-2 items-center">
+				<button
+					type="button"
+					id="theme-toggle-demo"
+					class="px-2 py-1 rounded transition-colors duration-200 ease text-center border cursor-pointer bg-paper hover:bg-base-150 active:bg-base-100 border-base-100 dark:bg-base-900 dark:hover:bg-base-800 dark:active:bg-base-850 dark:border-base-900"
+					aria-label="Theme toggle demo"
+					title="Theme toggle demo"
+					data-theme="light"
+				>
+					<span class="demo-icon-container">
+						<Sun class="h-4 demo-theme-icon demo-theme-icon-light" />
+						<Moon class="h-4 demo-theme-icon demo-theme-icon-dark" />
+						<SunFog class="h-4 demo-theme-icon demo-theme-icon-system" />
+					</span>
+				</button>
+				<span class="text-sm text-base-600 dark:text-base-400"
+					>Cycles through light → dark → system with blur/scale icon transitions</span
+				>
+			</div>
+		</div>
 	</section>
 
 	<!-- Inputs Section -->
@@ -190,8 +220,20 @@ import BasePage from "../layouts/BasePage.astro";
 				>
 			</div>
 			<div class="flex flex-col items-center gap-2">
+				<Moon class="h-8" />
+				<span class="text-xs text-base-600 dark:text-base-400">Moon</span>
+			</div>
+			<div class="flex flex-col items-center gap-2">
 				<Obsidian class="h-8" />
 				<span class="text-xs text-base-600 dark:text-base-400">Obsidian</span>
+			</div>
+			<div class="flex flex-col items-center gap-2">
+				<Sun class="h-8" />
+				<span class="text-xs text-base-600 dark:text-base-400">Sun</span>
+			</div>
+			<div class="flex flex-col items-center gap-2">
+				<SunFog class="h-8" />
+				<span class="text-xs text-base-600 dark:text-base-400">SunFog</span>
 			</div>
 		</div>
 
@@ -651,3 +693,70 @@ import BasePage from "../layouts/BasePage.astro";
 		</div>
 	</section>
 </BasePage>
+
+<style>
+	.demo-icon-container {
+		position: relative;
+		display: block;
+		width: 1rem;
+		height: 1rem;
+	}
+
+	.demo-theme-icon {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		transform: scale(0.92);
+		filter: blur(2px);
+		transition:
+			opacity 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+			transform 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+			filter 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+		will-change: transform, opacity, filter;
+	}
+
+	[data-theme="light"] .demo-theme-icon-light,
+	[data-theme="dark"] .demo-theme-icon-dark,
+	[data-theme="system"] .demo-theme-icon-system {
+		opacity: 1;
+		transform: scale(1);
+		filter: blur(0);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.demo-theme-icon {
+			transition: opacity 0s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+			transform: scale(1);
+			filter: none;
+		}
+	}
+</style>
+
+<script>
+	function setupDemoToggle() {
+		const button = document.getElementById("theme-toggle-demo");
+		if (!button) return;
+
+		const themes = ["light", "dark", "system"] as const;
+		type Theme = (typeof themes)[number];
+
+		function getNextTheme(current: Theme): Theme {
+			const currentIndex = themes.indexOf(current);
+			return themes[(currentIndex + 1) % themes.length];
+		}
+
+		function getCurrentTheme(): Theme {
+			const theme = button?.getAttribute("data-theme") as Theme;
+			return themes.includes(theme) ? theme : "light";
+		}
+
+		button.addEventListener("click", () => {
+			const current = getCurrentTheme();
+			const next = getNextTheme(current);
+			button.setAttribute("data-theme", next);
+		});
+	}
+
+	setupDemoToggle();
+	document.addEventListener("astro:after-swap", setupDemoToggle);
+</script>

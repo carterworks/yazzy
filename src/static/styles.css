@@ -291,7 +291,8 @@
 	}
 	a:not(:is(code, pre, h1, h2, h3, h4, h5, h6) *):not(:has(img)):not(:empty) {
 		@apply break-words rounded;
-		transition: color 200ms ease, background-color 200ms ease;
+		transition: color 0.28s var(--ease-out-quad), background-color 0.28s
+			var(--ease-out-quad);
 		@media (hover: hover) and (pointer: fine) {
 			&:hover {
 				@apply bg-base-100 dark:bg-base-800;
@@ -537,6 +538,12 @@ html.light {
 }
 html.dark {
 	color-scheme: dark;
+}
+
+/* Theme color transition */
+body {
+	transition: background-color 0.28s var(--ease-out-quad), color 0.28s
+		var(--ease-out-quad);
 }
 .primary {
 	fill: light-dark(var(--color-black), var(--color-base-200));
