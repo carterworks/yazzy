@@ -12,7 +12,6 @@ const { url } = Astro.props;
 let summary: string | null = null;
 let error: string | null = null;
 
-// Don't attempt to generate summaries if AI is not enabled
 if (AI_ENABLED) {
 	try {
 		const article = await cache.getArticle(url);
