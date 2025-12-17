@@ -18,20 +18,22 @@ const { title = "", classes = "" } = Astro.props;
 		<title>{title}</title>
 		<link rel="manifest" href="/manifest.webmanifest" />
 		<link rel="icon" href="/scissors.svg" type="image/svg+xml" />
-		<script src="/scripts.mjs" type="module" defer async />
+		<script src="/scripts.mjs" type="module" defer async></script>
 		<slot name="head" />
 	</head>
 
-	<body class="text-base bg-paper font-geometric-humanist dark:bg-black text-black dark:text-base-200 px-4 py-2 space-y-8 max-w-prose mx-auto">
+	<body
+		class="text-base bg-paper font-geometric-humanist dark:bg-black text-black dark:text-base-200 px-4 py-2 space-y-8 max-w-prose mx-auto"
+	>
 		<header
 			class="flex items-center gap-4 print:hidden"
-			style={{ viewTransitionName: "header" }}
+			style={{viewTransitionName: "header"}}
 		>
 			<div class="mr-auto">
 				<h1 class="text-2xl font-didone">
 					<a
 						href="/"
-						class="transition-colors rounded hover:bg-base-100 dark:hover:bg-base-800"
+						class="transition-colors duration-200 ease rounded hover:bg-base-100 dark:hover:bg-base-800"
 					>
 						yazzy
 					</a>
@@ -45,7 +47,7 @@ const { title = "", classes = "" } = Astro.props;
 		</div>
 		<footer
 			class="flex justify-between items-start print:hidden"
-			style={{ viewTransitionName: "footer" }}
+			style={{viewTransitionName: "footer"}}
 		>
 			<ul>
 				<li>
@@ -53,7 +55,7 @@ const { title = "", classes = "" } = Astro.props;
 						href="https://github.com/carterworks/yazzy"
 						target="_blank"
 						rel="noreferrer"
-						class="underline transition-colors rounded hover:bg-base-100 dark:hover:bg-base-800"
+						class="underline transition-colors duration-200 ease rounded hover:bg-base-100 dark:hover:bg-base-800"
 					>
 						Github
 					</a>
@@ -61,7 +63,7 @@ const { title = "", classes = "" } = Astro.props;
 				<li>
 					<a
 						href="/api/db-dump"
-						class="underline transition-colors rounded hover:bg-base-100 dark:hover:bg-base-800"
+						class="underline transition-colors duration-200 ease rounded hover:bg-base-100 dark:hover:bg-base-800"
 					>
 						Download db dump
 					</a>
@@ -77,10 +79,10 @@ const { title = "", classes = "" } = Astro.props;
 		</footer>
 		<script>
 			// Load article count on page load
-			fetch('/api/article-count')
-				.then(res => res.text())
-				.then(count => {
-					const el = document.getElementById('article-count');
+			fetch("/api/article-count")
+				.then((res) => res.text())
+				.then((count) => {
+					const el = document.getElementById("article-count");
 					if (el) el.textContent = count;
 				})
 				.catch(() => {});
