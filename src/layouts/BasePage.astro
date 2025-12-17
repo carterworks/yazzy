@@ -52,7 +52,7 @@ const themeClass = theme === "light" ? "light" : theme === "dark" ? "dark" : "";
 			<slot />
 		</div>
 		<footer
-			class="flex justify-between items-start print:hidden"
+			class="flex justify-between items-end print:hidden"
 			style={{viewTransitionName: "footer"}}
 		>
 			<ul>
@@ -72,6 +72,14 @@ const themeClass = theme === "light" ? "light" : theme === "dark" ? "dark" : "";
 						class="underline transition-colors duration-200 ease rounded hover:bg-base-100 dark:hover:bg-base-800"
 					>
 						Download db dump
+					</a>
+				</li>
+				<li>
+					<a
+						href="/ui"
+						class="underline transition-colors duration-200 ease rounded hover:bg-base-100 dark:hover:bg-base-800"
+					>
+						UI Components
 					</a>
 				</li>
 			</ul>
