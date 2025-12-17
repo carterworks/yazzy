@@ -19,7 +19,7 @@
 		"zod": "^3.25.76"
 	},
 	"scripts": {
-		"check": "biome check --write",
+		"check": "tsc --noEmit && biome check --write",
 		"dev": "bun --bun astro dev",
 		"build": "bun --bun astro build && mkdir -p dist/src/db/migrations/meta && cp -r src/db/migrations/ dist/src/db/migrations/",
 		"preview": "bun --bun astro preview"

@@ -12,7 +12,6 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import { JSDOM } from "jsdom";
-import log from "./log";
 const RE_YOUTUBE =
 	/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
 const USER_AGENT =
@@ -167,11 +166,15 @@ export async function fetchTranscript(
 
 	if (
 		config?.lang &&
-		!captions.captionTracks.some((track) => track.languageCode === config?.lang)
+		!captions.captionTracks.some(
+			(track: { languageCode: string }) => track.languageCode === config?.lang,
+		)
 	) {
 		throw new YoutubeTranscriptNotAvailableLanguageError(
 			config?.lang,
-			captions.captionTracks.map((track) => track.languageCode),
+			captions.captionTracks.map(
+				(track: { languageCode: string }) => track.languageCode,
+			),
 			videoId,
 		);
 	}
@@ -179,7 +182,8 @@ export async function fetchTranscript(
 	const transcriptURL = (
 		config?.lang
 			? captions.captionTracks.find(
-					(track) => track.languageCode === config?.lang,
+					(track: { languageCode: string }) =>
+						track.languageCode === config?.lang,
 				)
 			: captions.captionTracks[0]
 	).baseUrl;
@@ -209,15 +213,20 @@ export async function fetchTranscript(
 		),
 	);
 
-	const title = (videoObject?.name as string) ?? "YouTube Video";
-	const author = videoObject?.author?.name ?? null;
-	const published = videoObject?.datePublished
-		? new Date(videoObject.datePublished as string)
+	const title = (videoObject?.["name"] as string) ?? "YouTube Video";
+	const author =
+		videoObject?.["author"] &&
+		typeof videoObject["author"] === "object" &&
+		"name" in videoObject["author"]
+			? (videoObject["author"] as { name: string }).name
+			: null;
+	const published = videoObject?.["datePublished"]
+		? new Date(videoObject["datePublished"] as string)
 		: undefined;
-	const createdAt = videoObject?.uploadDate
-		? new Date(videoObject.uploadDate as string)
+	const createdAt = videoObject?.["uploadDate"]
+		? new Date(videoObject["uploadDate"] as string)
 		: undefined;
-	const thumbnailUrl = videoObject?.thumbnailUrl as string;
+	const thumbnailUrl = videoObject?.["thumbnailUrl"] as string;
 	return {
 		title,
 		author,

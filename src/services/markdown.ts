@@ -85,7 +85,7 @@ function asGenericElement(node: unknown): GenericElement {
 
 const footnotes: { [key: string]: string } = {};
 
-function createMarkdownContent(content: string, url: string) {
+function createMarkdownContent(content: string, _url: string) {
 	const turndownService = new TurndownService({
 		headingStyle: "atx",
 		hr: "---",
@@ -154,8 +154,8 @@ function createMarkdownContent(content: string, url: string) {
 	turndownService.remove(["style", "script"]);
 
 	// Keep iframes, video, audio, sup, and sub elements
-	// @ts-ignore
-	turndownService.keep([
+	// SVG and math are not in HTMLElementTagNameMap but are valid elements
+	const elementsToKeep = [
 		"iframe",
 		"video",
 		"audio",
@@ -163,7 +163,8 @@ function createMarkdownContent(content: string, url: string) {
 		"sub",
 		"svg",
 		"math",
-	]);
+	] as unknown as Array<keyof HTMLElementTagNameMap>;
+	turndownService.keep(elementsToKeep);
 	turndownService.remove(["button"]);
 
 	turndownService.addRule("list", {
@@ -281,7 +282,7 @@ function createMarkdownContent(content: string, url: string) {
 				let captionContent = figcaption.innerHTML || "";
 				captionContent = captionContent.replace(
 					/<math.*?>(.*?)<\/math>/g,
-					(match, mathContent, offset, string) => {
+					(match, _mathContent, offset, string) => {
 						const mathElement = new DOMParser().parseFromString(
 							match,
 							"text/html",
@@ -316,7 +317,7 @@ function createMarkdownContent(content: string, url: string) {
 			// Handle references in the caption
 			caption = caption.replace(
 				/\[([^\]]+)\]\(([^)]+)\)/g,
-				(match, text, href) => {
+				(_match, text, href) => {
 					return `[${text}](${href})`;
 				},
 			);
@@ -372,13 +373,13 @@ function createMarkdownContent(content: string, url: string) {
 
 	// Add a new custom rule for complex link structures
 	turndownService.addRule("complexLinkStructure", {
-		filter: (node, options) =>
+		filter: (node, _options) =>
 			node.nodeName === "A" &&
 			node.childNodes.length > 1 &&
 			Array.from(node.childNodes).some((child) =>
 				["H1", "H2", "H3", "H4", "H5", "H6"].includes(child.nodeName),
 			),
-		replacement: (content, node, options) => {
+		replacement: (content, node, _options) => {
 			if (!isGenericElement(node)) return content;
 			const href = node.getAttribute("href");
 			const title = node.getAttribute("title");
@@ -522,7 +523,7 @@ function createMarkdownContent(content: string, url: string) {
 			if (node.classList?.contains("footnote-backref")) return true;
 			return false;
 		},
-		replacement: (content, node) => "",
+		replacement: (_content, _node) => "",
 	});
 
 	turndownService.addRule("handleTextNodesInTables", {
