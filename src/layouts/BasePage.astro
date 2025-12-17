@@ -1,6 +1,7 @@
 ---
 import { version } from "../../package.json" with { type: "json" };
 import "../static/styles.css";
+import ThemeToggle from "../components/ThemeToggle.astro";
 
 interface Props {
 	title?: string;
@@ -8,9 +9,13 @@ interface Props {
 }
 
 const { title = "", classes = "" } = Astro.props;
+
+const themeCookie = Astro.cookies.get("theme");
+const theme = themeCookie?.value || "system";
+const themeClass = theme === "light" ? "light" : theme === "dark" ? "dark" : "";
 ---
 
-<html lang="en" class="md:text-lg">
+<html lang="en" class:list={["md:text-lg", themeClass]}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,20 +23,22 @@ const { title = "", classes = "" } = Astro.props;
 		<title>{title}</title>
 		<link rel="manifest" href="/manifest.webmanifest" />
 		<link rel="icon" href="/scissors.svg" type="image/svg+xml" />
-		<script src="/scripts.mjs" type="module" defer async />
+		<script src="/scripts.mjs" type="module" defer async></script>
 		<slot name="head" />
 	</head>
 
-	<body class="text-base bg-paper font-geometric-humanist dark:bg-black text-black dark:text-base-200 px-4 py-2 space-y-8 max-w-prose mx-auto">
+	<body
+		class="text-base bg-paper font-geometric-humanist dark:bg-black text-black dark:text-base-200 px-4 py-2 space-y-8 max-w-prose mx-auto"
+	>
 		<header
-			class="flex items-center gap-4 print:hidden"
-			style={{ viewTransitionName: "header" }}
+			class="flex items-center gap-2 print:hidden"
+			style={{viewTransitionName: "header"}}
 		>
 			<div class="mr-auto">
 				<h1 class="text-2xl font-didone">
 					<a
 						href="/"
-						class="transition-colors rounded hover:bg-base-100 dark:hover:bg-base-800"
+						class="transition-colors duration-200 ease rounded hover:bg-base-100 dark:hover:bg-base-800"
 					>
 						yazzy
 					</a>
@@ -39,13 +46,14 @@ const { title = "", classes = "" } = Astro.props;
 				<p class="text-xs">Plain ol' reading</p>
 			</div>
 			<slot name="header" />
+			<ThemeToggle />
 		</header>
 		<div class={classes}>
 			<slot />
 		</div>
 		<footer
-			class="flex justify-between items-start print:hidden"
-			style={{ viewTransitionName: "footer" }}
+			class="flex justify-between items-end print:hidden"
+			style={{viewTransitionName: "footer"}}
 		>
 			<ul>
 				<li>
@@ -53,7 +61,7 @@ const { title = "", classes = "" } = Astro.props;
 						href="https://github.com/carterworks/yazzy"
 						target="_blank"
 						rel="noreferrer"
-						class="underline transition-colors rounded hover:bg-base-100 dark:hover:bg-base-800"
+						class="underline transition-colors duration-200 ease rounded hover:bg-base-100 dark:hover:bg-base-800"
 					>
 						Github
 					</a>
@@ -61,9 +69,17 @@ const { title = "", classes = "" } = Astro.props;
 				<li>
 					<a
 						href="/api/db-dump"
-						class="underline transition-colors rounded hover:bg-base-100 dark:hover:bg-base-800"
+						class="underline transition-colors duration-200 ease rounded hover:bg-base-100 dark:hover:bg-base-800"
 					>
 						Download db dump
+					</a>
+				</li>
+				<li>
+					<a
+						href="/ui"
+						class="underline transition-colors duration-200 ease rounded hover:bg-base-100 dark:hover:bg-base-800"
+					>
+						UI Components
 					</a>
 				</li>
 			</ul>
@@ -77,10 +93,10 @@ const { title = "", classes = "" } = Astro.props;
 		</footer>
 		<script>
 			// Load article count on page load
-			fetch('/api/article-count')
-				.then(res => res.text())
-				.then(count => {
-					const el = document.getElementById('article-count');
+			fetch("/api/article-count")
+				.then((res) => res.text())
+				.then((count) => {
+					const el = document.getElementById("article-count");
 					if (el) el.textContent = count;
 				})
 				.catch(() => {});

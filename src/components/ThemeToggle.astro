@@ -1,0 +1,103 @@
+---
+import Moon from "./icons/Moon.astro";
+import Sun from "./icons/Sun.astro";
+import SunFog from "./icons/SunFog.astro";
+
+const themeCookie = Astro.cookies.get("theme");
+const theme = themeCookie?.value || "system";
+---
+
+<button
+	type="button"
+	id="theme-toggle"
+	class="px-2 py-1 rounded transition-colors duration-200 ease text-center border cursor-pointer bg-paper hover:bg-base-150 active:bg-base-100 border-base-100 dark:bg-base-900 dark:hover:bg-base-800 dark:active:bg-base-850 dark:border-base-900"
+	aria-label="Toggle theme"
+	title="Toggle theme"
+	data-theme={theme}
+>
+	<Sun class="h-4 theme-icon theme-icon-light" />
+	<Moon class="h-4 theme-icon theme-icon-dark" />
+	<SunFog class="h-4 theme-icon theme-icon-system" />
+</button>
+
+<style>
+	.theme-icon {
+		display: none;
+	}
+
+	[data-theme="light"] .theme-icon-light {
+		display: block;
+	}
+
+	[data-theme="dark"] .theme-icon-dark {
+		display: block;
+	}
+
+	[data-theme="system"] .theme-icon-system {
+		display: block;
+	}
+</style>
+
+<script>
+	function setupThemeToggle() {
+		const button = document.getElementById("theme-toggle");
+		if (!button) return;
+
+		const themes = ["system", "light", "dark"] as const;
+		type Theme = (typeof themes)[number];
+
+		function getNextTheme(current: Theme): Theme {
+			const currentIndex = themes.indexOf(current);
+			return themes[(currentIndex + 1) % themes.length];
+		}
+
+		function applyTheme(theme: Theme) {
+			const html = document.documentElement;
+			html.classList.remove("light", "dark");
+
+			if (theme === "system") {
+				const prefersDark = window.matchMedia(
+					"(prefers-color-scheme: dark)"
+				).matches;
+				html.classList.add(prefersDark ? "dark" : "light");
+			} else {
+				html.classList.add(theme);
+			}
+
+			button?.setAttribute("data-theme", theme);
+
+			const labels: Record<Theme, string> = {
+				light: "Current theme: light. Click to switch to dark.",
+				dark: "Current theme: dark. Click to switch to system.",
+				system: "Current theme: system. Click to switch to light.",
+			};
+			button?.setAttribute("aria-label", labels[theme]);
+
+			document.cookie = `theme=${theme}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+		}
+
+		function getCurrentTheme(): Theme {
+			const theme = button?.getAttribute("data-theme") as Theme;
+			return themes.includes(theme) ? theme : "system";
+		}
+
+		button.addEventListener("click", () => {
+			const current = getCurrentTheme();
+			const next = getNextTheme(current);
+			applyTheme(next);
+		});
+
+		window
+			.matchMedia("(prefers-color-scheme: dark)")
+			.addEventListener("change", () => {
+				if (getCurrentTheme() === "system") {
+					applyTheme("system");
+				}
+			});
+
+		applyTheme(getCurrentTheme());
+	}
+
+	setupThemeToggle();
+	document.addEventListener("astro:after-swap", setupThemeToggle);
+</script>

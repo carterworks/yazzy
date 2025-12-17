@@ -18,7 +18,7 @@ const {
 const classes = [
 	"px-2 py-1",
 	"rounded",
-	"transition",
+	"transition-colors duration-200 ease",
 	"text-center",
 	"border",
 	"cursor-pointer",
@@ -36,12 +36,14 @@ const className = [...classes, variantClasses[variant], extraClasses]
 	.join(" ");
 ---
 
-{type === "link" && href ? (
-	<a class={className} href={href} {...rest}>
-		<slot />
-	</a>
-) : (
-	<button class={className} type={type} {...rest}>
-		<slot />
-	</button>
-)}
+{
+	type === "link" && href ? (
+		<a class={className} href={href} {...rest}>
+			<slot />
+		</a>
+	) : (
+		<button class={className} type={type} {...rest}>
+			<slot />
+		</button>
+	)
+}

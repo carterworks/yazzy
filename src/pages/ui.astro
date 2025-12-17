@@ -1,0 +1,653 @@
+---
+import Button from "../components/Button.astro";
+import DownloadAs from "../components/DownloadAs.astro";
+import Input from "../components/Input.astro";
+import BookClosed from "../components/icons/BookClosed.astro";
+import Duplicate from "../components/icons/Duplicate.astro";
+import Hourglass from "../components/icons/Hourglass.astro";
+import InboxDownload from "../components/icons/InboxDownload.astro";
+import Obsidian from "../components/icons/Obsidian.astro";
+import BasePage from "../layouts/BasePage.astro";
+---
+
+<BasePage title="UI Components — yazzy" classes="space-y-12">
+	<Fragment slot="head">
+		<meta name="robots" content="noindex" />
+	</Fragment>
+
+	<header class="space-y-2">
+		<h2 class="text-2xl font-didone">UI Component Gallery</h2>
+		<p class="text-base-600 dark:text-base-400">
+			A comprehensive showcase of all UI elements and their variations.
+		</p>
+	</header>
+
+	<!-- Buttons Section -->
+	<section class="space-y-4">
+		<h2
+			class="text-lg font-didone border-b border-base-100 dark:border-base-900 pb-2"
+		>
+			Buttons
+		</h2>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Primary Variant
+			</h3>
+			<div class="flex flex-wrap gap-2 items-center">
+				<Button variant="primary">Primary Button</Button>
+				<Button variant="primary" type="submit">Submit</Button>
+				<Button variant="primary" disabled>Disabled</Button>
+				<Button variant="primary" type="link" href="#buttons"
+					>Link as Button</Button
+				>
+			</div>
+		</div>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Secondary Variant
+			</h3>
+			<div class="flex flex-wrap gap-2 items-center">
+				<Button variant="secondary">Secondary Button</Button>
+				<Button variant="secondary" type="submit">Submit</Button>
+				<Button variant="secondary" disabled>Disabled</Button>
+				<Button variant="secondary" type="link" href="#buttons"
+					>Link as Button</Button
+				>
+			</div>
+		</div>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				With Icons
+			</h3>
+			<div class="flex flex-wrap gap-2 items-center">
+				<Button variant="primary">
+					<InboxDownload class="h-4 inline mr-1" />
+					Download
+				</Button>
+				<Button variant="secondary">
+					<Duplicate class="h-4 inline mr-1" />
+					Copy
+				</Button>
+				<Button variant="secondary">
+					<BookClosed class="h-4 inline mr-1" />
+					Read
+				</Button>
+			</div>
+		</div>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Download Button
+			</h3>
+			<div class="flex flex-wrap gap-2 items-center">
+				<DownloadAs
+					contents="# Sample Markdown\n\nThis is sample content."
+					filename="sample.md"
+				>
+					<InboxDownload class="h-4 inline mr-1" />
+					Download as Markdown
+				</DownloadAs>
+				<DownloadAs
+					contents="Plain text content here."
+					filename="sample.txt"
+					variant="primary"
+				>
+					Download as Text
+				</DownloadAs>
+			</div>
+		</div>
+	</section>
+
+	<!-- Inputs Section -->
+	<section class="space-y-4">
+		<h2
+			class="text-lg font-didone border-b border-base-100 dark:border-base-900 pb-2"
+		>
+			Inputs
+		</h2>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Text Inputs
+			</h3>
+			<div class="space-y-2">
+				<Input type="text" placeholder="Default text input" />
+				<Input type="text" value="Filled input value" />
+				<Input type="text" placeholder="Disabled input" disabled />
+			</div>
+		</div>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Input Types
+			</h3>
+			<div class="space-y-2">
+				<Input type="url" placeholder="https://example.com" />
+				<Input type="email" placeholder="email@example.com" />
+				<Input type="search" placeholder="Search..." />
+				<Input type="password" placeholder="Password" />
+				<Input type="number" placeholder="0" />
+			</div>
+		</div>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Form Example
+			</h3>
+			<form class="flex gap-2 items-center">
+				<Input
+					type="url"
+					placeholder="https://paulgraham.com/submarine.html"
+					name="url"
+				/>
+				<Button type="submit" variant="primary">Clip</Button>
+			</form>
+		</div>
+	</section>
+
+	<!-- Icons Section -->
+	<section class="space-y-4">
+		<h2
+			class="text-lg font-didone border-b border-base-100 dark:border-base-900 pb-2"
+		>
+			Icons
+		</h2>
+
+		<div class="flex flex-wrap gap-6 items-end">
+			<div class="flex flex-col items-center gap-2">
+				<BookClosed class="h-8" />
+				<span class="text-xs text-base-600 dark:text-base-400">BookClosed</span>
+			</div>
+			<div class="flex flex-col items-center gap-2">
+				<Duplicate class="h-8" />
+				<span class="text-xs text-base-600 dark:text-base-400">Duplicate</span>
+			</div>
+			<div class="flex flex-col items-center gap-2">
+				<Hourglass class="h-8" />
+				<span class="text-xs text-base-600 dark:text-base-400">Hourglass</span>
+			</div>
+			<div class="flex flex-col items-center gap-2">
+				<InboxDownload class="h-8" />
+				<span class="text-xs text-base-600 dark:text-base-400"
+					>InboxDownload</span
+				>
+			</div>
+			<div class="flex flex-col items-center gap-2">
+				<Obsidian class="h-8" />
+				<span class="text-xs text-base-600 dark:text-base-400">Obsidian</span>
+			</div>
+		</div>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Icon Sizes
+			</h3>
+			<div class="flex flex-wrap gap-4 items-end">
+				<BookClosed class="h-4" />
+				<BookClosed class="h-6" />
+				<BookClosed class="h-8" />
+				<BookClosed class="h-10" />
+				<BookClosed class="h-12" />
+			</div>
+		</div>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Animated
+			</h3>
+			<div class="flex flex-wrap gap-4 items-center">
+				<Hourglass class="h-8 animate-springy-spin" />
+				<span class="text-sm text-base-600 dark:text-base-400"
+					>springy-spin animation</span
+				>
+			</div>
+		</div>
+	</section>
+
+	<!-- Colors Section -->
+	<section class="space-y-4">
+		<h2
+			class="text-lg font-didone border-b border-base-100 dark:border-base-900 pb-2"
+		>
+			Color Palette (Flexoki)
+		</h2>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Base Colors
+			</h3>
+			<div class="flex flex-wrap gap-1">
+				<div
+					class="w-12 h-12 bg-base-0 border border-base-200 rounded"
+					title="base-0 (paper)"
+				>
+				</div>
+				<div
+					class="w-12 h-12 bg-base-50 border border-base-200 rounded"
+					title="base-50"
+				>
+				</div>
+				<div class="w-12 h-12 bg-base-100 rounded" title="base-100"></div>
+				<div class="w-12 h-12 bg-base-150 rounded" title="base-150"></div>
+				<div class="w-12 h-12 bg-base-200 rounded" title="base-200"></div>
+				<div class="w-12 h-12 bg-base-300 rounded" title="base-300"></div>
+				<div class="w-12 h-12 bg-base-400 rounded" title="base-400"></div>
+				<div class="w-12 h-12 bg-base-500 rounded" title="base-500"></div>
+				<div class="w-12 h-12 bg-base-600 rounded" title="base-600"></div>
+				<div class="w-12 h-12 bg-base-700 rounded" title="base-700"></div>
+				<div class="w-12 h-12 bg-base-800 rounded" title="base-800"></div>
+				<div class="w-12 h-12 bg-base-850 rounded" title="base-850"></div>
+				<div class="w-12 h-12 bg-base-900 rounded" title="base-900"></div>
+				<div class="w-12 h-12 bg-base-950 rounded" title="base-950"></div>
+				<div class="w-12 h-12 bg-base-1000 rounded" title="base-1000 (black)">
+				</div>
+			</div>
+		</div>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Accent Colors
+			</h3>
+			<div class="grid grid-cols-4 gap-2 sm:grid-cols-8">
+				<div class="space-y-1">
+					<div class="w-full h-12 bg-red-400 rounded"></div>
+					<span class="text-xs text-center block">Red</span>
+				</div>
+				<div class="space-y-1">
+					<div class="w-full h-12 bg-orange-400 rounded"></div>
+					<span class="text-xs text-center block">Orange</span>
+				</div>
+				<div class="space-y-1">
+					<div class="w-full h-12 bg-yellow-400 rounded"></div>
+					<span class="text-xs text-center block">Yellow</span>
+				</div>
+				<div class="space-y-1">
+					<div class="w-full h-12 bg-green-400 rounded"></div>
+					<span class="text-xs text-center block">Green</span>
+				</div>
+				<div class="space-y-1">
+					<div class="w-full h-12 bg-cyan-400 rounded"></div>
+					<span class="text-xs text-center block">Cyan</span>
+				</div>
+				<div class="space-y-1">
+					<div class="w-full h-12 bg-blue-400 rounded"></div>
+					<span class="text-xs text-center block">Blue</span>
+				</div>
+				<div class="space-y-1">
+					<div class="w-full h-12 bg-purple-400 rounded"></div>
+					<span class="text-xs text-center block">Purple</span>
+				</div>
+				<div class="space-y-1">
+					<div class="w-full h-12 bg-magenta-400 rounded"></div>
+					<span class="text-xs text-center block">Magenta</span>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Typography Section -->
+	<section class="space-y-4">
+		<h2
+			class="text-lg font-didone border-b border-base-100 dark:border-base-900 pb-2"
+		>
+			Typography
+		</h2>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Font Stacks
+			</h3>
+			<div class="space-y-2">
+				<p class="font-system">
+					System UI: The quick brown fox jumps over the lazy dog
+				</p>
+				<p class="font-geometric-humanist">
+					Geometric Humanist (default): The quick brown fox jumps over the lazy
+					dog
+				</p>
+				<p class="font-didone">
+					Didone (headings): The quick brown fox jumps over the lazy dog
+				</p>
+				<p class="font-transitional">
+					Transitional: The quick brown fox jumps over the lazy dog
+				</p>
+				<p class="font-old-style">
+					Old Style: The quick brown fox jumps over the lazy dog
+				</p>
+				<p class="font-humanist">
+					Humanist: The quick brown fox jumps over the lazy dog
+				</p>
+				<p class="font-neo-grotesque">
+					Neo Grotesque: The quick brown fox jumps over the lazy dog
+				</p>
+				<p class="font-monospace-code">
+					Monospace Code: The quick brown fox jumps over the lazy dog
+				</p>
+				<p class="font-industrial">
+					Industrial: The quick brown fox jumps over the lazy dog
+				</p>
+				<p class="font-rounded-sans">
+					Rounded Sans: The quick brown fox jumps over the lazy dog
+				</p>
+				<p class="font-slab-serif">
+					Slab Serif: The quick brown fox jumps over the lazy dog
+				</p>
+				<p class="font-antique">
+					Antique: The quick brown fox jumps over the lazy dog
+				</p>
+				<p class="font-handwritten">
+					Handwritten: The quick brown fox jumps over the lazy dog
+				</p>
+			</div>
+		</div>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Heading Sizes
+			</h3>
+			<div class="space-y-2">
+				<p class="text-2xl font-didone">text-2xl — Main Page Title</p>
+				<p class="text-xl font-didone">text-xl — Large Heading</p>
+				<p class="text-lg font-didone">text-lg — Section Heading (h2)</p>
+				<p class="text-base font-didone">text-base — Subsection (h3)</p>
+				<p class="text-sm font-didone">text-sm — Small Heading (h4)</p>
+				<p class="text-xs">text-xs — Caption / Metadata</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- Prose Section -->
+	<section class="space-y-4">
+		<h2
+			class="text-lg font-didone border-b border-base-100 dark:border-base-900 pb-2"
+		>
+			Prose Content
+		</h2>
+		<p class="text-sm text-base-600 dark:text-base-400">
+			The <code>.prose</code> class styles long-form content like articles.
+		</p>
+
+		<div class="prose">
+			<h1>The Art of Reading</h1>
+			<p>
+				Reading is a complex cognitive process of decoding symbols to derive
+				meaning. It is a form of
+				<a href="https://en.wikipedia.org/wiki/Language">language</a> processing
+				that has evolved over millennia.
+			</p>
+
+			<h2>Why We Read</h2>
+			<p>
+				There are many reasons people read. Some seek knowledge, others
+				entertainment, and many find solace in the written word. As <em
+					>Virginia Woolf</em
+				> once said:
+			</p>
+			<blockquote>
+				<p>
+					One cannot think well, love well, sleep well, if one has not dined
+					well.
+				</p>
+			</blockquote>
+
+			<h3>Types of Reading Material</h3>
+			<p>The variety of reading materials available today is staggering:</p>
+			<ul>
+				<li>Books — both fiction and non-fiction</li>
+				<li>Articles and essays</li>
+				<li>Academic papers and journals</li>
+				<li>News and current events</li>
+			</ul>
+
+			<h4>Digital vs Physical</h4>
+			<p>
+				The debate between digital and physical reading continues. Consider
+				these formats:
+			</p>
+			<ol>
+				<li>Physical books provide tactile satisfaction</li>
+				<li>E-readers offer portability and convenience</li>
+				<li>Web articles are instantly accessible</li>
+			</ol>
+
+			<h2>Code Examples</h2>
+			<p>Here's how you might fetch an article programmatically:</p>
+			<pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">'https://example.com/article'</span>);
+<span class="hljs-keyword">const</span> html = <span class="hljs-keyword">await</span> response.<span class="hljs-title function_">text</span>();
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(html);</code></pre>
+
+			<p>
+				Inline code looks like <code>this.variable = value</code> within text.
+			</p>
+
+			<h2>Data Presentation</h2>
+			<p>Tables are useful for structured data:</p>
+			<table>
+				<thead>
+					<tr>
+						<th>Format</th>
+						<th>Pros</th>
+						<th>Cons</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Physical Book</td>
+						<td>No batteries needed</td>
+						<td>Heavy to carry</td>
+					</tr>
+					<tr>
+						<td>E-Reader</td>
+						<td>Thousands of books</td>
+						<td>Requires charging</td>
+					</tr>
+					<tr>
+						<td>Web Article</td>
+						<td>Instant access</td>
+						<td>Distractions abound</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<h2>Visual Content</h2>
+			<figure>
+				<img src="/scissors.svg" alt="Scissors icon" width="64" height="64" />
+				<figcaption>
+					The yazzy scissors icon, symbolizing clipping content.
+				</figcaption>
+			</figure>
+
+			<h2>Details Component</h2>
+			<details>
+				<summary class="cursor-pointer select-none">
+					<h3 class="inline">Click to expand additional information</h3>
+				</summary>
+				<p>
+					This is hidden content that appears when the details element is
+					expanded. It's perfect for FAQs, additional context, or optional
+					reading material.
+				</p>
+			</details>
+		</div>
+	</section>
+
+	<!-- Interactive States Section -->
+	<section class="space-y-4">
+		<h2
+			class="text-lg font-didone border-b border-base-100 dark:border-base-900 pb-2"
+		>
+			Interactive States
+		</h2>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Links
+			</h3>
+			<div class="space-y-2">
+				<p>
+					<a
+						href="#"
+						class="underline transition-colors duration-200 ease rounded hover:bg-base-100 dark:hover:bg-base-800"
+					>
+						Standard underlined link
+					</a>
+				</p>
+				<p class="prose">
+					<a href="#">Prose-styled link with asterisk</a>
+				</p>
+			</div>
+		</div>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Loading States
+			</h3>
+			<div class="space-y-2">
+				<div class="flex flex-col gap-1 @container">
+					<div
+						class="w-[40cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse rounded"
+					>
+					</div>
+					<div
+						class="w-[87cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse rounded"
+					>
+					</div>
+					<div
+						class="w-[93cqi] bg-base-50 dark:bg-base-950 px-4 py-2 h-4 animate-pulse rounded"
+					>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Cards Section -->
+	<section class="space-y-4">
+		<h2
+			class="text-lg font-didone border-b border-base-100 dark:border-base-900 pb-2"
+		>
+			Cards (Recent Articles Style)
+		</h2>
+
+		<div class="flex flex-column md:flex-row flex-wrap gap-2 justify-between">
+			<div
+				class="lg:w-40 md:w-60 flex-auto p-2 overflow-hidden transition-colors duration-200 ease rounded border border-base-100 dark:border-base-900 bg-paper hover:bg-base-50 dark:bg-black hover:dark:bg-base-950"
+			>
+				<a href="#">
+					<h3 class="font-didone">Sample Article Title</h3>
+					<p class="text-xs my-1 truncate">example.com</p>
+					<p class="text-xs">
+						A brief summary of the article content that gives readers an idea of
+						what to expect...
+					</p>
+				</a>
+			</div>
+			<div
+				class="lg:w-40 md:w-60 flex-auto p-2 overflow-hidden transition-colors duration-200 ease rounded border border-base-100 dark:border-base-900 bg-paper hover:bg-base-50 dark:bg-black hover:dark:bg-base-950"
+			>
+				<a href="#">
+					<h3 class="font-didone">Another Great Read</h3>
+					<p class="text-xs my-1 truncate">blog.example.org</p>
+					<p class="text-xs">
+						Exploring the depths of modern technology and its impact on our
+						daily lives...
+					</p>
+				</a>
+			</div>
+			<div
+				class="lg:w-40 md:w-60 flex-auto p-2 overflow-hidden transition-colors duration-200 ease rounded border border-base-100 dark:border-base-900 bg-paper hover:bg-base-50 dark:bg-black hover:dark:bg-base-950"
+			>
+				<a href="#">
+					<h3 class="font-didone">Third Example Card</h3>
+					<p class="text-xs my-1 truncate">news.example.net</p>
+					<p class="text-xs">
+						The latest developments in the world of web clipping and content
+						curation...
+					</p>
+				</a>
+			</div>
+		</div>
+	</section>
+
+	<!-- Utility Classes Section -->
+	<section class="space-y-4">
+		<h2
+			class="text-lg font-didone border-b border-base-100 dark:border-base-900 pb-2"
+		>
+			Utility Patterns
+		</h2>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Visibility
+			</h3>
+			<div class="space-y-2">
+				<p class="print:hidden">
+					<code>.print:hidden</code> — This text is hidden when printing
+				</p>
+				<p class="js-only">
+					<code>.js-only</code> — This text only appears when JavaScript is enabled
+				</p>
+			</div>
+		</div>
+
+		<div class="space-y-3">
+			<h3
+				class="text-sm font-bold text-base-600 dark:text-base-400 uppercase tracking-wide"
+			>
+				Semantic Colors
+			</h3>
+			<div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+				<div class="p-3 rounded bg-bg border border-ui">
+					<span class="text-tx">.bg-bg / .text-tx</span>
+				</div>
+				<div class="p-3 rounded bg-bg-2 border border-ui-2">
+					<span class="text-tx-2">.bg-bg-2 / .text-tx-2</span>
+				</div>
+				<div class="p-3 rounded bg-ui border border-ui-3">
+					<span class="text-tx-3">.bg-ui / .text-tx-3</span>
+				</div>
+				<div
+					class="p-3 rounded bg-paper dark:bg-black border border-base-100 dark:border-base-900"
+				>
+					<span class="text-black dark:text-base-200">.bg-paper</span>
+				</div>
+			</div>
+		</div>
+	</section>
+</BasePage>
