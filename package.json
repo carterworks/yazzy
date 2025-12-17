@@ -3,7 +3,7 @@
 	"version": "0.2.2",
 	"dependencies": {
 		"@astrojs/node": "^9.0.0",
-		"@tailwindcss/cli": "^4.1.12",
+		"@tailwindcss/vite": "^4.1.18",
 		"astro": "^5.16.6",
 		"defuddle": "^0.6.5",
 		"dompurify": "^3.2.6",
@@ -13,17 +13,16 @@
 		"lite-youtube-embed": "^0.3.3",
 		"nanoid": "^5.0.0",
 		"openai": "^5.12.2",
-		"tailwindcss": "^4.1.12",
+		"tailwindcss": "^4.1.18",
 		"turndown": "^7.2.0",
 		"typescript": "^5.9.2",
 		"zod": "^3.25.76"
 	},
 	"scripts": {
 		"check": "biome check --write",
-		"dev": "astro dev",
-		"css": "tailwindcss --input src/static/styles.css --output public/styles.min.css --minify",
-		"build": "bun run css && astro build && mkdir -p dist/src/db/migrations/meta && cp -r src/db/migrations/ dist/src/db/migrations/",
-		"preview": "astro preview"
+		"dev": "bun --bun astro dev",
+		"build": "bun --bun astro build && mkdir -p dist/src/db/migrations/meta && cp -r src/db/migrations/ dist/src/db/migrations/",
+		"preview": "bun --bun astro preview"
 	},
 	"type": "module",
 	"devDependencies": {
