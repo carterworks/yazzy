@@ -1,0 +1,16 @@
+---
+interface Props {
+	classes?: string;
+	[k: string]: string | boolean | undefined;
+}
+
+const { classes = "", ...props } = Astro.props;
+const className = [
+	"border border-base-100 dark:border-base-900 rounded block w-full py-1 px-4 transition",
+	classes,
+]
+	.filter(Boolean)
+	.join(" ");
+---
+
+<input class={className} {...props} />

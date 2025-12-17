@@ -27,6 +27,8 @@
 		"noPropertyAccessFromIndexSignature": true,
 
 		// other
-		"esModuleInterop": true
-	}
+		"esModuleInterop": true,
+		"types": ["astro/client", "bun-types", "bun-types/test-globals"]
+	},
+	"include": ["src/**/*"]
 }

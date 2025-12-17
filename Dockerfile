@@ -35,12 +35,13 @@ ARG HOST=0.0.0.0
 ARG PORT=4321
 
 # Copy built application
-COPY --from=build /app/dist/yazzy /app/yazzy
+COPY --from=build /app/dist /app/dist
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/src/db/migrations /app/src/db/migrations
+COPY --from=build /app/package.json /app/package.json
 
 # Start the server by default, this can be overwritten at runtime
 ENV HOST=${HOST}
 ENV PORT=${PORT}
 EXPOSE ${PORT}
-CMD [ "./yazzy" ]
+CMD [ "bun", "run", "dist/server/entry.mjs" ]

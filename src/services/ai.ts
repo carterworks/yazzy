@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import log from "./log";
-const AI_ENDPOINT = process.env.AI_ENDPOINT;
-const AI_API_KEY = process.env.AI_API_KEY;
+const AI_ENDPOINT = process.env["AI_ENDPOINT"];
+const AI_API_KEY = process.env["AI_API_KEY"];
 log(`Using ${AI_ENDPOINT} for AI. Key: ${AI_API_KEY ? "set" : "not set"}`);
 
 export const AI_ENABLED = AI_ENDPOINT && AI_API_KEY;
@@ -10,7 +10,7 @@ const openai = new OpenAI({
 	baseURL: AI_ENDPOINT,
 	apiKey: AI_API_KEY,
 	defaultHeaders: {
-		"HTTP-Referer": process.env.BASE_URL, // Optional. Site URL for rankings on openrouter.ai.
+		"HTTP-Referer": process.env["BASE_URL"], // Optional. Site URL for rankings on openrouter.ai.
 		"X-Title": "yazzy", // Optional. Site title for rankings on openrouter.ai.
 	},
 });
@@ -60,7 +60,7 @@ export async function fetchCompletion(
 		],
 		reasoning_effort: reasoning,
 	};
-	if (AI_ENDPOINT.includes("openrouter")) {
+	if (AI_ENDPOINT?.includes("openrouter")) {
 		// @ts-expect-error OpenRouter-specific option
 		params.models = fallbackModels;
 	}
