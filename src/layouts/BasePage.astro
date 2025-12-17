@@ -1,6 +1,7 @@
 ---
 import { version } from "../../package.json" with { type: "json" };
 import "../static/styles.css";
+import ThemeToggle from "../components/ThemeToggle.astro";
 
 interface Props {
 	title?: string;
@@ -8,9 +9,13 @@ interface Props {
 }
 
 const { title = "", classes = "" } = Astro.props;
+
+const themeCookie = Astro.cookies.get("theme");
+const theme = themeCookie?.value || "system";
+const themeClass = theme === "light" ? "light" : theme === "dark" ? "dark" : "";
 ---
 
-<html lang="en" class="md:text-lg">
+<html lang="en" class:list={["md:text-lg", themeClass]}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -26,7 +31,7 @@ const { title = "", classes = "" } = Astro.props;
 		class="text-base bg-paper font-geometric-humanist dark:bg-black text-black dark:text-base-200 px-4 py-2 space-y-8 max-w-prose mx-auto"
 	>
 		<header
-			class="flex items-center gap-4 print:hidden"
+			class="flex items-center gap-2 print:hidden"
 			style={{viewTransitionName: "header"}}
 		>
 			<div class="mr-auto">
@@ -41,6 +46,7 @@ const { title = "", classes = "" } = Astro.props;
 				<p class="text-xs">Plain ol' reading</p>
 			</div>
 			<slot name="header" />
+			<ThemeToggle />
 		</header>
 		<div class={classes}>
 			<slot />

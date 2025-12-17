@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode toggling */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
 	--color-button: ButtonFace;
 	--color-button-text: ButtonText;
@@ -527,6 +530,13 @@
 	@apply scroll-smooth scheme-light-dark;
 	/* biome-ignore lint/correctness/noUnknownProperty: the future is now, old man */
 	interpolate-size: allow-keywords;
+}
+/* Theme class overrides for explicit light/dark mode */
+html.light {
+	color-scheme: light;
+}
+html.dark {
+	color-scheme: dark;
 }
 .primary {
 	fill: light-dark(var(--color-black), var(--color-base-200));
