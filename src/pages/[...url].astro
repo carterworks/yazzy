@@ -9,10 +9,18 @@ import Obsidian from "../components/icons/Obsidian.astro";
 import BasePage from "../layouts/BasePage.astro";
 import { cache } from "../services/cache";
 import { clip } from "../services/clipper";
-import log from "../services/log";
+import {
+	enrichWithArticle,
+	enrichWithClipping,
+	enrichWithDatabase,
+	enrichWithError,
+} from "../services/wideLog";
 import convertHtmlToMarkdown from "../services/markdown";
 import type { ReadablePage } from "../types";
 import { formatDate, getPlainTextSummary } from "../utils";
+
+// Get the wide event from locals for enrichment
+const wideEvent = Astro.locals.wideEvent;
 
 function getFilename(title: string): string {
 	return title
@@ -120,13 +128,49 @@ try {
 }
 
 let article: ReadablePage | undefined;
+let isCached = false;
 try {
+	// Try to get from cache first
+	const dbStart = performance.now();
 	article = await cache.getArticle(url.toString());
-	if (!article) {
+	const dbDuration = performance.now() - dbStart;
+
+	if (article) {
+		isCached = true;
+		enrichWithDatabase(wideEvent, "read", {
+			durationMs: dbDuration,
+			cacheHit: true,
+		});
+	} else {
+		enrichWithDatabase(wideEvent, "read", {
+			durationMs: dbDuration,
+			cacheHit: false,
+		});
+
+		// Clip the article
+		const clipStart = performance.now();
 		article = await clip(url);
+		const clipDuration = performance.now() - clipStart;
+
+		enrichWithClipping(wideEvent, { fetchDurationMs: clipDuration }, {
+			markdownLength: article.markdownContent?.length,
+			htmlLength: article.htmlContent?.length,
+		});
+
+		// Save to cache
+		const writeStart = performance.now();
 		await cache.insertArticle(article);
+		enrichWithDatabase(wideEvent, "write", {
+			durationMs: performance.now() - writeStart,
+		});
 	}
+
+	// Enrich with article context
+	enrichWithArticle(wideEvent, article, { isCached });
 } catch (err) {
+	// Enrich wide event with error context
+	enrichWithError(wideEvent, err);
+
 	let message: string;
 	if (err instanceof Error) {
 		message = err.message;
@@ -137,7 +181,6 @@ try {
 	}
 	const requestId = Astro.locals.requestId || "unknown";
 	message = `[requestId=${requestId}] ${message}`;
-	log.error(message);
 
 	return Astro.redirect(`/error?message=${encodeURIComponent(message)}`);
 }

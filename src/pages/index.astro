@@ -4,8 +4,16 @@ import Input from "../components/Input.astro";
 import RecentArticles from "../components/RecentArticles.astro";
 import BasePage from "../layouts/BasePage.astro";
 import { cache } from "../services/cache";
+import { enrichWithDatabase } from "../services/wideLog";
 
+const wideEvent = Astro.locals.wideEvent;
+
+const dbStart = performance.now();
 const recentArticles = await cache.getRecentArticles();
+enrichWithDatabase(wideEvent, "read", {
+	durationMs: performance.now() - dbStart,
+	articleCount: recentArticles.length,
+});
 ---
 
 <BasePage title="yazzy" classes="space-y-2">

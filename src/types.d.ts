@@ -41,6 +41,7 @@ declare module "bun" {
 declare namespace App {
 	interface Locals {
 		requestId: string;
+		wideEvent: import("./services/wideLog").WideEvent;
 	}
 }
 

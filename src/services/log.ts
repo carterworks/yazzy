@@ -1,13 +1,19 @@
-function formatMessage(message: string) {
-	return `[${new Date().toISOString()}] ${message}`;
-}
-
-export default function log(message: string, ...rest: string[]) {
-	console.log(formatMessage(message), ...rest);
-}
-
-function error(message: string, ...rest: string[]) {
-	console.error(formatMessage(message), ...rest);
-}
-
-log.error = error;
+/**
+ * Legacy logging service - re-exports from wideLog for backwards compatibility.
+ *
+ * For new code, import directly from wideLog.ts and use wide events.
+ */
+export {
+	default,
+	type WideEvent,
+	createWideEvent,
+	emitWideEvent,
+	enrichWithArticle,
+	enrichWithClipping,
+	enrichWithDatabase,
+	enrichWithError,
+	enrichWithSummarization,
+	finalizeAndEmit,
+	shouldSample,
+	configureWideLog,
+} from "./wideLog";

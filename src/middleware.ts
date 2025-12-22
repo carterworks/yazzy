@@ -1,48 +1,49 @@
 import { defineMiddleware } from "astro:middleware";
 import { nanoid } from "nanoid";
 import { version } from "../package.json" with { type: "json" };
-import log from "./services/log";
-
-function getPath(request: Request): string {
-	const url = request.url;
-	const start = url.indexOf("/", 8);
-	let i = start;
-	for (; i < url.length; i++) {
-		const charCode = url.charCodeAt(i);
-		if (charCode === 37) {
-			// '%'
-			const queryIndex = url.indexOf("?", i);
-			const path = url.slice(start, queryIndex === -1 ? undefined : queryIndex);
-			return decodeURI(path);
-		}
-		if (charCode === 63) {
-			// '?'
-			break;
-		}
-	}
-	return url.slice(start, i);
-}
+import {
+	createWideEvent,
+	enrichWithError,
+	finalizeAndEmit,
+} from "./services/wideLog";
 
 export const onRequest = defineMiddleware(async (context, next) => {
 	const requestId = nanoid(8);
 	const start = performance.now();
-	const path = getPath(context.request);
 
-	log(`<-- ${requestId} ${context.request.method} ${path}`);
+	// Create the wide event with initial request context
+	const wideEvent = createWideEvent(requestId, context.request);
 
-	// Store requestId in locals for use in pages
+	// Store in locals for use in pages/handlers
 	context.locals.requestId = requestId;
+	context.locals.wideEvent = wideEvent;
 
-	const response = await next();
+	let response: Response;
+	try {
+		response = await next();
+	} catch (error) {
+		// Enrich with error context
+		enrichWithError(wideEvent, error);
 
-	const elapsed = (performance.now() - start).toFixed(2);
-	log(
-		`--> ${requestId} ${context.request.method} ${path} ${response.status} ${elapsed}ms`,
-	);
+		// Create error response
+		response = new Response("Internal Server Error", { status: 500 });
 
+		// Finalize and emit the wide event
+		finalizeAndEmit(wideEvent, response, start);
+
+		throw error;
+	}
+
+	// Add response headers
 	response.headers.set("X-Request-Id", requestId);
-	response.headers.set("X-Response-Time", `${elapsed}ms`);
+	response.headers.set(
+		"X-Response-Time",
+		`${(performance.now() - start).toFixed(2)}ms`,
+	);
 	response.headers.set("X-Yazzy-Version", version);
+
+	// Finalize and emit the wide event
+	finalizeAndEmit(wideEvent, response, start);
 
 	return response;
 });
