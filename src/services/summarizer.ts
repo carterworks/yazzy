@@ -2,6 +2,18 @@ import createDomPurify from "dompurify";
 import { JSDOM } from "jsdom";
 import { AI_ENABLED, fetchCompletion } from "./ai";
 
+// Lazy-loaded DOMPurify instance to avoid holding JSDOM in memory when not needed
+let domPurifyInstance: ReturnType<typeof createDomPurify> | null = null;
+let domPurifyJsdom: JSDOM | null = null;
+
+function getDOMPurify(): ReturnType<typeof createDomPurify> {
+	if (!domPurifyInstance) {
+		domPurifyJsdom = new JSDOM("<!DOCTYPE html>");
+		domPurifyInstance = createDomPurify(domPurifyJsdom.window);
+	}
+	return domPurifyInstance;
+}
+
 const systemPrompt = `## ROLE
 You are a professional summarization assistant.
 
@@ -49,8 +61,6 @@ China's exports to Russia are decreasing due to U.S. secondary sanctions and exp
 </blockquote>
 `;
 
-const DOMPurify = createDomPurify(new JSDOM("<!DOCTYPE html>").window);
-
 const addGenerationInformation = (
 	model: string,
 	date: string,
@@ -90,5 +100,5 @@ export async function summarize(text: string): Promise<string> {
 		generationDate,
 		message,
 	);
-	return DOMPurify.sanitize(generationMessage);
+	return getDOMPurify().sanitize(generationMessage);
 }

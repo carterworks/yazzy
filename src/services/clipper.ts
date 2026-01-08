@@ -40,12 +40,9 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 			`URL "${url.toString()}" has unsupported content type: ${baseContentType}`,
 		);
 	}
+	// Note: Avoid 'resources: "usable"' as it loads external resources and causes high memory usage
 	const page = new JSDOM(await response.text(), {
 		url: url.toString(),
-		resources: "usable",
-		pretendToBeVisual: true,
-		includeNodeLocations: true,
-		storageQuota: 10000000,
 		virtualConsole: new VirtualConsole().sendTo(console, {
 			omitJSDOMErrors: true,
 		}),
@@ -212,88 +209,99 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 		throw new Error(`Failed to fetch page "${url.toString()}"`);
 	}
 
-	const article = await Defuddle(page, url.toString());
+	let contentDom: JSDOM | null = null;
+	try {
+		const article = await Defuddle(page, url.toString());
 
-	if (!article) {
-		throw new Error(`Failed to parse article contents of "${url.toString()}"`);
-	}
-
-	// Create a temporary JSDOM instance to manipulate the article content
-	const contentDom = new JSDOM(article.content);
-	const contentDocument = contentDom.window.document;
-
-	// Highlight code blocks
-	const codeBlocks = contentDocument.querySelectorAll("pre code");
-	for (const block of codeBlocks) {
-		// We need to cast the Node to HTMLElement for highlightElement
-		if (block instanceof contentDom.window.HTMLElement) {
-			hljs.highlightElement(block);
+		if (!article) {
+			throw new Error(`Failed to parse article contents of "${url.toString()}"`);
 		}
-	}
 
-	// Turn all headers into links, if they are not already.
-	let headerId = 0;
-	const headers = contentDocument.querySelectorAll("h1, h2, h3, h4, h5, h6");
-	for (const header of headers) {
-		if (header instanceof contentDom.window.HTMLElement) {
-			const id = header.id ? header.id : `h${headerId++}`;
-			header.id = id;
-			header.innerHTML = `<a href="#${id}">${header.innerHTML}</a>`;
+		// Create a temporary JSDOM instance to manipulate the article content
+		contentDom = new JSDOM(article.content);
+		const contentDocument = contentDom.window.document;
+
+		// Highlight code blocks
+		const codeBlocks = contentDocument.querySelectorAll("pre code");
+		for (const block of codeBlocks) {
+			// We need to cast the Node to HTMLElement for highlightElement
+			if (block instanceof contentDom.window.HTMLElement) {
+				hljs.highlightElement(block);
+			}
 		}
+
+		// Turn all headers into links, if they are not already.
+		let headerId = 0;
+		const headers = contentDocument.querySelectorAll("h1, h2, h3, h4, h5, h6");
+		for (const header of headers) {
+			if (header instanceof contentDom.window.HTMLElement) {
+				const id = header.id ? header.id : `h${headerId++}`;
+				header.id = id;
+				header.innerHTML = `<a href="#${id}">${header.innerHTML}</a>`;
+			}
+		}
+
+		// Get the updated HTML content with highlighted code
+		const highlightedHtmlContent = contentDocument.body.innerHTML;
+
+		const markdownBody = convertHtmlToMarkdown(article.content, url.toString());
+
+		// Fetch byline, meta author, property author, or site name
+		const author =
+			article.author ||
+			getMetaContent(page.window.document, "name", "author") ||
+			getMetaContent(page.window.document, "property", "author") ||
+			getMetaContent(page.window.document, "property", "og:site_name");
+
+		const tags = [
+			"clippings",
+			...(
+				page.window.document
+					.querySelector("meta[name='keywords' i]")
+					?.getAttribute("content")
+					?.split(",") ?? []
+			).map((keyword) => keyword.split(" ").join("")),
+			...(article.schemaOrgData?.articleSection ?? []),
+		];
+
+		/* Try to get published date */
+		let published =
+			article.published ||
+			article.schemaOrgData?.datePublished ||
+			page.window.document.querySelector("time")?.getAttribute("datetime");
+		if (typeof published === "string") {
+			published = published.trim().split(/,\s+/gi)[0];
+		}
+		if (published) {
+			published = new Date(published);
+		}
+
+		const title =
+			article.title ||
+			article.schemaOrgData.headline ||
+			article.schemaOrgData.name ||
+			page.window.document.title;
+
+		return {
+			title,
+			url: url.toString(),
+			published,
+			createdAt: new Date(),
+			author,
+			tags,
+			markdownContent: markdownBody,
+			textContent: convertMarkdownToPlainText(markdownBody),
+			htmlContent: highlightedHtmlContent,
+		};
+	} finally {
+		// CRITICAL: Close JSDOM windows to free memory
+		// JSDOM holds references to the entire DOM tree, event listeners, and window objects
+		// Without explicit cleanup, these accumulate and cause OOM on memory-constrained containers
+		if (contentDom) {
+			contentDom.window.close();
+		}
+		page.window.close();
 	}
-
-	// Get the updated HTML content with highlighted code
-	const highlightedHtmlContent = contentDocument.body.innerHTML;
-
-	const markdownBody = convertHtmlToMarkdown(article.content, url.toString());
-
-	// Fetch byline, meta author, property author, or site name
-	const author =
-		article.author ||
-		getMetaContent(page.window.document, "name", "author") ||
-		getMetaContent(page.window.document, "property", "author") ||
-		getMetaContent(page.window.document, "property", "og:site_name");
-
-	const tags = [
-		"clippings",
-		...(
-			page.window.document
-				.querySelector("meta[name='keywords' i]")
-				?.getAttribute("content")
-				?.split(",") ?? []
-		).map((keyword) => keyword.split(" ").join("")),
-		...(article.schemaOrgData?.articleSection ?? []),
-	];
-
-	/* Try to get published date */
-	let published =
-		article.published ||
-		article.schemaOrgData?.datePublished ||
-		page.window.document.querySelector("time")?.getAttribute("datetime");
-	if (typeof published === "string") {
-		published = published.trim().split(/,\s+/gi)[0];
-	}
-	if (published) {
-		published = new Date(published);
-	}
-
-	const title =
-		article.title ||
-		article.schemaOrgData.headline ||
-		article.schemaOrgData.name ||
-		page.window.document.title;
-
-	return {
-		title,
-		url: url.toString(),
-		published,
-		createdAt: new Date(),
-		author,
-		tags,
-		markdownContent: markdownBody,
-		textContent: convertMarkdownToPlainText(markdownBody),
-		htmlContent: highlightedHtmlContent,
-	};
 }
 
 function createEmbedElementHtml(videoInfo: VideoInfo): string {

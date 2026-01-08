@@ -207,36 +207,41 @@ export async function fetchTranscript(
 		lang: config?.lang ?? captions.captionTracks[0].languageCode,
 	}));
 	const page = new JSDOM(videoPageBody);
-	const videoObject = objElementToJsObject(
-		page.window.document.querySelector(
-			'[itemtype="http://schema.org/VideoObject"]',
-		),
-	);
+	try {
+		const videoObject = objElementToJsObject(
+			page.window.document.querySelector(
+				'[itemtype="http://schema.org/VideoObject"]',
+			),
+		);
 
-	const title = (videoObject?.["name"] as string) ?? "YouTube Video";
-	const author =
-		videoObject?.["author"] &&
-		typeof videoObject["author"] === "object" &&
-		"name" in videoObject["author"]
-			? (videoObject["author"] as { name: string }).name
-			: null;
-	const published = videoObject?.["datePublished"]
-		? new Date(videoObject["datePublished"] as string)
-		: undefined;
-	const createdAt = videoObject?.["uploadDate"]
-		? new Date(videoObject["uploadDate"] as string)
-		: undefined;
-	const thumbnailUrl = videoObject?.["thumbnailUrl"] as string;
-	return {
-		title,
-		author,
-		published,
-		createdAt,
-		url: `https://www.youtube.com/watch?v=${identifier}`,
-		transcript,
-		thumbnailUrl,
-		id: identifier,
-	};
+		const title = (videoObject?.["name"] as string) ?? "YouTube Video";
+		const author =
+			videoObject?.["author"] &&
+			typeof videoObject["author"] === "object" &&
+			"name" in videoObject["author"]
+				? (videoObject["author"] as { name: string }).name
+				: null;
+		const published = videoObject?.["datePublished"]
+			? new Date(videoObject["datePublished"] as string)
+			: undefined;
+		const createdAt = videoObject?.["uploadDate"]
+			? new Date(videoObject["uploadDate"] as string)
+			: undefined;
+		const thumbnailUrl = videoObject?.["thumbnailUrl"] as string;
+		return {
+			title,
+			author,
+			published,
+			createdAt,
+			url: `https://www.youtube.com/watch?v=${identifier}`,
+			transcript,
+			thumbnailUrl,
+			id: identifier,
+		};
+	} finally {
+		// CRITICAL: Close JSDOM window to free memory
+		page.window.close();
+	}
 }
 
 /**

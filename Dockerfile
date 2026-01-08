@@ -43,5 +43,12 @@ COPY --from=build /app/package.json /app/package.json
 # Start the server by default, this can be overwritten at runtime
 ENV HOST=${HOST}
 ENV PORT=${PORT}
+
+# Memory management settings for Bun runtime
+# BUN_JSC_forceGCSlowPaths=1 makes garbage collection more aggressive
+# This helps prevent OOM in memory-constrained containers
+ENV BUN_JSC_forceGCSlowPaths=1
+
 EXPOSE ${PORT}
-CMD [ "bun", "run", "dist/server/entry.mjs" ]
+# Use --smol flag for reduced memory footprint
+CMD [ "bun", "--smol", "run", "dist/server/entry.mjs" ]
