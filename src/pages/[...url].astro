@@ -12,7 +12,7 @@ import { clip } from "../services/clipper";
 import log from "../services/log";
 import convertHtmlToMarkdown from "../services/markdown";
 import type { ReadablePage } from "../types";
-import { formatDate, getPlainTextSummary } from "../utils";
+import { formatDate, getOgDescription, getPlainTextSummary } from "../utils";
 
 function getFilename(title: string): string {
 	return title
@@ -143,23 +143,33 @@ try {
 }
 
 const plainTextSummary = getPlainTextSummary(article, 1000);
+const ogDescription = getOgDescription(article, 200);
 const markdownContent = generateObsidianContents(article);
 const articleHostname = new URL(article.url).hostname;
 const title = article.title ?? `${new Date().toISOString()} Clipping`;
 const obsidianUri = generateObsidianUri(markdownContent, title);
 const plainTextContent = generatePlainTextContents(article);
+const ogImageUrl = new URL(
+	`/api/og?url=${encodeURIComponent(article.url)}`,
+	Astro.url,
+).toString();
 ---
 
 <BasePage title={`${article.title} | yazzy`} classes="">
 	<Fragment slot="head">
-		<meta name="description" content={plainTextSummary} />
+		<meta name="description" content={ogDescription} />
 		<meta
 			property="og:title"
-			content={`${article.title} | ${articleHostname} | yazzy`}
+			content={`${article.title} | ${articleHostname}`}
 		/>
-		<meta property="og:description" content={plainTextSummary} />
+		<meta property="og:description" content={ogDescription} />
 		<meta property="og:url" content={article.url} />
 		<meta property="og:type" content="article" />
+		<meta property="og:image" content={ogImageUrl} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:image" content={ogImageUrl} />
 		{
 			article.published && (
 				<meta
