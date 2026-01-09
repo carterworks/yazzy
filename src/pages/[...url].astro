@@ -149,10 +149,14 @@ const articleHostname = new URL(article.url).hostname;
 const title = article.title ?? `${new Date().toISOString()} Clipping`;
 const obsidianUri = generateObsidianUri(markdownContent, title);
 const plainTextContent = generatePlainTextContents(article);
-const ogImageUrl = new URL(
-	`/api/og?url=${encodeURIComponent(article.url)}`,
-	Astro.url,
-).toString();
+const ogImageParams = new URLSearchParams({ url: article.url });
+if (article.author) {
+	ogImageParams.set("author", article.author);
+}
+if (article.published) {
+	ogImageParams.set("published", formatDate(article.published));
+}
+const ogImageUrl = new URL(`/api/og?${ogImageParams}`, Astro.url).toString();
 ---
 
 <BasePage title={`${article.title} | yazzy`} classes="">

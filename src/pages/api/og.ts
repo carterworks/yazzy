@@ -67,6 +67,7 @@ function createOgElement(
 	hostname: string,
 	title: string,
 	author: string | null,
+	published: string | null,
 	c: (typeof colors)["light"],
 ): SatoriElement {
 	return {
@@ -126,7 +127,7 @@ function createOgElement(
 									children: title,
 								},
 							},
-							...(author
+							...(author || published
 								? [
 										{
 											type: "div",
@@ -136,7 +137,11 @@ function createOgElement(
 													color: c.textMuted,
 													fontFamily: "Inter",
 												},
-												children: `by ${author}`,
+												children: [
+													author ? `by ${author}` : "",
+													author && published ? " · " : "",
+													published || "",
+												].join(""),
 											},
 										},
 									]
@@ -207,9 +212,10 @@ export const GET: APIRoute = async ({ url }) => {
 	const c = theme === "dark" ? colors.dark : colors.light;
 	const hostname = new URL(article.url).hostname.replace("www.", "");
 	const title = truncateText(article.title || "Untitled", 100);
-	const author = article.author || null;
+	const author = url.searchParams.get("author") || article.author || null;
+	const published = url.searchParams.get("published") || null;
 
-	const element = createOgElement(hostname, title, author, c);
+	const element = createOgElement(hostname, title, author, published, c);
 
 	const svg = await satori(element, {
 		width: 1200,
