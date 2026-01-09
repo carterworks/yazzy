@@ -15,7 +15,6 @@
 		"nanoid": "^5.0.0",
 		"openai": "^5.12.2",
 		"satori": "^0.18.3",
-		"satori-html": "^0.3.2",
 		"tailwindcss": "^4.1.18",
 		"turndown": "^7.2.0",
 		"typescript": "^5.9.2",

@@ -1,8 +1,6 @@
 import { Resvg } from "@resvg/resvg-js";
 import type { APIRoute } from "astro";
-import type { ReactNode } from "react";
 import satori from "satori";
-import { html } from "satori-html";
 import { cache } from "../../services/cache";
 
 // Scissors icon SVG path (from scissors.svg)
@@ -32,19 +30,23 @@ let fontDataCache: { inter: ArrayBuffer; sourceSerif: ArrayBuffer } | null =
 async function loadFonts() {
 	if (fontDataCache) return fontDataCache;
 
-	// Load Inter (sans-serif) and Source Serif Pro (serif) from Google Fonts
-	const [interResponse, sourceSerifResponse] = await Promise.all([
+	// Load Inter (sans-serif) and Noto Serif (serif) from fontsource CDN
+	const [interResponse, serifResponse] = await Promise.all([
 		fetch(
-			"https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hjp-Ek-_0ew.woff",
+			"https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.woff2",
 		),
 		fetch(
-			"https://fonts.gstatic.com/s/sourceserif4/v8/vEFy2_tTDB4M7-auWDN0ahZJW3IX2ih5nk3AucvUHf6OAVIJmeUDygwjipdqrhxXD-wGvjU.woff",
+			"https://cdn.jsdelivr.net/fontsource/fonts/noto-serif@latest/latin-600-normal.woff2",
 		),
 	]);
 
+	if (!interResponse.ok || !serifResponse.ok) {
+		throw new Error("Failed to load fonts");
+	}
+
 	fontDataCache = {
 		inter: await interResponse.arrayBuffer(),
-		sourceSerif: await sourceSerifResponse.arrayBuffer(),
+		sourceSerif: await serifResponse.arrayBuffer(),
 	};
 
 	return fontDataCache;
@@ -58,12 +60,133 @@ function truncateText(text: string, maxLength: number): string {
 	return `${truncated.substring(0, lastSpace > 0 ? lastSpace : maxLength)}...`;
 }
 
-function escapeHtml(text: string): string {
-	return text
-		.replace(/&/g, "&amp;")
-		.replace(/</g, "&lt;")
-		.replace(/>/g, "&gt;")
-		.replace(/"/g, "&quot;");
+// biome-ignore lint/suspicious/noExplicitAny: Satori element types are complex
+type SatoriElement = any;
+
+function createOgElement(
+	hostname: string,
+	title: string,
+	author: string | null,
+	c: (typeof colors)["light"],
+): SatoriElement {
+	return {
+		type: "div",
+		props: {
+			style: {
+				height: "100%",
+				width: "100%",
+				display: "flex",
+				flexDirection: "column",
+				justifyContent: "space-between",
+				backgroundColor: c.bg,
+				padding: "60px",
+			},
+			children: [
+				// Top: hostname
+				{
+					type: "div",
+					props: {
+						style: { display: "flex", alignItems: "center" },
+						children: {
+							type: "span",
+							props: {
+								style: {
+									fontSize: "24px",
+									color: c.textMuted,
+									fontFamily: "Inter",
+								},
+								children: hostname,
+							},
+						},
+					},
+				},
+				// Middle: title and author
+				{
+					type: "div",
+					props: {
+						style: {
+							display: "flex",
+							flexDirection: "column",
+							gap: "20px",
+							flex: 1,
+							justifyContent: "center",
+						},
+						children: [
+							{
+								type: "div",
+								props: {
+									style: {
+										fontSize: "56px",
+										fontFamily: "Source Serif",
+										fontWeight: 600,
+										color: c.text,
+										lineHeight: 1.2,
+										maxWidth: "1000px",
+									},
+									children: title,
+								},
+							},
+							...(author
+								? [
+										{
+											type: "div",
+											props: {
+												style: {
+													fontSize: "28px",
+													color: c.textMuted,
+													fontFamily: "Inter",
+												},
+												children: `by ${author}`,
+											},
+										},
+									]
+								: []),
+						],
+					},
+				},
+				// Bottom: branding
+				{
+					type: "div",
+					props: {
+						style: {
+							display: "flex",
+							justifyContent: "flex-end",
+							alignItems: "center",
+							gap: "8px",
+						},
+						children: [
+							{
+								type: "svg",
+								props: {
+									width: "20",
+									height: "16",
+									viewBox: "-10 0 2610 2048",
+									children: {
+										type: "path",
+										props: {
+											fill: c.textFaint,
+											d: scissorsPath,
+										},
+									},
+								},
+							},
+							{
+								type: "span",
+								props: {
+									style: {
+										fontSize: "20px",
+										color: c.textFaint,
+										fontFamily: "Inter",
+									},
+									children: "Yazzy",
+								},
+							},
+						],
+					},
+				},
+			],
+		},
+	};
 }
 
 export const GET: APIRoute = async ({ url }) => {
@@ -83,29 +206,12 @@ export const GET: APIRoute = async ({ url }) => {
 	const fonts = await loadFonts();
 	const c = theme === "dark" ? colors.dark : colors.light;
 	const hostname = new URL(article.url).hostname.replace("www.", "");
-	const title = escapeHtml(truncateText(article.title || "Untitled", 100));
-	const author = article.author ? escapeHtml(article.author) : null;
+	const title = truncateText(article.title || "Untitled", 100);
+	const author = article.author || null;
 
-	// Build the OG image using HTML template
-	const markup = html`
-		<div style="height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: space-between; background-color: ${c.bg}; padding: 60px;">
-			<div style="display: flex; align-items: center;">
-				<span style="font-size: 24px; color: ${c.textMuted}; font-family: Inter;">${hostname}</span>
-			</div>
-			<div style="display: flex; flex-direction: column; gap: 20px; flex: 1; justify-content: center;">
-				<div style="font-size: 56px; font-family: Source Serif; font-weight: 600; color: ${c.text}; line-height: 1.2; max-width: 1000px;">${title}</div>
-				${author ? `<div style="font-size: 28px; color: ${c.textMuted}; font-family: Inter;">by ${author}</div>` : ""}
-			</div>
-			<div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
-				<svg width="20" height="16" viewBox="-10 0 2610 2048" style="color: ${c.textFaint};">
-					<path fill="${c.textFaint}" d="${scissorsPath}" />
-				</svg>
-				<span style="font-size: 20px; color: ${c.textFaint}; font-family: Inter;">Yazzy</span>
-			</div>
-		</div>
-	`;
+	const element = createOgElement(hostname, title, author, c);
 
-	const svg = await satori(markup as ReactNode, {
+	const svg = await satori(element, {
 		width: 1200,
 		height: 630,
 		fonts: [
