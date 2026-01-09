@@ -30,13 +30,13 @@ let fontDataCache: { inter: ArrayBuffer; sourceSerif: ArrayBuffer } | null =
 async function loadFonts() {
 	if (fontDataCache) return fontDataCache;
 
-	// Load Inter (sans-serif) and Noto Serif (serif) from fontsource CDN
+	// Load Inter and Noto Serif in TTF format (satori doesn't support WOFF2)
 	const [interResponse, serifResponse] = await Promise.all([
 		fetch(
-			"https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.woff2",
+			"https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.ttf",
 		),
 		fetch(
-			"https://cdn.jsdelivr.net/fontsource/fonts/noto-serif@latest/latin-600-normal.woff2",
+			"https://cdn.jsdelivr.net/fontsource/fonts/noto-serif@latest/latin-600-normal.ttf",
 		),
 	]);
 
