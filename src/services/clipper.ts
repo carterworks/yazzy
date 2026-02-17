@@ -214,7 +214,9 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 		const article = await Defuddle(page, url.toString());
 
 		if (!article) {
-			throw new Error(`Failed to parse article contents of "${url.toString()}"`);
+			throw new Error(
+				`Failed to parse article contents of "${url.toString()}"`,
+			);
 		}
 
 		// Create a temporary JSDOM instance to manipulate the article content
