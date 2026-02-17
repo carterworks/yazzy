@@ -1,6 +1,6 @@
 {
 	"name": "yazzy",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"dependencies": {
 		"@astrojs/node": "9.5.3",
 		"@openrouter/sdk": "^0.8.0",
