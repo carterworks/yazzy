@@ -2,10 +2,10 @@
 	"name": "yazzy",
 	"version": "0.2.2",
 	"dependencies": {
-		"@astrojs/node": "^9.0.0",
+		"@astrojs/node": "9.5.3",
 		"@resvg/resvg-js": "^2.6.2",
 		"@tailwindcss/vite": "^4.1.18",
-		"astro": "^5.16.6",
+		"astro": "5.17.2",
 		"defuddle": "^0.7.0",
 		"dompurify": "^3.2.6",
 		"drizzle-orm": "^0.44.4",
