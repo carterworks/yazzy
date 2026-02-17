@@ -3,6 +3,7 @@
 	"version": "0.2.2",
 	"dependencies": {
 		"@astrojs/node": "9.5.3",
+		"@openrouter/sdk": "^0.8.0",
 		"@resvg/resvg-js": "^2.6.2",
 		"@tailwindcss/vite": "^4.1.18",
 		"astro": "5.17.2",
@@ -13,7 +14,6 @@
 		"jsdom": "^24.1.3",
 		"lite-youtube-embed": "^0.3.3",
 		"nanoid": "^5.0.0",
-		"openai": "^5.12.2",
 		"satori": "^0.18.3",
 		"tailwindcss": "^4.1.18",
 		"turndown": "^7.2.0",

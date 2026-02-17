@@ -74,17 +74,12 @@ export async function summarize(text: string): Promise<string> {
 	if (!AI_ENABLED || !text) {
 		return "";
 	}
-	const response = await fetchCompletion(
+	const result = await fetchCompletion(
 		systemPrompt,
 		`<article>${text}</article>`,
-		"minimal",
 	);
-	if (!response) {
+	if (!result) {
 		return "";
-	}
-	const message = response.choices[0].message.content;
-	if (!message) {
-		throw new Error("No message returned from AI endpoint");
 	}
 	const generationDate = new Date()
 		.toLocaleString("en-US", {
@@ -96,9 +91,9 @@ export async function summarize(text: string): Promise<string> {
 		})
 		.replace(",", "");
 	const generationMessage = addGenerationInformation(
-		response.model,
+		result.model,
 		generationDate,
-		message,
+		result.text,
 	);
 	return getDOMPurify().sanitize(generationMessage);
 }

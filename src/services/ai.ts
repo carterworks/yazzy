@@ -1,18 +1,12 @@
-import OpenAI from "openai";
+import { OpenRouter } from "@openrouter/sdk";
 import log from "./log";
-const AI_ENDPOINT = process.env["AI_ENDPOINT"];
 const AI_API_KEY = process.env["AI_API_KEY"];
-log(`Using ${AI_ENDPOINT} for AI. Key: ${AI_API_KEY ? "set" : "not set"}`);
+log(`Using OpenRouter for AI. Key: ${AI_API_KEY ? "set" : "not set"}`);
 
-export const AI_ENABLED = AI_ENDPOINT && AI_API_KEY;
+export const AI_ENABLED = !!AI_API_KEY;
 
-const openai = new OpenAI({
-	baseURL: AI_ENDPOINT,
+const client = new OpenRouter({
 	apiKey: AI_API_KEY,
-	defaultHeaders: {
-		"HTTP-Referer": process.env["BASE_URL"], // Optional. Site URL for rankings on openrouter.ai.
-		"X-Title": "yazzy", // Optional. Site title for rankings on openrouter.ai.
-	},
 });
 
 const models = Object.freeze({
@@ -42,28 +36,27 @@ const models = Object.freeze({
 export async function fetchCompletion(
 	systemPrompt: string,
 	userPrompt: string,
-	reasoning: "minimal" | "low" | "medium" | "high" = "medium",
 	model = models.openai.gptOss.presto120b,
 	fallbackModels = [
 		models.openai.gptOss.presto20b,
 		models.anthropic.claude.haiku45,
 	],
-) {
+): Promise<{ text: string; model: string } | null> {
 	if (!AI_ENABLED) {
 		return null;
 	}
-	const params: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
+	const result = client.callModel({
 		model,
-		messages: [
-			{ role: "system", content: systemPrompt },
-			{ role: "user", content: userPrompt },
-		],
-		reasoning_effort: reasoning,
-	};
-	if (AI_ENDPOINT?.includes("openrouter")) {
-		// @ts-expect-error OpenRouter-specific option
-		params.models = fallbackModels;
+		models: fallbackModels,
+		instructions: systemPrompt,
+		input: userPrompt,
+		reasoning: {
+			effort: "low",
+		},
+	});
+	const text = await result.getText();
+	if (!text) {
+		return null;
 	}
-	const completion = await openai.chat.completions.create(params);
-	return completion;
+	return { text, model };
 }
