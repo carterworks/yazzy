@@ -5,5 +5,5 @@ export const GET: APIRoute = async ({ request }) => {
 	if (!url) {
 		return new Response(`Value '${url}' is not a valid URL`, { status: 400 });
 	}
-	return Response.redirect(new URL(`/${url}`, request.url), 302);
+	return Response.redirect(new URL(`/${url}`));
 };
