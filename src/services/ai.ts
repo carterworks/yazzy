@@ -1,5 +1,6 @@
 import { OpenRouter } from "@openrouter/sdk";
 import log from "./log";
+
 const AI_API_KEY = process.env["AI_API_KEY"];
 log(`Using OpenRouter for AI. Key: ${AI_API_KEY ? "set" : "not set"}`);
 

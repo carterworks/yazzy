@@ -43,8 +43,8 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 	// Note: Avoid 'resources: "usable"' as it loads external resources and causes high memory usage
 	const page = new JSDOM(await response.text(), {
 		url: url.toString(),
-		virtualConsole: new VirtualConsole().sendTo(console, {
-			omitJSDOMErrors: true,
+		virtualConsole: new VirtualConsole().forwardTo(console, {
+			jsdomErrors: "none",
 		}),
 	});
 

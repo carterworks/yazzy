@@ -29,7 +29,7 @@ export function getPlainTextSummary(
 		?.replace(/<[^>]*>/g, " ")
 		// remove the "Generated on 02/06/2025 08:21 PM using google/gemini-2.0-flash-001"
 		// or "Generated on 2025-02-06T19:48:10.640Z using google/gemini-2.0-flash-001	"
-		.replace(/Generated on .+ using \w+\/[\w-\.]+/, "")
+		.replace(/Generated on .+ using \w+\/[\w-.]+/, "")
 		.split(/\s+/)
 		.slice(0, length)
 		.join(" ");
@@ -64,7 +64,7 @@ export function getOgDescription(
 		// Remove variation selectors (emoji modifiers)
 		.replace(/\u{FE0E}|\u{FE0F}/gu, "")
 		// Remove generated timestamp lines
-		.replace(/Generated on .+ using \w+\/[\w-\.]+/g, "")
+		.replace(/Generated on .+ using \w+\/[\w-.]+/g, "")
 		// Normalize whitespace
 		.replace(/\s+/g, " ")
 		.trim();
