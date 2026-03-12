@@ -183,11 +183,11 @@
 	--color-magenta-900: #39172b;
 	--color-magenta-950: #24131d;
 
-	/* 
+	/*
  * Base color
- * Flexoki uses warm monochromatic base values that blend the black value with 
+ * Flexoki uses warm monochromatic base values that blend the black value with
  * the paper value. 8 values are used in light and dark mode:
- * 
+ *
  * - 3 text values: normal, muted, faint
  * - 3 interface values: normal, hover, active
  * - 2 background values: primary, secondary
@@ -539,7 +539,15 @@ html.light {
 html.dark {
 	color-scheme: dark;
 }
-
+@utility transition-details-height {
+	@apply details-content:transition-[height,content-visibility]
+		details-content:transition-discrete
+		details-content:h-0
+		details-content:overflow-clip
+		open:details-content:h-auto
+		details-content:ease-out-quad
+		details-content:duration-150;
+}
 /* Theme color transition */
 body {
 	transition: background-color 0.28s var(--ease-out-quad), color 0.28s
