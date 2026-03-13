@@ -1,7 +1,7 @@
 import { Defuddle } from "defuddle/node";
 import createDomPurify from "dompurify";
 import hljs from "highlight.js";
-import { JSDOM, VirtualConsole } from "jsdom";
+import { parseHTML } from "linkedom";
 import type { ReadablePage } from "../types";
 import convertHtmlToMarkdown from "./markdown";
 import { type VideoInfo, fetchTranscript } from "./youtubeExtractor";
@@ -18,7 +18,18 @@ const supportedContentTypes = [
 	// - other text formats
 ];
 
-async function fetchPage(url: URL): Promise<JSDOM> {
+/** Polyfill APIs that linkedom doesn't implement but defuddle expects. */
+function patchLinkedomDocument(doc: Document, url: string): void {
+	const d = doc as unknown as Record<string, unknown>;
+	if (!d["styleSheets"]) d["styleSheets"] = [];
+	const dv = d["defaultView"] as Record<string, unknown> | null;
+	if (dv && !dv["getComputedStyle"]) {
+		dv["getComputedStyle"] = () => ({ display: "" });
+	}
+	d["URL"] = url;
+}
+
+async function fetchPage(url: URL): Promise<Document> {
 	const response = await fetch(url.toString(), {
 		headers: {
 			"User-Agent": "YazzyWebClipper/0.0.1",
@@ -40,18 +51,13 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 			`URL "${url.toString()}" has unsupported content type: ${baseContentType}`,
 		);
 	}
-	// Note: Avoid 'resources: "usable"' as it loads external resources and causes high memory usage
-	const page = new JSDOM(await response.text(), {
-		url: url.toString(),
-		virtualConsole: new VirtualConsole().forwardTo(console, {
-			jsdomErrors: "none",
-		}),
-	});
+	const { document, window } = parseHTML(await response.text());
 
-	const DOMPurify = createDomPurify(page.window);
-	page.window.document.body.innerHTML = DOMPurify.sanitize(
-		page.window.document.body.innerHTML,
-	);
+	// Polyfill APIs that linkedom doesn't implement but defuddle expects
+	patchLinkedomDocument(document, url.toString());
+
+	const DOMPurify = createDomPurify(window);
+	document.body.innerHTML = DOMPurify.sanitize(document.body.innerHTML);
 
 	// force lazy-loaded images to load
 	const LAZY_DATA_ATTRS = [
@@ -61,7 +67,7 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 		"data-td-src-property",
 	];
 	for (const dataAttr of LAZY_DATA_ATTRS) {
-		const images = page.window.document.querySelectorAll(`img[${dataAttr}]`);
+		const images = Array.from(document.querySelectorAll(`img[${dataAttr}]`));
 		for (const img of images) {
 			const src = img.getAttribute(dataAttr);
 			if (src) {
@@ -84,10 +90,10 @@ async function fetchPage(url: URL): Promise<JSDOM> {
 		["embed", "src"],
 	];
 	for (const [selector, attribute] of selectorsToNormalize) {
-		normalizeResourceUrls(page.window.document, url, selector, attribute);
+		normalizeResourceUrls(document, url, selector, attribute);
 	}
 
-	return page;
+	return document;
 }
 
 function normalizeResourceUrls(
@@ -96,7 +102,7 @@ function normalizeResourceUrls(
 	selector: string,
 	attribute: string,
 ) {
-	for (const element of document.querySelectorAll(selector)) {
+	for (const element of Array.from(document.querySelectorAll(selector))) {
 		const value = element.getAttribute(attribute);
 		if (!value) {
 			continue;
@@ -106,7 +112,7 @@ function normalizeResourceUrls(
 			// Handle srcset which can have multiple URLs and descriptors
 			const newSrcset = value
 				.split(",")
-				.map((part) => {
+				.map((part: string) => {
 					const trimmedPart = part.trim();
 					const urlMatch = trimmedPart.match(/^(\S+)(\s+.*)?$/);
 					if (urlMatch?.[1]) {
@@ -121,7 +127,7 @@ function normalizeResourceUrls(
 					}
 					return ""; // Return empty for parts that don't match expected format
 				})
-				.filter((part) => part !== "") // Remove parts that were invalid or empty
+				.filter((part: string) => part !== "") // Remove parts that were invalid or empty
 				.join(", ");
 			if (newSrcset) {
 				element.setAttribute(attribute, newSrcset);
@@ -204,106 +210,90 @@ function convertMarkdownToPlainText(markdown: string): string {
 }
 
 async function clipArticle(url: URL): Promise<ReadablePage> {
-	const page = await fetchPage(url);
-	if (!page || !page.window.document) {
+	const pageDocument = await fetchPage(url);
+	if (!pageDocument) {
 		throw new Error(`Failed to fetch page "${url.toString()}"`);
 	}
 
-	let contentDom: JSDOM | null = null;
-	try {
-		const article = await Defuddle(page, url.toString());
+	const article = await Defuddle(pageDocument, url.toString());
 
-		if (!article) {
-			throw new Error(
-				`Failed to parse article contents of "${url.toString()}"`,
-			);
-		}
-
-		// Create a temporary JSDOM instance to manipulate the article content
-		contentDom = new JSDOM(article.content);
-		const contentDocument = contentDom.window.document;
-
-		// Highlight code blocks
-		const codeBlocks = contentDocument.querySelectorAll("pre code");
-		for (const block of codeBlocks) {
-			// We need to cast the Node to HTMLElement for highlightElement
-			if (block instanceof contentDom.window.HTMLElement) {
-				hljs.highlightElement(block);
-			}
-		}
-
-		// Turn all headers into links, if they are not already.
-		let headerId = 0;
-		const headers = contentDocument.querySelectorAll("h1, h2, h3, h4, h5, h6");
-		for (const header of headers) {
-			if (header instanceof contentDom.window.HTMLElement) {
-				const id = header.id ? header.id : `h${headerId++}`;
-				header.id = id;
-				header.innerHTML = `<a href="#${id}">${header.innerHTML}</a>`;
-			}
-		}
-
-		// Get the updated HTML content with highlighted code
-		const highlightedHtmlContent = contentDocument.body.innerHTML;
-
-		const markdownBody = convertHtmlToMarkdown(article.content, url.toString());
-
-		// Fetch byline, meta author, property author, or site name
-		const author =
-			article.author ||
-			getMetaContent(page.window.document, "name", "author") ||
-			getMetaContent(page.window.document, "property", "author") ||
-			getMetaContent(page.window.document, "property", "og:site_name");
-
-		const tags = [
-			"clippings",
-			...(
-				page.window.document
-					.querySelector("meta[name='keywords' i]")
-					?.getAttribute("content")
-					?.split(",") ?? []
-			).map((keyword) => keyword.split(" ").join("")),
-			...(article.schemaOrgData?.articleSection ?? []),
-		];
-
-		/* Try to get published date */
-		let published =
-			article.published ||
-			article.schemaOrgData?.datePublished ||
-			page.window.document.querySelector("time")?.getAttribute("datetime");
-		if (typeof published === "string") {
-			published = published.trim().split(/,\s+/gi)[0];
-		}
-		if (published) {
-			published = new Date(published);
-		}
-
-		const title =
-			article.title ||
-			article.schemaOrgData.headline ||
-			article.schemaOrgData.name ||
-			page.window.document.title;
-
-		return {
-			title,
-			url: url.toString(),
-			published,
-			createdAt: new Date(),
-			author,
-			tags,
-			markdownContent: markdownBody,
-			textContent: convertMarkdownToPlainText(markdownBody),
-			htmlContent: highlightedHtmlContent,
-		};
-	} finally {
-		// CRITICAL: Close JSDOM windows to free memory
-		// JSDOM holds references to the entire DOM tree, event listeners, and window objects
-		// Without explicit cleanup, these accumulate and cause OOM on memory-constrained containers
-		if (contentDom) {
-			contentDom.window.close();
-		}
-		page.window.close();
+	if (!article) {
+		throw new Error(`Failed to parse article contents of "${url.toString()}"`);
 	}
+
+	// Create a temporary DOM to manipulate the article content
+	const { document: contentDocument } = parseHTML(article.content);
+
+	// Highlight code blocks
+	const codeBlocks = Array.from(contentDocument.querySelectorAll("pre code"));
+	for (const block of codeBlocks) {
+		hljs.highlightElement(block as HTMLElement);
+	}
+
+	// Turn all headers into links, if they are not already.
+	let headerId = 0;
+	const headers = Array.from(
+		contentDocument.querySelectorAll("h1, h2, h3, h4, h5, h6"),
+	);
+	for (const header of headers) {
+		const el = header as HTMLElement;
+		const id = el.id ? el.id : `h${headerId++}`;
+		el.id = id;
+		el.innerHTML = `<a href="#${id}">${el.innerHTML}</a>`;
+	}
+
+	// Get the updated HTML content with highlighted code
+	const highlightedHtmlContent = contentDocument.body.innerHTML;
+
+	const markdownBody = convertHtmlToMarkdown(article.content, url.toString());
+
+	// Fetch byline, meta author, property author, or site name
+	const author =
+		article.author ||
+		getMetaContent(pageDocument, "name", "author") ||
+		getMetaContent(pageDocument, "property", "author") ||
+		getMetaContent(pageDocument, "property", "og:site_name");
+
+	const tags = [
+		"clippings",
+		...(
+			pageDocument
+				.querySelector("meta[name='keywords' i]")
+				?.getAttribute("content")
+				?.split(",") ?? []
+		).map((keyword) => keyword.split(" ").join("")),
+		...(article.schemaOrgData?.articleSection ?? []),
+	];
+
+	/* Try to get published date */
+	let published =
+		article.published ||
+		article.schemaOrgData?.datePublished ||
+		pageDocument.querySelector("time")?.getAttribute("datetime");
+	if (typeof published === "string") {
+		published = published.trim().split(/,\s+/gi)[0];
+	}
+	if (published) {
+		published = new Date(published);
+	}
+
+	const title =
+		article.title ||
+		article.schemaOrgData.headline ||
+		article.schemaOrgData.name ||
+		pageDocument.title;
+
+	return {
+		title,
+		url: url.toString(),
+		published,
+		createdAt: new Date(),
+		author,
+		tags,
+		markdownContent: markdownBody,
+		textContent: convertMarkdownToPlainText(markdownBody),
+		htmlContent: highlightedHtmlContent,
+	};
 }
 
 function createEmbedElementHtml(videoInfo: VideoInfo): string {

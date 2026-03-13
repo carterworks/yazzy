@@ -1,15 +1,14 @@
 import createDomPurify from "dompurify";
-import { JSDOM } from "jsdom";
+import { parseHTML } from "linkedom";
 import { AI_ENABLED, fetchCompletion } from "./ai";
 
-// Lazy-loaded DOMPurify instance to avoid holding JSDOM in memory when not needed
+// Lazy-loaded DOMPurify instance
 let domPurifyInstance: ReturnType<typeof createDomPurify> | null = null;
-let domPurifyJsdom: JSDOM | null = null;
 
 function getDOMPurify(): ReturnType<typeof createDomPurify> {
 	if (!domPurifyInstance) {
-		domPurifyJsdom = new JSDOM("<!DOCTYPE html>");
-		domPurifyInstance = createDomPurify(domPurifyJsdom.window);
+		const { window } = parseHTML("<!DOCTYPE html>");
+		domPurifyInstance = createDomPurify(window);
 	}
 	return domPurifyInstance;
 }
