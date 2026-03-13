@@ -11,7 +11,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { JSDOM } from "jsdom";
+import { parseHTML } from "linkedom";
 
 const RE_YOUTUBE =
 	/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/i;
@@ -99,7 +99,7 @@ function objElementToJsObject(schemaObj: Element | null): SchemaObject {
 	// If the element has achildern, then the object is a nested object.
 	// If the item has commas, then it is an array.
 	const obj: SchemaObject = {};
-	for (const child of schemaObj.children) {
+	for (const child of Array.from(schemaObj.children)) {
 		const key = child.getAttribute("itemprop");
 		const value = child.getAttribute("content") ?? child.getAttribute("href");
 		if (child.children.length > 0 && key !== null) {
@@ -207,42 +207,35 @@ export async function fetchTranscript(
 		offset: Number.parseFloat(result[1]),
 		lang: config?.lang ?? captions.captionTracks[0].languageCode,
 	}));
-	const page = new JSDOM(videoPageBody);
-	try {
-		const videoObject = objElementToJsObject(
-			page.window.document.querySelector(
-				'[itemtype="http://schema.org/VideoObject"]',
-			),
-		);
+	const { document } = parseHTML(videoPageBody);
+	const videoObject = objElementToJsObject(
+		document.querySelector('[itemtype="http://schema.org/VideoObject"]'),
+	);
 
-		const title = (videoObject?.["name"] as string) ?? "YouTube Video";
-		const author =
-			videoObject?.["author"] &&
-			typeof videoObject["author"] === "object" &&
-			"name" in videoObject["author"]
-				? (videoObject["author"] as { name: string }).name
-				: null;
-		const published = videoObject?.["datePublished"]
-			? new Date(videoObject["datePublished"] as string)
-			: undefined;
-		const createdAt = videoObject?.["uploadDate"]
-			? new Date(videoObject["uploadDate"] as string)
-			: undefined;
-		const thumbnailUrl = videoObject?.["thumbnailUrl"] as string;
-		return {
-			title,
-			author,
-			published,
-			createdAt,
-			url: `https://www.youtube.com/watch?v=${identifier}`,
-			transcript,
-			thumbnailUrl,
-			id: identifier,
-		};
-	} finally {
-		// CRITICAL: Close JSDOM window to free memory
-		page.window.close();
-	}
+	const title = (videoObject?.["name"] as string) ?? "YouTube Video";
+	const author =
+		videoObject?.["author"] &&
+		typeof videoObject["author"] === "object" &&
+		"name" in videoObject["author"]
+			? (videoObject["author"] as { name: string }).name
+			: null;
+	const published = videoObject?.["datePublished"]
+		? new Date(videoObject["datePublished"] as string)
+		: undefined;
+	const createdAt = videoObject?.["uploadDate"]
+		? new Date(videoObject["uploadDate"] as string)
+		: undefined;
+	const thumbnailUrl = videoObject?.["thumbnailUrl"] as string;
+	return {
+		title,
+		author,
+		published,
+		createdAt,
+		url: `https://www.youtube.com/watch?v=${identifier}`,
+		transcript,
+		thumbnailUrl,
+		id: identifier,
+	};
 }
 
 /**

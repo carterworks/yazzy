@@ -748,7 +748,7 @@ function createMarkdownContent(content: string, _url: string) {
 					element.removeAttribute(attr.name);
 				}
 			}
-			for (const child of element.childNodes) {
+			for (const child of Array.from(element.childNodes)) {
 				if (isElement(child)) {
 					cleanElement(child);
 				}
