@@ -187,14 +187,6 @@ const ogImageUrl = new URL(`/api/og?${ogImageParams}`, Astro.url).toString();
 				<meta property="og:article:author" content={article.author} />
 			)
 		}
-		{
-			articleHostname.includes("youtu") && (
-				<>
-					<link rel="stylesheet" href="/lite-yt-embed.css" />
-					<script type="module" src="/lite-yt-embed.js" async defer />
-				</>
-			)
-		}
 		<script
 			type="module"
 			id="obsidian-script"
