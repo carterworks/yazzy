@@ -4,7 +4,6 @@ import hljs from "highlight.js";
 import { parseHTML } from "linkedom";
 import type { ReadablePage } from "../types";
 import convertHtmlToMarkdown from "./markdown";
-import { type VideoInfo, fetchTranscript } from "./youtubeExtractor";
 
 const supportedContentTypes = [
 	"text/html",
@@ -294,37 +293,6 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 	};
 }
 
-function createEmbedElementHtml(videoInfo: VideoInfo): string {
-	return `<lite-youtube videoid="${videoInfo.id}" style="background-image: url('${videoInfo.thumbnailUrl}');">
-  <a href="${videoInfo.url}" class="lyt-playbtn" title="Play Video">
-    <span class="lyt-visually-hidden">${videoInfo.title} | ${videoInfo.author}</span>
-  </a>
-</lite-youtube>`;
-}
-
-function createEmbedElementMarkdown(videoInfo: VideoInfo): string {
-	return `[![${videoInfo.title} | ${videoInfo.author}](${videoInfo.thumbnailUrl})](${videoInfo.url})`;
-}
-
-async function clipYoutube(url: URL): Promise<ReadablePage> {
-	const videoInfo = await fetchTranscript(url.toString());
-	const transcriptContent = videoInfo.transcript.map((t) => t.text).join("\n");
-	return {
-		title: videoInfo.title,
-		url: url.toString(),
-		published: videoInfo.published,
-		author: videoInfo.author,
-		tags: ["clippings", "youtube"],
-		markdownContent: `${createEmbedElementMarkdown(videoInfo)}\n\n---\n\n${transcriptContent}`,
-		textContent: transcriptContent,
-		htmlContent: `<p>${createEmbedElementHtml(videoInfo)}</p>${videoInfo.transcript.map((t) => `<p>${t.text}</p > `).join("\n")}`,
-		createdAt: videoInfo.createdAt,
-	};
-}
-
 export async function clip(url: URL): Promise<ReadablePage> {
-	if (url.hostname.includes("youtu")) {
-		return clipYoutube(url);
-	}
 	return clipArticle(url);
 }

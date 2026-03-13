@@ -30,9 +30,7 @@
 		"useIgnoreFile": true,
 		"defaultBranch": "main"
 	},
-	"files": {
-		"ignore": ["public/lite-yt-embed.js", "public/lite-yt-embed.css"]
-	},
+	"files": {},
 	"overrides": [
 		{
 			"include": ["*.svelte", "*.astro", "*.vue"],

@@ -1,6 +1,6 @@
 {
 	"name": "yazzy",
-	"version": "0.3.0",
+	"version": "0.3.2",
 	"dependencies": {
 		"@astrojs/node": "^10.0.1",
 		"@openrouter/sdk": "^0.9.11",
@@ -12,7 +12,6 @@
 		"drizzle-orm": "^0.45.1",
 		"highlight.js": "^11.11.1",
 		"linkedom": "^0.18.12",
-		"lite-youtube-embed": "^0.3.4",
 		"nanoid": "^5.1.6",
 		"satori": "^0.25.0",
 		"tailwindcss": "^4.2.1",
