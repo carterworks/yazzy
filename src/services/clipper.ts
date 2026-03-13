@@ -1,6 +1,5 @@
 import { Defuddle } from "defuddle/node";
 import createDomPurify from "dompurify";
-import hljs from "highlight.js";
 import { parseHTML } from "linkedom";
 import type { ReadablePage } from "../types";
 import convertHtmlToMarkdown from "./markdown";
@@ -219,28 +218,8 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 		throw new Error(`Failed to parse article contents of "${url.toString()}"`);
 	}
 
-	const { document: contentDocument } = parseHTML(article.content);
-
-	// Highlight code blocks
-	const codeBlocks = Array.from(contentDocument.querySelectorAll("pre code"));
-	for (const block of codeBlocks) {
-		hljs.highlightElement(block as HTMLElement);
-	}
-
-	// Turn all headers into links, if they are not already.
-	let headerId = 0;
-	const headers = Array.from(
-		contentDocument.querySelectorAll("h1, h2, h3, h4, h5, h6"),
-	);
-	for (const header of headers) {
-		const el = header as HTMLElement;
-		const id = el.id ? el.id : `h${headerId++}`;
-		el.id = id;
-		el.innerHTML = `<a href="#${id}">${el.innerHTML}</a>`;
-	}
-
-	// Get the updated HTML content with highlighted code
-	const highlightedHtmlContent = contentDocument.body.innerHTML;
+	// TODO: reimplement code syntax highlighting with shiki (which is used by defuddle, I think?)
+	// TODO: reimplement header linking
 
 	const markdownBody = convertHtmlToMarkdown(article.content, url.toString());
 
@@ -289,7 +268,7 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 		tags,
 		markdownContent: markdownBody,
 		textContent: convertMarkdownToPlainText(markdownBody),
-		htmlContent: highlightedHtmlContent,
+		htmlContent: article.content,
 	};
 }
 
