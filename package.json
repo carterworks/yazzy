@@ -1,6 +1,6 @@
 {
 	"name": "yazzy",
-	"version": "0.3.2",
+	"version": "0.3.3",
 	"dependencies": {
 		"@astrojs/node": "^10.0.1",
 		"@openrouter/sdk": "^0.9.11",
@@ -10,7 +10,6 @@
 		"defuddle": "^0.13.0",
 		"dompurify": "^3.3.2",
 		"drizzle-orm": "^0.45.1",
-		"highlight.js": "^11.11.1",
 		"linkedom": "^0.18.12",
 		"nanoid": "^5.1.6",
 		"satori": "^0.25.0",
