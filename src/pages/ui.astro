@@ -483,9 +483,9 @@ import BasePage from "../layouts/BasePage.astro";
 
 			<h2>Code Examples</h2>
 			<p>Here's how you might fetch an article programmatically:</p>
-			<pre><code class="hljs language-javascript"><span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(<span class="hljs-string">'https://example.com/article'</span>);
-<span class="hljs-keyword">const</span> html = <span class="hljs-keyword">await</span> response.<span class="hljs-title function_">text</span>();
-<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(html);</code></pre>
+			<pre><code class="language-javascript">const response = await fetch('https://example.com/article');
+const html = await response.text();
+console.log(html);</code></pre>
 
 			<p>
 				Inline code looks like <code>this.variable = value</code> within text.

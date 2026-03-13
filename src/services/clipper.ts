@@ -218,7 +218,7 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 		throw new Error(`Failed to parse article contents of "${url.toString()}"`);
 	}
 
-	// TODO: reimplement code syntax highlighting with shiki (which is used by defuddle, I think?)
+	// TODO: reimplement code syntax highlighting with shiki
 	// TODO: reimplement header linking
 
 	const markdownBody = convertHtmlToMarkdown(article.content, url.toString());
