@@ -53,7 +53,6 @@ async function fetchPage(url: URL): Promise<Document> {
 	}
 	const { document, window } = parseHTML(await response.text());
 
-	// Polyfill APIs that linkedom doesn't implement but defuddle expects
 	patchLinkedomDocument(document, url.toString());
 
 	const DOMPurify = createDomPurify(window);
@@ -221,7 +220,6 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 		throw new Error(`Failed to parse article contents of "${url.toString()}"`);
 	}
 
-	// Create a temporary DOM to manipulate the article content
 	const { document: contentDocument } = parseHTML(article.content);
 
 	// Highlight code blocks
