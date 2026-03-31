@@ -7,7 +7,7 @@
 		"@resvg/resvg-js": "^2.6.2",
 		"@tailwindcss/vite": "^4.2.1",
 		"astro": "^6.0.4",
-		"defuddle": "^0.13.0",
+		"defuddle": "0.14.0",
 		"dompurify": "^3.3.2",
 		"drizzle-orm": "^0.45.1",
 		"linkedom": "^0.18.12",
