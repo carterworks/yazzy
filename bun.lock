@@ -10,7 +10,7 @@
         "@resvg/resvg-js": "^2.6.2",
         "@tailwindcss/vite": "^4.2.1",
         "astro": "^6.0.4",
-        "defuddle": "0.14.0",
+        "defuddle": "0.15.0",
         "dompurify": "^3.3.2",
         "drizzle-orm": "^0.45.1",
         "linkedom": "^0.18.12",
@@ -440,7 +440,7 @@
 
     "defu": ["defu@6.1.4", "", {}, "sha512-mEQCMmwJu317oSz8CwdIOdwf3xMif1ttiM8LTufzc3g6kR+9Pe236twL8j3IYT1F7GfRgGcW6MWxzZjLIkuHIg=="],
 
-    "defuddle": ["defuddle@0.14.0", "", { "dependencies": { "commander": "^12.1.0" }, "optionalDependencies": { "linkedom": "^0.18.12", "mathml-to-latex": "^1.5.0", "temml": "^0.13.1", "turndown": "^7.2.0" }, "bin": { "defuddle": "dist/cli.js" } }, "sha512-btavZGd1WgiVqrVM62WGRXMUi/aU7ckTZiq0xXWLZMHvzIqNZjwIFQEDRx8MarD7fIgsB90NXZ9xHJkKtapt2Q=="],
+    "defuddle": ["defuddle@0.15.0", "", { "dependencies": { "commander": "^12.1.0" }, "optionalDependencies": { "linkedom": "^0.18.12", "mathml-to-latex": "^1.5.0", "temml": "^0.13.1", "turndown": "^7.2.0" }, "bin": { "defuddle": "dist/cli.js" } }, "sha512-ZIouJe2TcVMZDTpU4G0UBA+kN101dBQ5fxCsamq/zgH4etbRZTd86fcWbYrnus28SFBpMyHWCbL23P1rkp4XUw=="],
 
     "depd": ["depd@2.0.0", "", {}, "sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw=="],
 
