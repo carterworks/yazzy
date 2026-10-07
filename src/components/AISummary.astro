@@ -1,5 +1,6 @@
 ---
 import { AI_ENABLED } from "../services/ai";
+import { applyLocalDirections } from "../services/article-locale";
 import { cache } from "../services/cache";
 import { summarize } from "../services/summarizer";
 
@@ -57,7 +58,7 @@ if (AI_ENABLED) {
 				<summary class="cursor-pointer select-none">
 					<h2 class="inline">AI-generated summary</h2>
 				</summary>
-				<div lang={language} dir="auto" class="text-start" set:html={summary} />
+				<div lang={language} dir="auto" class="text-start" set:html={applyLocalDirections(summary)} />
 			</details>
 		</aside>
 	) : null

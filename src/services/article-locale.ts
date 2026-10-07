@@ -6,6 +6,30 @@ interface TextLocale extends Intl.Locale {
 	getTextInfo(): { direction: "ltr" | "rtl" };
 }
 
+function parseLocale(languageTag: string): TextLocale | undefined {
+	try {
+		return new Intl.Locale(languageTag.replaceAll("_", "-")) as TextLocale;
+	} catch {
+		// Invalid source metadata should not prevent reading an article.
+		return undefined;
+	}
+}
+
+export function applyLocalDirections(content: string): string {
+	const { document } = parseHTML("<html><body></body></html>");
+	document.body.innerHTML = content;
+	for (const element of Array.from(
+		document.body.querySelectorAll("[lang]:not([dir])"),
+	)) {
+		if (element.closest("pre, code, bdi, bdo")) continue;
+		const language = element.getAttribute("lang")?.trim();
+		const direction =
+			language && parseLocale(language)?.getTextInfo().direction;
+		if (direction) element.setAttribute("dir", direction);
+	}
+	return document.body.innerHTML;
+}
+
 export function getArticleLocale(
 	document: Document,
 	content?: string,
@@ -35,14 +59,7 @@ export function getArticleLocale(
 			.querySelector('meta[property="og:locale"]')
 			?.getAttribute("content")
 			?.trim();
-	let locale: Intl.Locale | undefined;
-	if (languageTag) {
-		try {
-			locale = new Intl.Locale(languageTag.replaceAll("_", "-"));
-		} catch {
-			// Invalid source metadata should not prevent clipping an article.
-		}
-	}
+	const locale = languageTag ? parseLocale(languageTag) : undefined;
 
 	const sourceDirection = (
 		articleRoot.closest("[dir]")?.getAttribute("dir") || ""
@@ -54,7 +71,7 @@ export function getArticleLocale(
 		sourceDirection === "ltr" ||
 		sourceDirection === "auto"
 			? sourceDirection
-			: (locale as TextLocale | undefined)?.getTextInfo().direction;
+			: locale?.getTextInfo().direction;
 
 	return { language: locale?.toString() ?? null, direction: direction ?? null };
 }

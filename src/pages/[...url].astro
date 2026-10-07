@@ -7,6 +7,7 @@ import Duplicate from "../components/icons/Duplicate.astro";
 import InboxDownload from "../components/icons/InboxDownload.astro";
 import Obsidian from "../components/icons/Obsidian.astro";
 import BasePage from "../layouts/BasePage.astro";
+import { applyLocalDirections } from "../services/article-locale";
 import { cache } from "../services/cache";
 import { clip } from "../services/clipper";
 import log from "../services/log";
@@ -233,7 +234,7 @@ const ogImageUrl = new URL(`/api/og?${ogImageParams}`, Astro.url).toString();
 			<div
 				class="prose"
 				dir={article.direction ?? "auto"}
-				set:html={article.htmlContent ?? ""}
+				set:html={applyLocalDirections(article.htmlContent ?? "")}
 			/>
 		</article>
 	</main>
