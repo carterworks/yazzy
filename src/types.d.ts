@@ -1,6 +1,8 @@
 export interface ReadablePage {
 	title: string | null;
 	url: string;
+	language?: string | null;
+	direction?: "ltr" | "rtl" | "auto" | null;
 	published?: Date;
 	author: string | null;
 	tags: string[];

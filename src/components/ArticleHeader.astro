@@ -24,8 +24,12 @@ function generateMetadataNuggets(article: ReadablePage): string[] {
 const metadata = generateMetadataNuggets(article);
 ---
 
-<header class={classes}>
-	<h2 class="text-2xl font-didone">
+<header
+	class:list={["text-start", classes]}
+	lang={article.language ?? ""}
+	dir={article.direction ?? "auto"}
+>
+	<h2 class="text-2xl font-didone" dir="auto">
 		<a
 			href={article.url}
 			class="transition-colors duration-200 ease rounded hover:bg-base-100 dark:hover:bg-base-800"
@@ -33,7 +37,14 @@ const metadata = generateMetadataNuggets(article);
 			{article.title}
 		</a>
 	</h2>
-	<p class="text-sm">{metadata.join(" ・ ")}</p>
+	<p class="text-sm">
+		{metadata.map((nugget, index) => (
+			<Fragment>
+				{index > 0 && " ・ "}
+				<bdi>{nugget}</bdi>
+			</Fragment>
+		))}
+	</p>
 	<AISummary server:defer url={article.url}>
 		<AISummaryFallback slot="fallback" />
 	</AISummary>

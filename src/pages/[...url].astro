@@ -7,6 +7,7 @@ import Duplicate from "../components/icons/Duplicate.astro";
 import InboxDownload from "../components/icons/InboxDownload.astro";
 import Obsidian from "../components/icons/Obsidian.astro";
 import BasePage from "../layouts/BasePage.astro";
+import { applyLocalDirections } from "../services/article-locale";
 import { cache } from "../services/cache";
 import { clip } from "../services/clipper";
 import log from "../services/log";
@@ -224,9 +225,17 @@ const ogImageUrl = new URL(`/api/og?${ogImageParams}`, Astro.url).toString();
 	</Fragment>
 
 	<main>
-		<article class="space-y-8">
+		<article
+			class="space-y-8 text-start"
+			lang={article.language ?? ""}
+			dir={article.direction ?? "auto"}
+		>
 			<ArticleHeader article={article} classes="" />
-			<div class="prose" set:html={article.htmlContent ?? ""} />
+			<div
+				class="prose"
+				dir={article.direction ?? "auto"}
+				set:html={applyLocalDirections(article.htmlContent ?? "")}
+			/>
 		</article>
 	</main>
 </BasePage>
