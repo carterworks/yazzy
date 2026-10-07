@@ -11,10 +11,12 @@ const { url } = Astro.props;
 
 let summary: string | null = null;
 let error: string | null = null;
+let language = "";
 
 if (AI_ENABLED) {
 	try {
 		const article = await cache.getArticle(url);
+		language = article?.language ?? "";
 
 		if (!article) {
 			error = `Article not found for URL ${url}`;
@@ -41,7 +43,7 @@ if (AI_ENABLED) {
 
 {
 	error ? (
-		<aside class="prose">
+		<aside class="prose" lang="en" dir="ltr">
 			<details>
 				<summary class="cursor-pointer select-none">
 					<h2 class="inline">Failed to retrieve AI summary</h2>
@@ -50,12 +52,12 @@ if (AI_ENABLED) {
 			</details>
 		</aside>
 	) : summary ? (
-		<aside class="prose">
+		<aside class="prose" lang="en" dir="ltr">
 			<details class="transition-details-height">
 				<summary class="cursor-pointer select-none">
 					<h2 class="inline">AI-generated summary</h2>
 				</summary>
-				<div set:html={summary} />
+				<div lang={language} dir="auto" class="text-start" set:html={summary} />
 			</details>
 		</aside>
 	) : null

@@ -263,7 +263,7 @@
 	--ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 .prose {
-	@apply leading-normal max-w-prose;
+	@apply leading-normal max-w-prose text-start;
 	* {
 		@apply max-w-prose;
 	}
@@ -329,9 +329,9 @@
 	}
 	ul,
 	ol {
-		@apply list-outside list-disc pl-6;
+		@apply list-outside list-disc ps-6;
 		li {
-			@apply pl-3 mt-0;
+			@apply ps-3 mt-0;
 		}
 	}
 	ol {
@@ -340,9 +340,14 @@
 	code {
 		@apply font-mono font-medium;
 		font-variant-ligatures: none;
+		direction: ltr;
+		unicode-bidi: isolate;
 	}
 	pre:has(code) {
 		@apply overflow-x-auto text-xs max-w-full rounded;
+		direction: ltr;
+		text-align: left;
+		unicode-bidi: isolate;
 	}
 	table {
 		@apply w-full my-8 leading-6 text-sm;
@@ -352,10 +357,10 @@
 				@apply font-medium align-bottom pb-3 px-2;
 			}
 			th:first-child {
-				@apply pl-0;
+				@apply ps-0;
 			}
 			th:last-child {
-				@apply pr-0;
+				@apply pe-0;
 			}
 		}
 		tbody {
@@ -385,15 +390,15 @@
 				@apply px-2 py-1.5;
 			}
 			td:first-child {
-				@apply pl-0;
+				@apply ps-0;
 			}
 			td:last-child {
-				@apply pr-0;
+				@apply pe-0;
 			}
 		}
 	}
 	blockquote {
-		@apply italic border-l-2 border-l-base-300 pl-1;
+		@apply italic border-s-2 border-s-base-300 ps-1;
 		p:first-of-type::before {
 			content: open-quote;
 		}
@@ -409,7 +414,7 @@
 	}
 	/* It's 2025, I don't respect the <center> tag */
 	center {
-		@apply text-left;
+		@apply text-start;
 	}
 }
 :root {

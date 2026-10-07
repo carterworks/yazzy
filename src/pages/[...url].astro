@@ -224,9 +224,17 @@ const ogImageUrl = new URL(`/api/og?${ogImageParams}`, Astro.url).toString();
 	</Fragment>
 
 	<main>
-		<article class="space-y-8">
+		<article
+			class="space-y-8 text-start"
+			lang={article.language ?? ""}
+			dir={article.direction ?? "auto"}
+		>
 			<ArticleHeader article={article} classes="" />
-			<div class="prose" set:html={article.htmlContent ?? ""} />
+			<div
+				class="prose"
+				dir={article.direction ?? "auto"}
+				set:html={article.htmlContent ?? ""}
+			/>
 		</article>
 	</main>
 </BasePage>
