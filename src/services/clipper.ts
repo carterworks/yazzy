@@ -2,6 +2,7 @@ import { Defuddle } from "defuddle/node";
 import createDomPurify from "dompurify";
 import { parseHTML } from "linkedom";
 import type { ReadablePage } from "../types";
+import { getArticleLocale } from "./article-locale";
 import convertHtmlToMarkdown from "./markdown";
 
 const supportedContentTypes = [
@@ -212,11 +213,13 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 		throw new Error(`Failed to fetch page "${url.toString()}"`);
 	}
 
+	const localeDocument = pageDocument.cloneNode(true) as Document;
 	const article = await Defuddle(pageDocument, url.toString());
 
 	if (!article) {
 		throw new Error(`Failed to parse article contents of "${url.toString()}"`);
 	}
+	const locale = getArticleLocale(localeDocument, article.content);
 
 	// TODO: reimplement code syntax highlighting with shiki
 	// TODO: reimplement header linking
@@ -261,6 +264,7 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 
 	return {
 		title,
+		...locale,
 		url: url.toString(),
 		published,
 		createdAt: new Date(),

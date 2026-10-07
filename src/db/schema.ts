@@ -4,6 +4,8 @@ import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 export const articles = sqliteTable("articles", {
 	url: text().primaryKey().notNull(),
 	title: text(),
+	language: text(),
+	direction: text({ enum: ["ltr", "rtl", "auto"] }),
 	author: text(),
 	published: integer({ mode: "timestamp_ms" }),
 	topics: text(),
