@@ -37,6 +37,9 @@
     "@biomejs/biome",
     "lefthook",
   ],
+  "patchedDependencies": {
+    "defuddle@0.19.2": "patches/defuddle@0.19.2.patch",
+  },
   "packages": {
     "@astrojs/compiler": ["@astrojs/compiler@3.0.0", "", {}, "sha512-MwAbDE5mawZ1SS+D8qWiHdprdME5Tlj2e0YjxnEICvcOpbSukNS7Sa7hA5PK+6RrmUr/t6Gi5YgrdZKjbO/WPQ=="],
 

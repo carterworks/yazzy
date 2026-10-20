@@ -21,6 +21,7 @@ RUN apt update -qq && \
 
 # Install node modules
 COPY --link bun.lock package.json ./
+COPY --link patches ./patches
 RUN bun install --frozen-lockfile
 
 # Copy application code

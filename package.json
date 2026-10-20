@@ -39,5 +39,8 @@
 		"esbuild",
 		"lefthook",
 		"sharp"
-	]
+	],
+	"patchedDependencies": {
+		"defuddle@0.19.2": "patches/defuddle@0.19.2.patch"
+	}
 }
