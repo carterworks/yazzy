@@ -83,6 +83,14 @@ function asGenericElement(node: unknown): GenericElement {
 	return node as unknown as GenericElement;
 }
 
+function nearestAncestor(node: Node, name: string): Node | null {
+	let parent = node.parentNode;
+	while (parent && parent.nodeName.toUpperCase() !== name) {
+		parent = parent.parentNode;
+	}
+	return parent;
+}
+
 const footnotes: { [key: string]: string } = {};
 
 function createMarkdownContent(content: string, _url: string) {
@@ -95,7 +103,33 @@ function createMarkdownContent(content: string, _url: string) {
 		preformattedCode: true,
 	});
 
-	turndownService.addRule("table", {
+	// Turndown visits cell children before their table. Reuse that result instead
+	// of reparsing each cell's HTML (and recursively converting nested tables).
+	const convertedCells = new WeakMap<Node, string>();
+	function addRule(name: string, rule: TurndownService.Rule) {
+		const replacement = rule.replacement;
+		if (!replacement) {
+			turndownService.addRule(name, rule);
+			return;
+		}
+		turndownService.addRule(name, {
+			...rule,
+			replacement(content, node, options) {
+				if (node.nodeName === "TD" || node.nodeName === "TH") {
+					// Tables format cell children, not a math/style rule on the cell itself.
+					convertedCells.set(node, content);
+				}
+				return replacement.call(this, content, node, options);
+			},
+		});
+	}
+
+	addRule("tableCell", {
+		filter: ["td", "th"],
+		replacement: (content) => content,
+	});
+
+	addRule("table", {
 		filter: "table",
 		replacement: (content, node) => {
 			if (!isGenericElement(node)) return content;
@@ -122,25 +156,32 @@ function createMarkdownContent(content: string, _url: string) {
 				return `\n\n${cleanedTable}\n\n`;
 			}
 
-			// Process simple tables as before
-			const rows = Array.from(node.rows || []).map((row) => {
-				const cells = Array.from(row.cells || []).map((cell) => {
-					// Remove newlines and trim the content
-					let cellContent = turndownService
-						.turndown(cell.innerHTML || "")
-						.replace(/\n/g, " ")
-						.trim();
-					// Escape pipe characters
-					cellContent = cellContent.replace(/\|/g, "\\|");
-					return cellContent;
-				});
-				return `| ${cells.join(" | ")} |`;
-			});
+			const rows: string[] = [];
+			let firstRowWidth = 0;
+			const tableRows = node.querySelectorAll("tr");
+			for (let rowIndex = 0; rowIndex < tableRows.length; rowIndex++) {
+				const row = tableRows[rowIndex];
+				if (!row || nearestAncestor(row, "TABLE") !== node) continue;
+				const cells: string[] = [];
+				for (let cellIndex = 0; cellIndex < row.children.length; cellIndex++) {
+					const cell = row.children[cellIndex];
+					if (!cell || (cell.nodeName !== "TD" && cell.nodeName !== "TH")) {
+						continue;
+					}
+					const cellContent = convertedCells.get(cell) ?? "";
+					convertedCells.delete(cell);
+					cells.push(
+						cellContent.replace(/\n/g, " ").trim().replace(/\|/g, "\\|"),
+					);
+				}
+				if (!rows.length) firstRowWidth = cells.length;
+				rows.push(`| ${cells.join(" | ")} |`);
+			}
 
 			if (!rows.length) return content;
 
 			// Create the separator row
-			const separatorRow = `| ${Array(rows[0].split("|").length - 2)
+			const separatorRow = `| ${Array(Math.max(firstRowWidth, 1))
 				.fill("---")
 				.join(" | ")} |`;
 
@@ -167,7 +208,7 @@ function createMarkdownContent(content: string, _url: string) {
 	turndownService.keep(elementsToKeep);
 	turndownService.remove(["button"]);
 
-	turndownService.addRule("list", {
+	addRule("list", {
 		filter: ["ul", "ol"],
 		replacement: (content: string, node: Node) => {
 			// Remove trailing newlines/spaces from content
@@ -185,7 +226,7 @@ function createMarkdownContent(content: string, _url: string) {
 	});
 
 	// Lists with tab indentation
-	turndownService.addRule("listItem", {
+	addRule("listItem", {
 		filter: "li",
 		replacement: (
 			content: string,
@@ -257,7 +298,7 @@ function createMarkdownContent(content: string, _url: string) {
 		},
 	});
 
-	turndownService.addRule("figure", {
+	addRule("figure", {
 		filter: "figure",
 		replacement: (content, node) => {
 			if (!isGenericElement(node)) return content;
@@ -327,7 +368,7 @@ function createMarkdownContent(content: string, _url: string) {
 	});
 
 	// Use Obsidian format for YouTube embeds and tweets
-	turndownService.addRule("embedToMarkdown", {
+	addRule("embedToMarkdown", {
 		filter: (node: Node): boolean => {
 			if (!isGenericElement(node)) return false;
 			const src = node.getAttribute("src");
@@ -358,12 +399,12 @@ function createMarkdownContent(content: string, _url: string) {
 		},
 	});
 
-	turndownService.addRule("highlight", {
+	addRule("highlight", {
 		filter: "mark",
 		replacement: (content) => `==${content}==`,
 	});
 
-	turndownService.addRule("strikethrough", {
+	addRule("strikethrough", {
 		filter: (node: Node) =>
 			node.nodeName === "DEL" ||
 			node.nodeName === "S" ||
@@ -372,7 +413,7 @@ function createMarkdownContent(content: string, _url: string) {
 	});
 
 	// Add a new custom rule for complex link structures
-	turndownService.addRule("complexLinkStructure", {
+	addRule("complexLinkStructure", {
 		filter: (node, _options) =>
 			node.nodeName === "A" &&
 			node.childNodes.length > 1 &&
@@ -411,7 +452,7 @@ function createMarkdownContent(content: string, _url: string) {
 		},
 	});
 
-	turndownService.addRule("arXivEnumerate", {
+	addRule("arXivEnumerate", {
 		filter: (node) => {
 			return (
 				node.nodeName === "OL" &&
@@ -438,7 +479,7 @@ function createMarkdownContent(content: string, _url: string) {
 		},
 	});
 
-	turndownService.addRule("citations", {
+	addRule("citations", {
 		filter: (node: Node): boolean => {
 			if (isGenericElement(node)) {
 				const id = node.getAttribute("id");
@@ -461,7 +502,7 @@ function createMarkdownContent(content: string, _url: string) {
 	});
 
 	// Footnotes list
-	turndownService.addRule("footnotesList", {
+	addRule("footnotesList", {
 		filter: (node: Node): boolean => {
 			if (isGenericElement(node)) {
 				const parentNode = node.parentNode;
@@ -515,7 +556,7 @@ function createMarkdownContent(content: string, _url: string) {
 	});
 
 	// General removal rules for varous website elements
-	turndownService.addRule("removals", {
+	addRule("removals", {
 		filter: (node) => {
 			if (!isGenericElement(node)) return false;
 			// Remove the Defuddle backlink from the footnote content
@@ -526,7 +567,7 @@ function createMarkdownContent(content: string, _url: string) {
 		replacement: (_content, _node) => "",
 	});
 
-	turndownService.addRule("handleTextNodesInTables", {
+	addRule("handleTextNodesInTables", {
 		filter: (node: Node): boolean =>
 			isTextNode(node) &&
 			node.parentNode !== null &&
@@ -534,7 +575,7 @@ function createMarkdownContent(content: string, _url: string) {
 		replacement: (content: string): string => content,
 	});
 
-	turndownService.addRule("preformattedCode", {
+	addRule("preformattedCode", {
 		filter: (node) => {
 			return node.nodeName === "PRE";
 		},
@@ -554,7 +595,7 @@ function createMarkdownContent(content: string, _url: string) {
 		},
 	});
 
-	turndownService.addRule("math", {
+	addRule("math", {
 		filter: (node) => {
 			return (
 				node.nodeName.toLowerCase() === "math" ||
@@ -620,7 +661,7 @@ function createMarkdownContent(content: string, _url: string) {
 		},
 	});
 
-	turndownService.addRule("katex", {
+	addRule("katex", {
 		filter: (node) => {
 			return (
 				isGenericElement(node) &&
@@ -663,7 +704,7 @@ function createMarkdownContent(content: string, _url: string) {
 		},
 	});
 
-	turndownService.addRule("callout", {
+	addRule("callout", {
 		filter: (node) => {
 			return (
 				node.nodeName.toLowerCase() === "div" &&
