@@ -6,6 +6,23 @@ const prose =
 		20,
 	);
 
+async function clipHtml(html: string) {
+	const url = new URL("https://example.test/article");
+	const originalFetch = globalThis.fetch;
+	globalThis.fetch = (async (input: RequestInfo | URL) => {
+		const requestedUrl = input instanceof Request ? input.url : String(input);
+		if (requestedUrl !== url.toString()) {
+			throw new Error("Unexpected network request during extraction test");
+		}
+		return new Response(html, { headers: { "content-type": "text/html" } });
+	}) as typeof fetch;
+	try {
+		return await clip(url);
+	} finally {
+		globalThis.fetch = originalFetch;
+	}
+}
+
 describe("clip article locale", () => {
 	test.each([
 		{
@@ -37,25 +54,20 @@ describe("clip article locale", () => {
 			expected: { language: null, direction: null },
 		},
 	])("preserves $name after extraction", async (fixture) => {
-		const url = new URL("https://example.test/article");
-		const originalFetch = globalThis.fetch;
-		globalThis.fetch = (async (input: RequestInfo | URL) => {
-			const requestedUrl = input instanceof Request ? input.url : String(input);
-			if (requestedUrl !== url.toString()) {
-				throw new Error("Unexpected network request during extraction test");
-			}
-			return new Response(
-				`<!doctype html><html ${fixture.attributes}><head><title>Article</title>${fixture.head}</head><body>${fixture.body}</body></html>`,
-				{ headers: { "content-type": "text/html" } },
-			);
-		}) as typeof fetch;
-		try {
-			const article = await clip(url);
-			expect(article.language).toBe(fixture.expected.language);
-			expect(article.direction).toBe(fixture.expected.direction);
-			expect(article.htmlContent).toContain("article text");
-		} finally {
-			globalThis.fetch = originalFetch;
-		}
+		const article = await clipHtml(
+			`<!doctype html><html ${fixture.attributes}><head><title>Article</title>${fixture.head}</head><body>${fixture.body}</body></html>`,
+		);
+		expect(article.language).toBe(fixture.expected.language);
+		expect(article.direction).toBe(fixture.expected.direction);
+		expect(article.htmlContent).toContain("article text");
 	});
+});
+
+test("clipping preserves all ragged-table columns in Markdown exports", async () => {
+	const article = await clipHtml(
+		`<html><head><title>Article</title></head><body><article><h1>Article</h1><p>${prose}</p><table><thead><tr><th>A</th></tr></thead><tbody><tr><td>B</td><td>C</td></tr></tbody></table></article></body></html>`,
+	);
+	expect(article.markdownContent).toContain(
+		"| A |  |\n| --- | --- |\n| B | C |",
+	);
 });

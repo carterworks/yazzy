@@ -15,19 +15,27 @@ describe("HTML table conversion", () => {
 		expect(markdown.length).toBeLessThan(4096);
 	});
 
-	test("does not treat nested cells as extra columns or rows", () => {
+	test("flattens nested layout cells in reading order without duplication", () => {
 		const markdown = convert(
 			"<table><tr><td>OUTERONE<table><tr><td>INNERONE</td></tr></table></td><td>OUTERTWO</td></tr></table>",
 		);
 		for (const token of ["OUTERONE", "INNERONE", "OUTERTWO"]) {
 			expect(markdown.match(new RegExp(token, "g"))).toHaveLength(1);
 		}
-		expect(markdown.split("\n")[1]).toBe("| --- | --- |");
+		expect(markdown).toBe("OUTERONE\n\nINNERONE\n\nOUTERTWO");
 	});
 
 	test("counts actual columns rather than pipes inside cell content", () => {
-		expect(convert("<table><tr><td>left|right</td></tr></table>")).toBe(
-			"| left\\|right |\n| --- |",
+		expect(
+			convert(
+				"<table><tr><th>left|right</th><th>other</th></tr><tr><td>one</td><td>two</td></tr></table>",
+			),
+		).toBe("| left\\|right | other |\n| --- | --- |\n| one | two |");
+	});
+
+	test("treats a one-cell wrapper as layout rather than a data table", () => {
+		expect(convert("<table><tr><td>plain text</td></tr></table>")).toBe(
+			"plain text",
 		);
 	});
 
@@ -89,9 +97,9 @@ describe("HTML table conversion", () => {
 	test("converts cell children rather than the cell's own math wrapper", () => {
 		expect(
 			convert(
-				'<table><tr><td class="katex" data-latex="different">literal</td></tr></table>',
+				'<table><tr><td class="katex" data-latex="different">literal</td><td>kept</td></tr></table>',
 			),
-		).toBe("| literal |\n| --- |");
+		).toBe("| literal | kept |\n| --- | --- |");
 	});
 
 	test("keeps conversion state isolated between calls", () => {
