@@ -88,3 +88,38 @@ describe("getArticleLocale", () => {
 		});
 	});
 });
+
+describe("extracted prose locale", () => {
+	test("keeps the first matching paragraph and stable longest-paragraph ties", () => {
+		const { document } = parseHTML(
+			'<html lang="en"><body><div lang="fa"><p>one</p></div><div lang="ar"><p>one</p></div><p>two</p></body></html>',
+		);
+		const content = "<p> one </p><p>two</p>";
+		expect(getArticleLocale(document, content)).toEqual({
+			language: "fa",
+			direction: "rtl",
+		});
+	});
+
+	test("preserves empty overrides, invalid directions and Open Graph fallback", () => {
+		const { document } = parseHTML(
+			'<html lang="en" dir="rtl"><head><meta property="og:locale" content="fa_IR"></head><body><article lang="" dir="sideways"><p>prose</p></article></body></html>',
+		);
+		expect(getArticleLocale(document, "<p>prose</p>")).toEqual({
+			language: "fa-IR",
+			direction: "rtl",
+		});
+	});
+
+	test("uses article fallback for absent or unmatched extracted prose", () => {
+		const { document } = parseHTML(
+			'<html lang="en"><body><article lang="he" dir="auto"><p>known</p></article></body></html>',
+		);
+		for (const content of [undefined, "", "<p> </p>", "<p>missing</p>"]) {
+			expect(getArticleLocale(document, content)).toEqual({
+				language: "he",
+				direction: "auto",
+			});
+		}
+	});
+});

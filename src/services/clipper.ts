@@ -213,13 +213,12 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 		throw new Error(`Failed to fetch page "${url.toString()}"`);
 	}
 
-	const localeDocument = pageDocument.cloneNode(true) as Document;
 	const article = await Defuddle(pageDocument, url.toString());
 
 	if (!article) {
 		throw new Error(`Failed to parse article contents of "${url.toString()}"`);
 	}
-	const locale = getArticleLocale(localeDocument, article.content);
+	const locale = getArticleLocale(pageDocument, article.content);
 
 	// TODO: reimplement code syntax highlighting with shiki
 	// TODO: reimplement header linking

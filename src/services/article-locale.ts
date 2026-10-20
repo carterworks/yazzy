@@ -36,17 +36,28 @@ export function getArticleLocale(
 ): Pick<ReadablePage, "language" | "direction"> {
 	const normalizeText = (text: string | null) =>
 		text?.replace(/\s+/g, " ").trim() ?? "";
-	const contentParagraph = content
-		? Array.from(parseHTML(content).document.querySelectorAll("p"))
-				.map((paragraph) => normalizeText(paragraph.textContent))
-				.sort((a, b) => b.length - a.length)[0]
-		: undefined;
-	const sourceParagraph = contentParagraph
-		? Array.from(document.querySelectorAll("p")).find(
-				(paragraph) =>
-					normalizeText(paragraph.textContent) === contentParagraph,
-			)
-		: undefined;
+	let contentParagraph = "";
+	if (content) {
+		const paragraphs = parseHTML(content).document.querySelectorAll("p");
+		for (let index = 0; index < paragraphs.length; index++) {
+			const text = normalizeText(paragraphs[index]?.textContent ?? null);
+			if (text.length > contentParagraph.length) contentParagraph = text;
+		}
+	}
+	let sourceParagraph: Element | undefined;
+	if (contentParagraph) {
+		const paragraphs = document.querySelectorAll("p");
+		for (let index = 0; index < paragraphs.length; index++) {
+			const paragraph = paragraphs[index];
+			if (
+				paragraph &&
+				normalizeText(paragraph.textContent) === contentParagraph
+			) {
+				sourceParagraph = paragraph;
+				break;
+			}
+		}
+	}
 	const articleRoot =
 		sourceParagraph ||
 		document.querySelector("article") ||
@@ -59,13 +70,12 @@ export function getArticleLocale(
 			.querySelector('meta[property="og:locale"]')
 			?.getAttribute("content")
 			?.trim();
-	const locale = languageTag ? parseLocale(languageTag) : undefined;
-
 	const sourceDirection = (
 		articleRoot.closest("[dir]")?.getAttribute("dir") || ""
 	)
 		.trim()
 		.toLowerCase();
+	const locale = languageTag ? parseLocale(languageTag) : undefined;
 	const direction =
 		sourceDirection === "rtl" ||
 		sourceDirection === "ltr" ||
@@ -73,5 +83,8 @@ export function getArticleLocale(
 			? sourceDirection
 			: locale?.getTextInfo().direction;
 
-	return { language: locale?.toString() ?? null, direction: direction ?? null };
+	return {
+		language: locale?.toString() ?? null,
+		direction: direction ?? null,
+	};
 }
