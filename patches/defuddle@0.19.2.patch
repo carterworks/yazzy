@@ -1,0 +1,21 @@
+diff --git a/dist/node.d.ts b/dist/node.d.ts
+index 777c8ac63d1c7d5b48ae5fcb3f8cd85691c9b138..3a29da55953bab16e36c956a84560fcfc9236b11 100644
+--- a/dist/node.d.ts
++++ b/dist/node.d.ts
+@@ -17,3 +17,4 @@ export declare function Defuddle(input: Document | string | {
+     };
+ }, url?: string, options?: DefuddleOptions): Promise<DefuddleResponse>;
+ export { DefuddleClass, DefuddleOptions, DefuddleResponse };
++export { createMarkdownContent } from './markdown';
+diff --git a/dist/node.js b/dist/node.js
+index 7c7230a9f5faeb93bb6d8baca08ce4468545338f..0612a7cd30a5d0a320726397a6b54c44a418b64c 100644
+--- a/dist/node.js
++++ b/dist/node.js
+@@ -38,6 +38,7 @@ exports.Defuddle = Defuddle;
+ const defuddle_1 = require("./defuddle");
+ Object.defineProperty(exports, "DefuddleClass", { enumerable: true, get: function () { return defuddle_1.Defuddle; } });
+ const markdown_1 = require("./markdown");
++exports.createMarkdownContent = markdown_1.createMarkdownContent;
+ /**
+  * Parse HTML content from a Document, HTML string, or JSDOM instance.
+  * Accepts any DOM Document implementation (linkedom, JSDOM, happy-dom, etc.).
