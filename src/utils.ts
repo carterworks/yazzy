@@ -23,7 +23,7 @@ export function getArticleUrlFromPath(pathname: string): string {
 }
 
 export function formatDate(date: Date | undefined): string {
-	if (!date) {
+	if (!date || Number.isNaN(date.getTime())) {
 		return "";
 	}
 	return date.toISOString().split("T")[0];

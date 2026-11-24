@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { ReadablePage } from "./types";
 import {
+	formatDate,
 	getArticleUrlFromPath,
 	getOgDescription,
 	getPlainTextSummary,
@@ -80,5 +81,15 @@ describe("getArticleUrlFromPath", () => {
 		["/", ""],
 	])("%s -> %s", (path, expected) => {
 		expect(getArticleUrlFromPath(path)).toBe(expected);
+	});
+});
+
+describe("formatDate", () => {
+	test("formats a valid date", () => {
+		expect(formatDate(new Date("2026-11-20T10:00:00Z"))).toBe("2026-11-20");
+	});
+
+	test("returns an empty string for an invalid date instead of throwing", () => {
+		expect(formatDate(new Date("19 minutes ago"))).toBe("");
 	});
 });

@@ -220,3 +220,17 @@ describe("clip limits", () => {
 		expect(article.title).toBe("Article");
 	});
 });
+
+test.each([
+	["an unparseable published date", "19 minutes ago", undefined],
+	[
+		"a parseable published date",
+		"2026-11-20T10:00:00Z",
+		"2026-11-20T10:00:00.000Z",
+	],
+])("clipping handles %s", async (_name, value, expected) => {
+	const article = await clipHtml(
+		`<html><head><title>Article</title><meta property="article:published_time" content="${value}"></head><body><article><h1>Article</h1><time datetime="${value}">${value}</time><p>${prose}</p></article></body></html>`,
+	);
+	expect(article.published?.toISOString()).toBe(expected);
+});
