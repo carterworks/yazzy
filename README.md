@@ -17,6 +17,21 @@ Named after [Jasnah Kholin](https://coppermind.net/wiki/Jasnah_Kholin), famous h
 - Database dumps for backing up your article collection.
 - Minimalist, distraction-free reading experience.
 
+## Dev shell
+
+`flake.nix` declares the tools this repo needs: `bun` (the same version Fly builds with), `flyctl`, `sqlite3` and `gh`.
+
+```sh
+nix develop          # enter the shell once
+direnv allow         # or load it automatically on cd, via .envrc
+```
+
+Fly commands such as `flyctl logs -a yazzy` need you to sign in first, and only you can do that. Run `flyctl auth login`, or export a token as `FLY_API_TOKEN` in your own environment. Never commit a token.
+
+To look at the production database, fetch `https://yazzy.carter.works/api/db-dump` and open it with `sqlite3`.
+
+Bun's version is pinned once, as `BUN_VERSION` in the `Dockerfile`, and the dev shell reads it from there. To change it, run `scripts/update-bun.sh` (latest release) or `scripts/update-bun.sh 1.4.5`. The script updates the `Dockerfile`, the download hashes in `nix/bun-hashes.json` and `@types/bun` together.
+
 ## 🧞 Commands
 
 All commands are run from the root of the project, from a terminal:
