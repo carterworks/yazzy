@@ -8,5 +8,6 @@ LICENSE
 Dockerfile
 dist/
 *.sqlite3*
-biome.json
+.oxlintrc.json
+.oxfmtrc.json
 fly.toml

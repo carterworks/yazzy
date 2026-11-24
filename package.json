@@ -1,6 +1,13 @@
 {
 	"name": "yazzy",
 	"version": "0.3.10",
+	"type": "module",
+	"scripts": {
+		"check": "tsc --noEmit && oxlint --fix && oxfmt",
+		"dev": "bun --bun astro dev",
+		"build": "bun --bun astro build && mkdir -p dist/src/db/migrations/meta && cp -r src/db/migrations/ dist/src/db/migrations/",
+		"preview": "bun --bun astro preview"
+	},
 	"dependencies": {
 		"@astrojs/node": "^10.0.1",
 		"@openrouter/sdk": "^0.9.11",
@@ -18,29 +25,22 @@
 		"typescript": "^5.9.3",
 		"zod": "^4.3.6"
 	},
-	"scripts": {
-		"check": "tsc --noEmit && biome check --write",
-		"dev": "bun --bun astro dev",
-		"build": "bun --bun astro build && mkdir -p dist/src/db/migrations/meta && cp -r src/db/migrations/ dist/src/db/migrations/",
-		"preview": "bun --bun astro preview"
-	},
-	"type": "module",
 	"devDependencies": {
-		"@biomejs/biome": "1.9.4",
-		"@types/bun": "^1.3.10",
+		"@types/bun": "^1.4.5",
 		"@types/dompurify": "^3.2.0",
 		"@types/turndown": "^5.0.6",
 		"drizzle-kit": "^0.31.9",
-		"lefthook": "^2.1.2"
+		"lefthook": "^2.1.2",
+		"oxfmt": "0.80.0",
+		"oxlint": "1.95.0"
+	},
+	"patchedDependencies": {
+		"defuddle@0.19.2": "patches/defuddle@0.19.2.patch"
 	},
 	"trustedDependencies": [
-		"@biomejs/biome",
 		"@parcel/watcher",
 		"esbuild",
 		"lefthook",
 		"sharp"
-	],
-	"patchedDependencies": {
-		"defuddle@0.19.2": "patches/defuddle@0.19.2.patch"
-	}
+	]
 }

@@ -1,7 +1,7 @@
 {
 	"recommendations": [
 		"bradlc.vscode-tailwindcss",
-		"biomejs.biome",
+		"oxc.oxc-vscode",
 		"editorconfig.editorconfig",
 		"oven.bun-vscode"
 	],

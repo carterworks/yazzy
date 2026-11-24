@@ -1,10 +1,14 @@
 # Refer for explanation to following link:
 # https://github.com/evilmartians/lefthook/blob/master/docs/configuration.md
-pre-commit: 
-  parallel: true
+pre-commit:
+  piped: true
   commands:
-    check:
-      run: bun check --staged --no-errors-on-unmatched --files-ignore-unknown=true
-      skip-output:
-       - meta
-       - success
+    typecheck:
+      run: bun x tsc --noEmit
+    lint:
+      glob: "*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,astro}"
+      run: bun x oxlint --fix {staged_files}
+      stage_fixed: true
+    format:
+      run: bun x oxfmt --no-error-on-unmatched-pattern {staged_files}
+      stage_fixed: true

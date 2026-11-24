@@ -1,0 +1,6 @@
+{
+	"version": "1.4.5",
+	"aarch64-darwin": "sha256-tda8LhPK8U5XyJZh6J79Bz/xYWW0G/5DiCYWQQYJzRA=",
+	"aarch64-linux": "sha256-GGVqO/DqVkH1eWrkITt1JVV5pwoP3tLzN5M3hVaM34Q=",
+	"x86_64-linux": "sha256-3LI6GKHC//EtV7zvaW27tC62f94p9DgW7LWVRZokxGM="
+}

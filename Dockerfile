@@ -1,7 +1,8 @@
 # syntax = docker/dockerfile:1
 
-# Adjust BUN_VERSION as desired
-ARG BUN_VERSION=1.2
+# The one place Bun's version is pinned; the Nix dev shell reads it too.
+# Change it with scripts/update-bun.sh, which also updates nix/bun-hashes.json.
+ARG BUN_VERSION=1.4.5
 FROM oven/bun:${BUN_VERSION} AS base
 
 LABEL fly_launch_runtime="Bun"
