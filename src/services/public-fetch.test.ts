@@ -94,6 +94,38 @@ describe("fetchPublic", () => {
 		expect(requested).toHaveLength(6);
 	});
 
+	test("follows Location headers sent as raw UTF-8", async () => {
+		const paths: string[] = [];
+		const server = Bun.listen({
+			hostname: "localhost",
+			port: 0,
+			socket: {
+				data(socket, data) {
+					const path = data.toString().split(" ")[1] ?? "";
+					paths.push(path);
+					socket.end(
+						Buffer.from(
+							path === "/start"
+								? "HTTP/1.1 302 Found\r\nLocation: /café\r\nContent-Length: 0\r\n\r\n"
+								: "HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n",
+						),
+					);
+				},
+			},
+		});
+		try {
+			const { url } = await fetchPublic(
+				new URL(`http://localhost:${server.port}/start`),
+				{},
+				publicLookup,
+			);
+			expect(paths).toEqual(["/start", "/caf%C3%A9"]);
+			expect(url.pathname).toBe("/caf%C3%A9");
+		} finally {
+			server.stop(true);
+		}
+	});
+
 	// Uses the real fetch so a regression to automatic redirect following,
 	// which would skip the per-hop check, cannot hide behind a mock.
 	test("checks redirect hops made by the real fetch", async () => {

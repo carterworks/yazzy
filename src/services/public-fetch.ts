@@ -24,6 +24,18 @@ async function lookupAll(hostname: string): Promise<string[]> {
 	return addresses.map(({ address }) => address);
 }
 
+// Header values arrive as latin1, but servers commonly send raw UTF-8 in
+// Location; automatic redirects decode it as UTF-8, so match that.
+function decodeLocation(location: string): string {
+	try {
+		return new TextDecoder("utf-8", { fatal: true }).decode(
+			Buffer.from(location, "latin1"),
+		);
+	} catch {
+		return location;
+	}
+}
+
 // Allow-list public unicast rather than deny-listing private ranges, so every
 // special-purpose range (loopback, private, link-local, Fly's fdaa::/16, ...)
 // is refused without naming it.
@@ -69,7 +81,7 @@ export async function fetchPublic(
 			return { response, url: currentUrl };
 		}
 		await response.body?.cancel();
-		currentUrl = new URL(location, currentUrl);
+		currentUrl = new URL(decodeLocation(location), currentUrl);
 	}
 	throw new Error(`Too many redirects fetching ${url}`);
 }
