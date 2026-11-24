@@ -125,6 +125,7 @@ describe("clip limits", () => {
 	const page = `<html><head><title>Article</title></head><body><article><h1>Article</h1><p>${prose}</p></article></body></html>`;
 	let server: ReturnType<typeof Bun.serve>;
 	let cancelled = false;
+	let chunks = 0;
 
 	beforeAll(() => {
 		process.env["CLIP_ALLOW_PRIVATE_HOSTS"] = "localhost";
@@ -154,6 +155,9 @@ describe("clip limits", () => {
 						return new Response(
 							new ReadableStream({
 								pull(controller) {
+									// Stop after 1 MiB (10x the limit) but stay open: Bun.serve before 1.4
+									// ignores backpressure and would otherwise allocate until OOM.
+									if (++chunks > 64) return new Promise(() => {});
 									controller.enqueue(new Uint8Array(16_384).fill(32));
 								},
 								cancel() {
