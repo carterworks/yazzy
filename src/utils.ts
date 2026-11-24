@@ -9,6 +9,19 @@ export function isUrl(potentialUrl: string): boolean {
 	}
 }
 
+// Astro drops a trailing ".html" from route params, which breaks clipping
+// "/https://example.com/page.html", so read the request path and decode it the
+// way Astro does.
+export function getArticleUrlFromPath(pathname: string): string {
+	let decoded = pathname;
+	try {
+		decoded = decodeURI(pathname);
+	} catch {
+		// Malformed escapes are passed through, as Astro does.
+	}
+	return decoded.replace(/^\//, "");
+}
+
 export function formatDate(date: Date | undefined): string {
 	if (!date) {
 		return "";

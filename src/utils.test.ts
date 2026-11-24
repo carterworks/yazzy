@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import type { ReadablePage } from "./types";
-import { getOgDescription, getPlainTextSummary } from "./utils";
+import {
+	getArticleUrlFromPath,
+	getOgDescription,
+	getPlainTextSummary,
+} from "./utils";
 
 function articleWithSummary(summary: string): ReadablePage {
 	return {
@@ -57,5 +61,24 @@ describe("generation notice stripping", () => {
 			textContent: text,
 		};
 		expect(getPlainTextSummary(article, 100)).toStartWith(text);
+	});
+});
+
+describe("getArticleUrlFromPath", () => {
+	test.each([
+		[
+			"/https://paulgraham.com/submarine.html",
+			"https://paulgraham.com/submarine.html",
+		],
+		["/https://example.com/index.html", "https://example.com/index.html"],
+		["/example.com/a/b", "example.com/a/b"],
+		[
+			"/https://fa.wikipedia.org/wiki/%D9%85%D8%A7%D9%87",
+			"https://fa.wikipedia.org/wiki/ماه",
+		],
+		["/https://example.com/%E0%A4%A", "https://example.com/%E0%A4%A"],
+		["/", ""],
+	])("%s -> %s", (path, expected) => {
+		expect(getArticleUrlFromPath(path)).toBe(expected);
 	});
 });
