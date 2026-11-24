@@ -93,3 +93,30 @@ test("clipping refuses non-public addresses", async () => {
 		"not a public address",
 	);
 });
+
+test("clipping resolves relative links against the redirected URL", async () => {
+	const start = "https://93.184.215.14/goto";
+	const final = "https://93.184.215.15/news/article";
+	const originalFetch = globalThis.fetch;
+	globalThis.fetch = (async (input: RequestInfo | URL) => {
+		const requestedUrl = input instanceof Request ? input.url : String(input);
+		if (requestedUrl === start) {
+			return new Response(null, { status: 302, headers: { location: final } });
+		}
+		return new Response(
+			`<html><head><title>Article</title></head><body><article><h1>Article</h1><p>${prose}<a href="/related">Related</a></p><img src="photo.jpg"></article></body></html>`,
+			{ headers: { "content-type": "text/html" } },
+		);
+	}) as typeof fetch;
+	try {
+		const article = await clip(new URL(start));
+		expect(article.htmlContent).toContain(
+			'href="https://93.184.215.15/related"',
+		);
+		expect(article.htmlContent).toContain(
+			'src="https://93.184.215.15/news/photo.jpg"',
+		);
+	} finally {
+		globalThis.fetch = originalFetch;
+	}
+});

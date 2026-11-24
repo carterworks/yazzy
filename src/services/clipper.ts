@@ -58,10 +58,11 @@ function patchLinkedomDocument(doc: Document, url: string): void {
 	d["URL"] = url;
 }
 
-async function download(url: URL): Promise<string> {
+async function download(url: URL): Promise<{ html: string; url: URL }> {
 	let response: Response;
+	let finalUrl: URL;
 	try {
-		({ response } = await fetchPublic(url, {
+		({ response, url: finalUrl } = await fetchPublic(url, {
 			headers: {
 				"User-Agent": "YazzyWebClipper/0.0.1",
 			},
@@ -94,11 +95,15 @@ async function download(url: URL): Promise<string> {
 	}
 	const bytes = await response.arrayBuffer();
 	telemetry.set({ html_bytes: bytes.byteLength });
-	return new TextDecoder().decode(bytes);
+	return { html: new TextDecoder().decode(bytes), url: finalUrl };
 }
 
-async function fetchPage(url: URL): Promise<Document> {
-	const html = await telemetry.time("fetch", () => download(url));
+async function fetchPage(
+	requestedUrl: URL,
+): Promise<{ document: Document; url: URL }> {
+	const { html, url } = await telemetry.time("fetch", () =>
+		download(requestedUrl),
+	);
 
 	const { document, window } = await telemetry.time("parse", () => {
 		const parsed = parseHTML(html);
@@ -147,7 +152,7 @@ async function fetchPage(url: URL): Promise<Document> {
 	}
 	telemetry.set({ invalid_urls: invalidUrls });
 
-	return document;
+	return { document, url };
 }
 
 function normalizeResourceUrls(
@@ -263,10 +268,10 @@ function convertMarkdownToPlainText(markdown: string): string {
 
 async function clipArticle(url: URL): Promise<ReadablePage> {
 	telemetry.set({ host: url.hostname });
-	const pageDocument = await fetchPage(url);
+	const { document: pageDocument, url: pageUrl } = await fetchPage(url);
 
 	const article = await telemetry.time("extract", () =>
-		Defuddle(pageDocument, url.toString()),
+		Defuddle(pageDocument, pageUrl.toString()),
 	);
 
 	if (!article) {
@@ -280,7 +285,7 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 	// TODO: reimplement header linking
 
 	const markdownBody = await telemetry.time("markdown", () =>
-		convertHtmlToMarkdown(article.content, url.toString()),
+		convertHtmlToMarkdown(article.content, pageUrl.toString()),
 	);
 	telemetry.set({ markdown_chars: markdownBody.length });
 	if (!markdownBody.trim()) {
