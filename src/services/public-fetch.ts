@@ -3,7 +3,7 @@ import ipaddr from "ipaddr.js";
 
 type Lookup = (hostname: string) => Promise<string[]>;
 
-const MAX_REDIRECTS = 5;
+const MAX_REDIRECTS = 20;
 const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
 
 /** The URL points somewhere yazzy refuses to fetch: not HTTP(S), or not a public address. */

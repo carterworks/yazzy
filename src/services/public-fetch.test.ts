@@ -91,7 +91,7 @@ describe("fetchPublic", () => {
 		await expect(
 			fetchPublic(new URL("https://loop.example/"), {}, publicLookup),
 		).rejects.toThrow("Too many redirects");
-		expect(requested).toHaveLength(6);
+		expect(requested).toHaveLength(21);
 	});
 
 	test("follows Location headers sent as raw UTF-8", async () => {
