@@ -1,14 +1,28 @@
 import { OpenRouter } from "@openrouter/sdk";
-import log from "./log";
+import { facet, log } from "./telemetry";
 
 const AI_API_KEY = process.env["AI_API_KEY"];
-log(`Using OpenRouter for AI. Key: ${AI_API_KEY ? "set" : "not set"}`);
+const AI_ENDPOINT = process.env["AI_ENDPOINT"];
 
 export const AI_ENABLED = !!AI_API_KEY;
+log.info("AI summaries configured", {
+	enabled: AI_ENABLED,
+	custom_endpoint: !!AI_ENDPOINT,
+});
 
 const client = new OpenRouter({
 	apiKey: AI_API_KEY,
+	...(AI_ENDPOINT ? { serverURL: AI_ENDPOINT } : {}),
 });
+
+type AiFields = {
+	model_requested: string;
+	model_used: string;
+	tokens_in: number;
+	tokens_out: number;
+	cost_usd: number;
+};
+const telemetry = facet<AiFields>("ai");
 
 const models = Object.freeze({
 	openai: {
@@ -46,18 +60,28 @@ export async function fetchCompletion(
 	if (!AI_ENABLED) {
 		return null;
 	}
-	const result = client.callModel({
-		model,
-		models: fallbackModels,
-		instructions: systemPrompt,
-		input: userPrompt,
-		reasoning: {
-			effort: "low",
-		},
+	telemetry.set({ model_requested: model });
+	const { response, text } = await telemetry.time("completion", async () => {
+		const result = client.callModel({
+			model,
+			models: fallbackModels,
+			instructions: systemPrompt,
+			input: userPrompt,
+			reasoning: {
+				effort: "low",
+			},
+		});
+		const response = await result.getResponse();
+		return { response, text: await result.getText() };
 	});
-	const text = await result.getText();
+	telemetry.set({
+		model_used: response.model,
+		tokens_in: response.usage?.inputTokens,
+		tokens_out: response.usage?.outputTokens,
+		cost_usd: response.usage?.cost ?? undefined,
+	});
 	if (!text) {
 		return null;
 	}
-	return { text, model };
+	return { text, model: response.model || model };
 }

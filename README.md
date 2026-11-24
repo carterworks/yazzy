@@ -29,6 +29,19 @@ All commands are run from the root of the project, from a terminal:
 | `bun run build`           | Builds a production-ready archive into ./dist    |
 | `bun run check`           | Format and lint the project                      |
 
+## Logging
+
+yazzy writes one JSON line per request to stdout (a "wide event") with the route, status, duration, cache hit, clipping step timings, AI model and token usage, memory, and any error. Point any log collector at stdout; nothing is host-specific. Query strings are never logged.
+
+| Variable                 | Default                             | Effect                                                     |
+| :----------------------- | :---------------------------------- | :--------------------------------------------------------- |
+| `LOG_LEVEL`              | `info`                              | `debug`, `info`, `warn`, or `error`                        |
+| `LOG_FORMAT`             | `json` (`pretty` under `astro dev`) | `json` or `pretty`                                         |
+| `LOG_MEMORY_INTERVAL_MS` | `60000`                             | How often to log a memory sample; `0` disables it          |
+| `AI_ENDPOINT`            | OpenRouter                          | Base URL for an OpenRouter-compatible API                  |
+
+Incoming `x-request-id` or W3C `traceparent` headers are reused as the request ID, and every response carries it back in `X-Request-Id`.
+
 ## TODO
 
 - Local history

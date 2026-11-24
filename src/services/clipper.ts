@@ -4,6 +4,35 @@ import { parseHTML } from "linkedom";
 import type { ReadablePage } from "../types";
 import { getArticleLocale } from "./article-locale";
 import convertHtmlToMarkdown from "./markdown";
+import { facet } from "./telemetry";
+
+type ClipFields = {
+	host: string;
+	upstream_status: number;
+	content_type: string;
+	html_bytes: number;
+	markdown_chars: number;
+	invalid_urls: number;
+};
+const telemetry = facet<ClipFields>("clip");
+
+/** The site being clipped responded with an error status. */
+export class UpstreamHttpError extends Error {
+	override name = "UpstreamHttpError";
+}
+
+/** The site being clipped couldn't be reached at all. */
+export class UpstreamFetchError extends Error {
+	override name = "UpstreamFetchError";
+}
+
+export class UnsupportedContentTypeError extends Error {
+	override name = "UnsupportedContentTypeError";
+}
+
+export class ExtractionError extends Error {
+	override name = "ExtractionError";
+}
 
 const supportedContentTypes = [
 	"text/html",
@@ -28,34 +57,57 @@ function patchLinkedomDocument(doc: Document, url: string): void {
 	d["URL"] = url;
 }
 
-async function fetchPage(url: URL): Promise<Document> {
-	const response = await fetch(url.toString(), {
-		headers: {
-			"User-Agent": "YazzyWebClipper/0.0.1",
-		},
-	});
+async function download(url: URL): Promise<string> {
+	let response: Response;
+	try {
+		response = await fetch(url.toString(), {
+			headers: {
+				"User-Agent": "YazzyWebClipper/0.0.1",
+			},
+		});
+	} catch (err) {
+		throw new UpstreamFetchError(`Failed to fetch ${url.toString()}`, {
+			cause: err,
+		});
+	}
+	telemetry.set({ upstream_status: response.status });
 	if (!response.ok) {
-		throw new Error(
+		throw new UpstreamHttpError(
 			`Failed to fetch ${url.toString()}: ${response.status} ${response.statusText}`,
 		);
 	}
 	const contentType = response.headers.get("content-type");
 	if (!contentType) {
-		throw new Error(`No content type specified for ${url.toString()}`);
+		throw new UnsupportedContentTypeError(
+			`No content type specified for ${url.toString()}`,
+		);
 	}
 	// Extract the base content type without parameters
 	const baseContentType = contentType.split(";")[0].trim().toLowerCase();
+	telemetry.set({ content_type: baseContentType });
 	if (!supportedContentTypes.includes(baseContentType)) {
-		throw new Error(
+		throw new UnsupportedContentTypeError(
 			`URL "${url.toString()}" has unsupported content type: ${baseContentType}`,
 		);
 	}
-	const { document, window } = parseHTML(await response.text());
+	const bytes = await response.arrayBuffer();
+	telemetry.set({ html_bytes: bytes.byteLength });
+	return new TextDecoder().decode(bytes);
+}
 
-	patchLinkedomDocument(document, url.toString());
+async function fetchPage(url: URL): Promise<Document> {
+	const html = await telemetry.time("fetch", () => download(url));
 
-	const DOMPurify = createDomPurify(window);
-	document.body.innerHTML = DOMPurify.sanitize(document.body.innerHTML);
+	const { document, window } = await telemetry.time("parse", () => {
+		const parsed = parseHTML(html);
+		patchLinkedomDocument(parsed.document, url.toString());
+		return parsed;
+	});
+
+	await telemetry.time("sanitize", () => {
+		const DOMPurify = createDomPurify(window);
+		document.body.innerHTML = DOMPurify.sanitize(document.body.innerHTML);
+	});
 
 	// force lazy-loaded images to load
 	const LAZY_DATA_ATTRS = [
@@ -87,9 +139,11 @@ async function fetchPage(url: URL): Promise<Document> {
 		["track", "src"],
 		["embed", "src"],
 	];
+	let invalidUrls = 0;
 	for (const [selector, attribute] of selectorsToNormalize) {
-		normalizeResourceUrls(document, url, selector, attribute);
+		invalidUrls += normalizeResourceUrls(document, url, selector, attribute);
 	}
+	telemetry.set({ invalid_urls: invalidUrls });
 
 	return document;
 }
@@ -99,7 +153,8 @@ function normalizeResourceUrls(
 	url: URL,
 	selector: string,
 	attribute: string,
-) {
+): number {
+	let invalid = 0;
 	for (const element of Array.from(document.querySelectorAll(selector))) {
 		const value = element.getAttribute(attribute);
 		if (!value) {
@@ -117,9 +172,8 @@ function normalizeResourceUrls(
 						try {
 							const absoluteUrl = new URL(urlMatch[1], url.href).href;
 							return absoluteUrl + (urlMatch[2] || "");
-						} catch (e) {
-							// Ignore invalid URLs in srcset
-							console.warn(`Skipping invalid URL in srcset: ${urlMatch[1]}`);
+						} catch {
+							invalid++;
 							return "";
 						}
 					}
@@ -138,15 +192,13 @@ function normalizeResourceUrls(
 			try {
 				const absoluteUrl = new URL(value, url.href).href;
 				element.setAttribute(attribute, absoluteUrl);
-			} catch (e) {
-				// Ignore invalid URLs
-				console.warn(
-					`Skipping invalid URL for attribute ${attribute}: ${value}`,
-				);
-				element.removeAttribute(attribute); // Optionally remove attribute if URL is invalid
+			} catch {
+				invalid++;
+				element.removeAttribute(attribute);
 			}
 		}
 	}
+	return invalid;
 }
 
 // Utility function to get meta content by name or property
@@ -208,22 +260,27 @@ function convertMarkdownToPlainText(markdown: string): string {
 }
 
 async function clipArticle(url: URL): Promise<ReadablePage> {
+	telemetry.set({ host: url.hostname });
 	const pageDocument = await fetchPage(url);
-	if (!pageDocument) {
-		throw new Error(`Failed to fetch page "${url.toString()}"`);
-	}
 
-	const article = await Defuddle(pageDocument, url.toString());
+	const article = await telemetry.time("extract", () =>
+		Defuddle(pageDocument, url.toString()),
+	);
 
 	if (!article) {
-		throw new Error(`Failed to parse article contents of "${url.toString()}"`);
+		throw new ExtractionError(
+			`Failed to parse article contents of "${url.toString()}"`,
+		);
 	}
 	const locale = getArticleLocale(pageDocument, article.content);
 
 	// TODO: reimplement code syntax highlighting with shiki
 	// TODO: reimplement header linking
 
-	const markdownBody = convertHtmlToMarkdown(article.content, url.toString());
+	const markdownBody = await telemetry.time("markdown", () =>
+		convertHtmlToMarkdown(article.content, url.toString()),
+	);
+	telemetry.set({ markdown_chars: markdownBody.length });
 
 	// Fetch byline, meta author, property author, or site name
 	const author =
@@ -270,7 +327,9 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 		author,
 		tags,
 		markdownContent: markdownBody,
-		textContent: convertMarkdownToPlainText(markdownBody),
+		textContent: await telemetry.time("plaintext", () =>
+			convertMarkdownToPlainText(markdownBody),
+		),
 		htmlContent: article.content,
 	};
 }

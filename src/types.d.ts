@@ -42,7 +42,7 @@ declare module "bun" {
 
 declare namespace App {
 	interface Locals {
-		requestId: string;
+		clipFailure?: { status: number; message: string };
 	}
 }
 
@@ -54,6 +54,7 @@ declare module "astro:middleware" {
 				locals: App.Locals;
 				params: Record<string, string | undefined>;
 				url: URL;
+				routePattern: string;
 			},
 			next: () => Promise<Response>,
 		) => Promise<Response>,
@@ -63,6 +64,7 @@ declare module "astro:middleware" {
 			locals: App.Locals;
 			params: Record<string, string | undefined>;
 			url: URL;
+			routePattern: string;
 		},
 		next: () => Promise<Response>,
 	) => Promise<Response>;

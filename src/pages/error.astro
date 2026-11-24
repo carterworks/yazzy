@@ -1,10 +1,20 @@
 ---
 import BasePage from "../layouts/BasePage.astro";
+import { event } from "../services/telemetry";
 
-const message = Astro.url.searchParams.get("message") || "An error occurred";
+const failure = Astro.locals.clipFailure;
+if (failure) {
+	Astro.response.status = failure.status;
+}
+const message =
+	failure?.message ??
+	Astro.url.searchParams.get("message") ??
+	"An error occurred";
+const requestId = event.id();
 ---
 
 <BasePage title="Failure to clip | yazzy">
 	<h1 class="text-2xl font-didone">Failure to clip</h1>
 	<p>{message}</p>
+	{requestId && <p class="text-sm text-base-600 dark:text-base-400">Request ID: <code>{requestId}</code></p>}
 </BasePage>
