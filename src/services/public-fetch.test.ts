@@ -85,12 +85,42 @@ describe("fetchPublic", () => {
 	});
 
 	test("gives up after too many redirects", async () => {
-		mockFetch({
+		const requested = mockFetch({
 			"https://loop.example/": redirect("https://loop.example/"),
 		});
 		await expect(
 			fetchPublic(new URL("https://loop.example/"), {}, publicLookup),
 		).rejects.toThrow("Too many redirects");
+		expect(requested).toHaveLength(6);
+	});
+
+	// Uses the real fetch so a regression to automatic redirect following,
+	// which would skip the per-hop check, cannot hide behind a mock.
+	test("checks redirect hops made by the real fetch", async () => {
+		const server = Bun.serve({
+			hostname: "localhost",
+			port: 0,
+			fetch: (request): Response =>
+				new URL(request.url).pathname === "/start"
+					? Response.redirect(`http://localhost:${server.port}/private`)
+					: new Response("private"),
+		});
+		const lookups: string[] = [];
+		const firstHopLooksPublic = async (hostname: string) => {
+			lookups.push(hostname);
+			return lookups.length === 1 ? ["93.184.215.14"] : ["127.0.0.1"];
+		};
+		try {
+			await expect(
+				fetchPublic(
+					new URL(`http://localhost:${server.port}/start`),
+					{},
+					firstHopLooksPublic,
+				),
+			).rejects.toThrow("not a public address");
+		} finally {
+			server.stop(true);
+		}
 	});
 });
 
