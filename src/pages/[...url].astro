@@ -9,9 +9,14 @@ import Obsidian from "../components/icons/Obsidian.astro";
 import BasePage from "../layouts/BasePage.astro";
 import { applyLocalDirections } from "../services/article-locale";
 import { cache } from "../services/cache";
-import { clip } from "../services/clipper";
-import log from "../services/log";
+import {
+	UnsupportedContentTypeError,
+	UpstreamFetchError,
+	UpstreamHttpError,
+	clip,
+} from "../services/clipper";
 import convertHtmlToMarkdown from "../services/markdown";
+import { event } from "../services/telemetry";
 import type { ReadablePage } from "../types";
 import { formatDate, getOgDescription, getPlainTextSummary } from "../utils";
 
@@ -128,19 +133,21 @@ try {
 		await cache.insertArticle(article);
 	}
 } catch (err) {
-	let message: string;
-	if (err instanceof Error) {
-		message = err.message;
-	} else if (typeof err === "string") {
-		message = err;
-	} else {
-		message = `Unknown error: ${err}`;
+	event.error(err);
+	let status = 500;
+	if (err instanceof UnsupportedContentTypeError) {
+		status = 422;
+	} else if (
+		err instanceof UpstreamHttpError ||
+		err instanceof UpstreamFetchError
+	) {
+		status = 502;
 	}
-	const requestId = Astro.locals.requestId || "unknown";
-	message = `[requestId=${requestId}] ${message}`;
-	log.error(message);
-
-	return Astro.redirect(`/error?message=${encodeURIComponent(message)}`);
+	Astro.locals.clipFailure = {
+		status,
+		message: err instanceof Error ? err.message : String(err),
+	};
+	return Astro.rewrite("/error");
 }
 
 const plainTextSummary = getPlainTextSummary(article, 1000);

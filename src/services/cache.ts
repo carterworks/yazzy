@@ -2,6 +2,10 @@ import { eq, sql } from "drizzle-orm";
 import database from "../db/db";
 import { articles } from "../db/schema";
 import type { ReadablePage } from "../types";
+import { facet } from "./telemetry";
+
+type CacheFields = { hit: boolean };
+const telemetry = facet<CacheFields>("cache");
 
 const LIST_DELIMITER = "|";
 
@@ -30,15 +34,16 @@ class CacheService {
 	async insertArticle(article: ReadablePage) {
 		// convert all the types
 		const serializedArticle = fromReadablePage(article);
-		await this.#db.insert(articles).values(serializedArticle);
+		await telemetry.time("insert", () =>
+			this.#db.insert(articles).values(serializedArticle),
+		);
 	}
 
 	async getArticle(url: string) {
-		const [result] = await this.#db
-			.select()
-			.from(articles)
-			.limit(1)
-			.where(eq(articles.url, url));
+		const [result] = await telemetry.time("lookup", () =>
+			this.#db.select().from(articles).limit(1).where(eq(articles.url, url)),
+		);
+		telemetry.set({ hit: result !== undefined });
 		if (!result) return undefined;
 		return toReadablePage(result);
 	}

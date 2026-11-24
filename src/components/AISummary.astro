@@ -3,6 +3,7 @@ import { AI_ENABLED } from "../services/ai";
 import { applyLocalDirections } from "../services/article-locale";
 import { cache } from "../services/cache";
 import { summarize } from "../services/summarizer";
+import { event } from "../services/telemetry";
 
 interface Props {
 	url: string;
@@ -31,6 +32,7 @@ if (AI_ENABLED) {
 			}
 		}
 	} catch (err) {
+		event.error(err);
 		if (err instanceof Error) {
 			error = err.message;
 		} else if (typeof err === "string") {
