@@ -4,6 +4,7 @@ import { parseHTML } from "linkedom";
 import type { ReadablePage } from "../types";
 import { getArticleLocale } from "./article-locale";
 import convertHtmlToMarkdown from "./markdown";
+import { NonPublicUrlError, fetchPublic } from "./public-fetch";
 import { facet } from "./telemetry";
 
 type ClipFields = {
@@ -60,12 +61,13 @@ function patchLinkedomDocument(doc: Document, url: string): void {
 async function download(url: URL): Promise<string> {
 	let response: Response;
 	try {
-		response = await fetch(url.toString(), {
+		({ response } = await fetchPublic(url, {
 			headers: {
 				"User-Agent": "YazzyWebClipper/0.0.1",
 			},
-		});
+		}));
 	} catch (err) {
+		if (err instanceof NonPublicUrlError) throw err;
 		throw new UpstreamFetchError(`Failed to fetch ${url.toString()}`, {
 			cause: err,
 		});

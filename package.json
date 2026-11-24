@@ -10,6 +10,7 @@
 		"defuddle": "0.19.2",
 		"dompurify": "^3.3.2",
 		"drizzle-orm": "^0.45.1",
+		"ipaddr.js": "^2.5.0",
 		"linkedom": "^0.18.12",
 		"satori": "^0.25.0",
 		"tailwindcss": "^4.2.1",

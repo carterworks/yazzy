@@ -126,6 +126,7 @@ beforeAll(async () => {
 			AI_API_KEY: SECRET_KEY,
 			AI_ENDPOINT: `http://127.0.0.1:${fixture.port}/ai/v1`,
 			LOG_FORMAT: "json",
+			CLIP_ALLOW_PRIVATE_HOSTS: "127.0.0.1",
 		},
 	});
 	collect(app.stdout);
@@ -219,6 +220,17 @@ describe("wide request events from the running app", () => {
 			outcome: "error",
 			"error.type": "UnsupportedContentTypeError",
 			"clip.content_type": "application/pdf",
+		});
+	});
+
+	test("a private address is refused as a 422 warning", async () => {
+		const { response, text, event } = await request("/http://10.0.0.1/admin");
+		expect(response.status).toBe(422);
+		expect(text).toContain("not a public address");
+		expect(event).toMatchObject({
+			level: "warn",
+			outcome: "error",
+			"error.type": "NonPublicUrlError",
 		});
 	});
 

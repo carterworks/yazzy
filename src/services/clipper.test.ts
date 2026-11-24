@@ -7,7 +7,8 @@ const prose =
 	);
 
 async function clipHtml(html: string) {
-	const url = new URL("https://example.test/article");
+	// A public IP literal skips DNS, which the public-address check would need.
+	const url = new URL("https://93.184.215.14/article");
 	const originalFetch = globalThis.fetch;
 	globalThis.fetch = (async (input: RequestInfo | URL) => {
 		const requestedUrl = input instanceof Request ? input.url : String(input);
@@ -85,4 +86,10 @@ test("clipping keeps image-only articles", async () => {
 		'<html><head><title>Photo</title></head><body><article><h1>Photo</h1><img src="https://example.test/photo.jpg" alt="A photo"></article></body></html>',
 	);
 	expect(article.markdownContent).toContain("photo.jpg");
+});
+
+test("clipping refuses non-public addresses", async () => {
+	await expect(clip(new URL("http://127.0.0.1/api/db-dump"))).rejects.toThrow(
+		"not a public address",
+	);
 });

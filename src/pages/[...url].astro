@@ -16,6 +16,7 @@ import {
 	clip,
 } from "../services/clipper";
 import convertHtmlToMarkdown from "../services/markdown";
+import { NonPublicUrlError } from "../services/public-fetch";
 import { event } from "../services/telemetry";
 import type { ReadablePage } from "../types";
 import { formatDate, getOgDescription, getPlainTextSummary } from "../utils";
@@ -135,7 +136,10 @@ try {
 } catch (err) {
 	event.error(err);
 	let status = 500;
-	if (err instanceof UnsupportedContentTypeError) {
+	if (
+		err instanceof UnsupportedContentTypeError ||
+		err instanceof NonPublicUrlError
+	) {
 		status = 422;
 	} else if (
 		err instanceof UpstreamHttpError ||
