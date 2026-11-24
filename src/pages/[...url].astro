@@ -21,7 +21,12 @@ import convertHtmlToMarkdown from "../services/markdown";
 import { NonPublicUrlError } from "../services/public-fetch";
 import { event } from "../services/telemetry";
 import type { ReadablePage } from "../types";
-import { formatDate, getOgDescription, getPlainTextSummary } from "../utils";
+import {
+	formatDate,
+	getArticleUrlFromPath,
+	getOgDescription,
+	getPlainTextSummary,
+} from "../utils";
 
 function getFilename(title: string): string {
 	return title
@@ -104,7 +109,7 @@ function generateObsidianUri(
 	return obsidianUri;
 }
 
-const { url: urlParam } = Astro.params;
+const urlParam = getArticleUrlFromPath(new URL(Astro.request.url).pathname);
 const searchParams = Astro.url.searchParams;
 
 if (!urlParam) {

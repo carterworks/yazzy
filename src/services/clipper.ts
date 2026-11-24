@@ -404,8 +404,11 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 	if (typeof published === "string") {
 		published = published.trim().split(/,\s+/gi)[0];
 	}
+	// Sites sometimes give relative text such as "19 minutes ago", which parses to
+	// an invalid Date that later throws in toISOString().
 	if (published) {
-		published = new Date(published);
+		const date = new Date(published);
+		published = Number.isNaN(date.getTime()) ? undefined : date;
 	}
 
 	const title =

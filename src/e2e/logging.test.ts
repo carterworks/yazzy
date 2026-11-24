@@ -253,6 +253,12 @@ describe("wide request events from the running app", () => {
 		expect(event["clip.fetch_ms"]).toBeGreaterThanOrEqual(1000);
 	});
 
+	test("URLs ending in .html are clipped with the extension intact", async () => {
+		const { response, text } = await request(articlePath("page.html"));
+		expect(response.status).toBe(200);
+		expect(text).toContain("Fixture /page.html");
+	});
+
 	test("a private address is refused as a 422 warning", async () => {
 		const { response, text, event } = await request("/http://10.0.0.1/admin");
 		expect(response.status).toBe(422);
