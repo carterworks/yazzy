@@ -41,3 +41,21 @@ describe("getOgDescription", () => {
 		).toStartWith("Black Friday streaming discounts unveiled.");
 	});
 });
+
+describe("generation notice stripping", () => {
+	const text = "Generated on demand using esbuild, our pages stay fast.";
+
+	test("leaves article text alone in descriptions", () => {
+		const article = { ...articleWithSummary(""), textContent: text };
+		expect(getOgDescription(article)).toBe(text);
+	});
+
+	test("leaves article text alone in plain-text summaries", () => {
+		const article = {
+			...articleWithSummary(""),
+			summary: null,
+			textContent: text,
+		};
+		expect(getPlainTextSummary(article, 100)).toStartWith(text);
+	});
+});
