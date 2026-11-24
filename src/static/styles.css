@@ -11,36 +11,47 @@
 
 	/* System Font Stack—https://github.com/system-fonts/modern-font-stacks */
 	--font-system: "system-ui", "sans-serif";
-	--font-transitional: "Charter", "'Bitstream Charter'", "'Sitka Text'",
-		"Cambria", "serif";
-	--font-old-style: "'Iowan Old Style'", "'Palatino Linotype'",
-		"'URW Palladio L'", "P052", "serif";
-	--font-humanist: "Seravek", "'Gill Sans Nova'", "Ubuntu", "Calibri",
-		"'DejaVu Sans'", "source-sans-pro", "sans-serif";
-	--font-geometric-humanist: "Avenir", "Montserrat", "Corbel", "'URW Gothic'",
+	--font-transitional:
+		"Charter", "'Bitstream Charter'", "'Sitka Text'", "Cambria", "serif";
+	--font-old-style:
+		"'Iowan Old Style'", "'Palatino Linotype'", "'URW Palladio L'", "P052",
+		"serif";
+	--font-humanist:
+		"Seravek", "'Gill Sans Nova'", "Ubuntu", "Calibri", "'DejaVu Sans'",
 		"source-sans-pro", "sans-serif";
-	--font-classical-humanist: "Optima", "Candara", "'Noto Sans'",
-		"source-sans-pro", "sans-serif";
-	--font-neo-grotesque: "Inter", "Roboto", "'Helvetica Neue'", "'Arial Nova'",
-		"'Nimbus Sans'", "Arial", "sans-serif";
-	--font-monospace-slab-serif: "'Nimbus Mono PS'", "'Courier New'", "monospace";
-	--font-monospace-code: "ui-monospace", "'Cascadia Code'", "'Source Code Pro'",
-		"Menlo", "Consolas", "'DejaVu Sans Mono'", "monospace";
-	--font-industrial: "Bahnschrift", "'DIN Alternate'",
-		"'Franklin Gothic Medium'", "'Nimbus Sans Narrow'", "sans-serif-condensed",
+	--font-geometric-humanist:
+		"Avenir", "Montserrat", "Corbel", "'URW Gothic'", "source-sans-pro",
 		"sans-serif";
-	--font-rounded-sans: "ui-rounded", "'Hiragino Maru Gothic ProN'", "Quicksand",
-		"Comfortaa", "Manjari", "'Arial Rounded MT'", "'Arial Rounded MT Bold'",
-		"Calibri", "source-sans-pro", "sans-serif";
-	--font-slab-serif: "Rockwell", "'Rockwell Nova'", "'Roboto Slab'",
-		"'DejaVu Serif'", "'Sitka Small'", "serif";
-	--font-antique: "Superclarendon", "'Bookman Old Style'", "'URW Bookman'",
-		"'URW Bookman L'", "'Georgia Pro'", "Georgia", "serif";
-	--font-didone: "Didot", "'Bodoni MT'", "'Noto Serif Display'",
-		"'URW Palladio L'", "P052", "Sylfaen", "serif";
-	--font-handwritten: "'Segoe Print'", "'Bradley Hand'", "Chilanka",
-		"TSCu_Comic", "casual", "cursive";
-	--font-emoji: "'Apple Color Emoji'", "'Segoe UI Emoji'", "'Segoe UI Symbol'",
+	--font-classical-humanist:
+		"Optima", "Candara", "'Noto Sans'", "source-sans-pro", "sans-serif";
+	--font-neo-grotesque:
+		"Inter", "Roboto", "'Helvetica Neue'", "'Arial Nova'", "'Nimbus Sans'",
+		"Arial", "sans-serif";
+	--font-monospace-slab-serif: "'Nimbus Mono PS'", "'Courier New'", "monospace";
+	--font-monospace-code:
+		"ui-monospace", "'Cascadia Code'", "'Source Code Pro'", "Menlo", "Consolas",
+		"'DejaVu Sans Mono'", "monospace";
+	--font-industrial:
+		"Bahnschrift", "'DIN Alternate'", "'Franklin Gothic Medium'",
+		"'Nimbus Sans Narrow'", "sans-serif-condensed", "sans-serif";
+	--font-rounded-sans:
+		"ui-rounded", "'Hiragino Maru Gothic ProN'", "Quicksand", "Comfortaa",
+		"Manjari", "'Arial Rounded MT'", "'Arial Rounded MT Bold'", "Calibri",
+		"source-sans-pro", "sans-serif";
+	--font-slab-serif:
+		"Rockwell", "'Rockwell Nova'", "'Roboto Slab'", "'DejaVu Serif'",
+		"'Sitka Small'", "serif";
+	--font-antique:
+		"Superclarendon", "'Bookman Old Style'", "'URW Bookman'", "'URW Bookman L'",
+		"'Georgia Pro'", "Georgia", "serif";
+	--font-didone:
+		"Didot", "'Bodoni MT'", "'Noto Serif Display'", "'URW Palladio L'", "P052",
+		"Sylfaen", "serif";
+	--font-handwritten:
+		"'Segoe Print'", "'Bradley Hand'", "Chilanka", "TSCu_Comic", "casual",
+		"cursive";
+	--font-emoji:
+		"'Apple Color Emoji'", "'Segoe UI Emoji'", "'Segoe UI Symbol'",
 		"'Noto Color Emoji'";
 
 	/* Flexoki—https://stephango.com/flexoki */
@@ -291,8 +302,9 @@
 	}
 	a:not(:is(code, pre, h1, h2, h3, h4, h5, h6) *):not(:has(img)):not(:empty) {
 		@apply break-words rounded;
-		transition: color 0.28s var(--ease-out-quad), background-color 0.28s
-			var(--ease-out-quad);
+		transition:
+			color 0.28s var(--ease-out-quad),
+			background-color 0.28s var(--ease-out-quad);
 		@media (hover: hover) and (pointer: fine) {
 			&:hover {
 				@apply bg-base-100 dark:bg-base-800;
@@ -419,7 +431,6 @@
 }
 :root {
 	@apply scroll-smooth scheme-light-dark;
-	/* biome-ignore lint/correctness/noUnknownProperty: the future is now, old man */
 	interpolate-size: allow-keywords;
 }
 /* Theme class overrides for explicit light/dark mode */
@@ -440,8 +451,9 @@ html.dark {
 }
 /* Theme color transition */
 body {
-	transition: background-color 0.28s var(--ease-out-quad), color 0.28s
-		var(--ease-out-quad);
+	transition:
+		background-color 0.28s var(--ease-out-quad),
+		color 0.28s var(--ease-out-quad);
 }
 .primary {
 	fill: light-dark(var(--color-black), var(--color-base-200));
@@ -458,7 +470,7 @@ body {
 	}
 }
 @view-transition {
-	/* biome-ignore lint/correctness/noUnknownProperty: supported in Chrome and Safari */
+	/* Supported in Chrome and Safari; other browsers ignore it. */
 	navigation: auto;
 }
 

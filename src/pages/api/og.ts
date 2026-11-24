@@ -60,7 +60,7 @@ function truncateText(text: string, maxLength: number): string {
 	return `${truncated.substring(0, lastSpace > 0 ? lastSpace : maxLength)}...`;
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: Satori element types are complex
+// Satori's element types are too complex to spell out here.
 type SatoriElement = any;
 
 function createOgElement(
