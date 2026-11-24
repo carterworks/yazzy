@@ -42,6 +42,15 @@ yazzy writes one JSON line per request to stdout (a "wide event") with the route
 
 Incoming `x-request-id` or W3C `traceparent` headers are reused as the request ID, and every response carries it back in `X-Request-Id`.
 
+### Clipping limits
+
+yazzy only fetches public internet addresses, follows at most 20 redirects, and gives up on pages that are too slow or too large. Refused pages are logged with `error.type` `ResponseTooLargeError` (422, with `clip.content_length` when the site declares one) or `UpstreamTimeoutError` (504, with `clip.fetch_ms`), so you can tell when a limit is too tight.
+
+| Variable              | Default               | Effect                                                         |
+| :-------------------- | :-------------------- | :------------------------------------------------------------- |
+| `CLIP_MAX_HTML_BYTES` | `13631488` (13 MiB)   | Largest page body yazzy will download, after decompression     |
+| `CLIP_TIMEOUT_MS`     | `20000`               | Time allowed for all redirects plus the body before giving up  |
+
 ## TODO
 
 - Local history

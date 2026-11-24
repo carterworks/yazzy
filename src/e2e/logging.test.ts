@@ -35,6 +35,14 @@ function fixtureFetch(request: Request): Response {
 	if (pathname === "/missing") {
 		return new Response("gone", { status: 404 });
 	}
+	if (pathname === "/slow") {
+		return new Promise(() => {}) as unknown as Response;
+	}
+	if (pathname === "/huge") {
+		return new Response("<p>too big</p>".repeat(10_000), {
+			headers: { "content-type": "text/html" },
+		});
+	}
 	if (pathname === "/document.pdf") {
 		return new Response("%PDF-1.7", {
 			headers: { "content-type": "application/pdf" },
@@ -127,6 +135,8 @@ beforeAll(async () => {
 			AI_ENDPOINT: `http://127.0.0.1:${fixture.port}/ai/v1`,
 			LOG_FORMAT: "json",
 			CLIP_ALLOW_PRIVATE_HOSTS: "127.0.0.1",
+			CLIP_MAX_HTML_BYTES: "65536",
+			CLIP_TIMEOUT_MS: "1000",
 		},
 	});
 	collect(app.stdout);
@@ -221,6 +231,26 @@ describe("wide request events from the running app", () => {
 			"error.type": "UnsupportedContentTypeError",
 			"clip.content_type": "application/pdf",
 		});
+	});
+
+	test("an oversized page is a 422 warning with its size", async () => {
+		const { response, event } = await request(articlePath("huge"));
+		expect(response.status).toBe(422);
+		expect(event).toMatchObject({
+			level: "warn",
+			"error.type": "ResponseTooLargeError",
+			"clip.content_length": 140_000,
+		});
+	});
+
+	test("a server that never responds is a 504 error", async () => {
+		const { response, event } = await request(articlePath("slow"));
+		expect(response.status).toBe(504);
+		expect(event).toMatchObject({
+			level: "error",
+			"error.type": "UpstreamTimeoutError",
+		});
+		expect(event["clip.fetch_ms"]).toBeGreaterThanOrEqual(1000);
 	});
 
 	test("a private address is refused as a 422 warning", async () => {

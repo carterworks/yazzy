@@ -10,9 +10,11 @@ import BasePage from "../layouts/BasePage.astro";
 import { applyLocalDirections } from "../services/article-locale";
 import { cache } from "../services/cache";
 import {
+	ResponseTooLargeError,
 	UnsupportedContentTypeError,
 	UpstreamFetchError,
 	UpstreamHttpError,
+	UpstreamTimeoutError,
 	clip,
 } from "../services/clipper";
 import convertHtmlToMarkdown from "../services/markdown";
@@ -138,9 +140,12 @@ try {
 	let status = 500;
 	if (
 		err instanceof UnsupportedContentTypeError ||
-		err instanceof NonPublicUrlError
+		err instanceof NonPublicUrlError ||
+		err instanceof ResponseTooLargeError
 	) {
 		status = 422;
+	} else if (err instanceof UpstreamTimeoutError) {
+		status = 504;
 	} else if (
 		err instanceof UpstreamHttpError ||
 		err instanceof UpstreamFetchError

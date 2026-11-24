@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test";
-import { clip } from "./clipper";
+import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import { ResponseTooLargeError, UpstreamTimeoutError, clip } from "./clipper";
 
 const prose =
 	"This is the article text used to verify extraction and locale handling. ".repeat(
@@ -119,4 +119,104 @@ test("clipping resolves relative links against the redirected URL", async () => 
 	} finally {
 		globalThis.fetch = originalFetch;
 	}
+});
+
+describe("clip limits", () => {
+	const page = `<html><head><title>Article</title></head><body><article><h1>Article</h1><p>${prose}</p></article></body></html>`;
+	let server: ReturnType<typeof Bun.serve>;
+	let cancelled = false;
+
+	beforeAll(() => {
+		process.env["CLIP_ALLOW_PRIVATE_HOSTS"] = "localhost";
+		process.env["CLIP_TIMEOUT_MS"] = "300";
+		process.env["CLIP_MAX_HTML_BYTES"] = "100000";
+		server = Bun.serve({
+			hostname: "localhost",
+			port: 0,
+			idleTimeout: 30,
+			fetch(request): Response | Promise<Response> {
+				const html = { "content-type": "text/html" };
+				switch (new URL(request.url).pathname) {
+					case "/no-response":
+						return new Promise(() => {});
+					case "/stalled-body":
+						return new Response(
+							new ReadableStream({
+								start(controller) {
+									controller.enqueue(new TextEncoder().encode("<html>"));
+								},
+							}),
+							{ headers: html },
+						);
+					case "/declared-too-large":
+						return new Response(new Uint8Array(200_000), { headers: html });
+					case "/streamed-too-large":
+						return new Response(
+							new ReadableStream({
+								pull(controller) {
+									controller.enqueue(new Uint8Array(16_384).fill(32));
+								},
+								cancel() {
+									cancelled = true;
+								},
+							}),
+							{ headers: html },
+						);
+					default:
+						return new Response(page, { headers: html });
+				}
+			},
+		});
+	});
+
+	afterAll(() => {
+		server.stop(true);
+		for (const name of [
+			"CLIP_ALLOW_PRIVATE_HOSTS",
+			"CLIP_TIMEOUT_MS",
+			"CLIP_MAX_HTML_BYTES",
+		]) {
+			Reflect.deleteProperty(process.env, name);
+		}
+	});
+
+	const at = (path: string) =>
+		new URL(`http://localhost:${server.port}${path}`);
+
+	test("gives up on a server that never responds", async () => {
+		await expect(clip(at("/no-response"))).rejects.toBeInstanceOf(
+			UpstreamTimeoutError,
+		);
+	});
+
+	test("gives up on a body that stops arriving", async () => {
+		await expect(clip(at("/stalled-body"))).rejects.toBeInstanceOf(
+			UpstreamTimeoutError,
+		);
+	});
+
+	test("refuses a declared size over the limit before reading it", async () => {
+		await expect(clip(at("/declared-too-large"))).rejects.toBeInstanceOf(
+			ResponseTooLargeError,
+		);
+		await expect(clip(at("/declared-too-large"))).rejects.toThrow(
+			"declares 200000 bytes",
+		);
+	});
+
+	test("stops reading a body that streams past the limit", async () => {
+		await expect(clip(at("/streamed-too-large"))).rejects.toBeInstanceOf(
+			ResponseTooLargeError,
+		);
+		// Without an explicit cancel the stream stays open until the timeout or GC.
+		for (let waited = 0; !cancelled && waited < 100; waited += 5) {
+			await Bun.sleep(5);
+		}
+		expect(cancelled).toBe(true);
+	});
+
+	test("still clips pages within the limits", async () => {
+		const article = await clip(at("/article"));
+		expect(article.title).toBe("Article");
+	});
 });
