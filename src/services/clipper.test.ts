@@ -71,3 +71,18 @@ test("clipping preserves all ragged-table columns in Markdown exports", async ()
 		"| A |  |\n| --- | --- |\n| B | C |",
 	);
 });
+
+test("clipping rejects pages with no extractable content", async () => {
+	await expect(
+		clipHtml(
+			'<!DOCTYPE html><html lang="en"><head><title></title></head><body><section class="error-section--hide" id="en"><h1></h1><h2>Transferring to the website...</h2></section><script>window.location.reload()</script></body></html>',
+		),
+	).rejects.toThrow("No readable content");
+});
+
+test("clipping keeps image-only articles", async () => {
+	const article = await clipHtml(
+		'<html><head><title>Photo</title></head><body><article><h1>Photo</h1><img src="https://example.test/photo.jpg" alt="A photo"></article></body></html>',
+	);
+	expect(article.markdownContent).toContain("photo.jpg");
+});

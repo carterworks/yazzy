@@ -281,6 +281,11 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 		convertHtmlToMarkdown(article.content, url.toString()),
 	);
 	telemetry.set({ markdown_chars: markdownBody.length });
+	if (!markdownBody.trim()) {
+		throw new ExtractionError(
+			`No readable content found at "${url.toString()}"`,
+		);
+	}
 
 	// Fetch byline, meta author, property author, or site name
 	const author =
