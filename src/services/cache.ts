@@ -64,6 +64,7 @@ class CacheService {
 		const result = await this.#db
 			.select()
 			.from(articles)
+			.where(sql`trim(coalesce(${articles.title}, '')) != ''`)
 			.orderBy(
 				sql`CASE WHEN createdAt IS NULL THEN published ELSE createdAt END DESC`,
 			)

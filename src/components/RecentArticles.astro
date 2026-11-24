@@ -20,12 +20,15 @@ const recentArticles = articles.map((article) => ({
 		{
 			recentArticles.map((article) => (
 				<li
+					lang={article.language ?? ""}
+					dir={article.direction ?? "auto"}
 					class={[
 						"lg:w-40",
 						"md:w-60",
 						"flex-auto",
 						"p-2",
 						"overflow-hidden",
+						"text-start",
 						"transition-colors duration-200 ease",
 						"rounded",
 						"border",
@@ -36,7 +39,9 @@ const recentArticles = articles.map((article) => ({
 				>
 					<a href={`/${article.url}`}>
 						<h3 class="font-didone">{article.title}</h3>
-						<p class="text-xs my-1 truncate">{new URL(article.url).hostname}</p>
+						<p class="text-xs my-1 truncate">
+							<bdi>{new URL(article.url).hostname}</bdi>
+						</p>
 						<p class="text-xs">{article.summary}</p>
 					</a>
 				</li>

@@ -4,12 +4,14 @@ import { parseHTML } from "linkedom";
 import type { ReadablePage } from "../types";
 import { getArticleLocale } from "./article-locale";
 import convertHtmlToMarkdown from "./markdown";
+import { NonPublicUrlError, fetchPublic } from "./public-fetch";
 import { facet } from "./telemetry";
 
 type ClipFields = {
 	host: string;
 	upstream_status: number;
 	content_type: string;
+	content_length: number;
 	html_bytes: number;
 	markdown_chars: number;
 	invalid_urls: number;
@@ -32,6 +34,27 @@ export class UnsupportedContentTypeError extends Error {
 
 export class ExtractionError extends Error {
 	override name = "ExtractionError";
+}
+
+/** The site didn't finish responding within CLIP_TIMEOUT_MS. */
+export class UpstreamTimeoutError extends Error {
+	override name = "UpstreamTimeoutError";
+}
+
+/** The page is bigger than CLIP_MAX_HTML_BYTES. */
+export class ResponseTooLargeError extends Error {
+	override name = "ResponseTooLargeError";
+}
+
+// One deadline covers every redirect hop and the body, so a slow or endless
+// response can't hold a request open. The size cap applies to decoded bytes,
+// which also bounds compressed responses that expand far beyond their length.
+const DEFAULT_TIMEOUT_MS = 20_000;
+const DEFAULT_MAX_HTML_BYTES = 13 * 1024 * 1024;
+
+function positiveNumberFromEnv(name: string, fallback: number): number {
+	const value = Number(process.env[name]);
+	return Number.isFinite(value) && value > 0 ? value : fallback;
 }
 
 const supportedContentTypes = [
@@ -57,15 +80,71 @@ function patchLinkedomDocument(doc: Document, url: string): void {
 	d["URL"] = url;
 }
 
-async function download(url: URL): Promise<string> {
+async function readBody(
+	response: Response,
+	url: URL,
+	maxBytes: number,
+): Promise<Uint8Array> {
+	const tooLarge = (detail: string) =>
+		new ResponseTooLargeError(
+			`${url.toString()} ${detail}; the limit is ${maxBytes} bytes`,
+		);
+	const declared = Number(response.headers.get("content-length"));
+	if (declared > 0) telemetry.set({ content_length: declared });
+	if (declared > maxBytes) {
+		await response.body?.cancel();
+		throw tooLarge(`declares ${declared} bytes`);
+	}
+	if (!response.body) return new Uint8Array();
+	const reader = response.body.getReader();
+	const chunks: Uint8Array[] = [];
+	let total = 0;
+	for (;;) {
+		const { done, value } = await reader.read();
+		if (done) break;
+		total += value.byteLength;
+		if (total > maxBytes) {
+			await reader.cancel();
+			throw tooLarge(`sent more than ${maxBytes} bytes`);
+		}
+		chunks.push(value);
+	}
+	const bytes = new Uint8Array(total);
+	let offset = 0;
+	for (const chunk of chunks) {
+		bytes.set(chunk, offset);
+		offset += chunk.byteLength;
+	}
+	return bytes;
+}
+
+async function download(url: URL): Promise<{ html: string; url: URL }> {
+	const timeoutMs = positiveNumberFromEnv(
+		"CLIP_TIMEOUT_MS",
+		DEFAULT_TIMEOUT_MS,
+	);
+	const maxBytes = positiveNumberFromEnv(
+		"CLIP_MAX_HTML_BYTES",
+		DEFAULT_MAX_HTML_BYTES,
+	);
+	const signal = AbortSignal.timeout(timeoutMs);
+	const timedOut = (cause: unknown) =>
+		new UpstreamTimeoutError(
+			`${url.toString()} didn't finish responding within ${timeoutMs} ms`,
+			{ cause },
+		);
 	let response: Response;
+	let finalUrl: URL;
 	try {
-		response = await fetch(url.toString(), {
+		({ response, url: finalUrl } = await fetchPublic(url, {
 			headers: {
 				"User-Agent": "YazzyWebClipper/0.0.1",
 			},
-		});
+			signal,
+		}));
 	} catch (err) {
+		if (err instanceof NonPublicUrlError) throw err;
+		if (signal.aborted) throw timedOut(err);
 		throw new UpstreamFetchError(`Failed to fetch ${url.toString()}`, {
 			cause: err,
 		});
@@ -90,13 +169,25 @@ async function download(url: URL): Promise<string> {
 			`URL "${url.toString()}" has unsupported content type: ${baseContentType}`,
 		);
 	}
-	const bytes = await response.arrayBuffer();
+	let bytes: Uint8Array;
+	try {
+		bytes = await readBody(response, url, maxBytes);
+	} catch (err) {
+		if (signal.aborted && !(err instanceof ResponseTooLargeError)) {
+			throw timedOut(err);
+		}
+		throw err;
+	}
 	telemetry.set({ html_bytes: bytes.byteLength });
-	return new TextDecoder().decode(bytes);
+	return { html: new TextDecoder().decode(bytes), url: finalUrl };
 }
 
-async function fetchPage(url: URL): Promise<Document> {
-	const html = await telemetry.time("fetch", () => download(url));
+async function fetchPage(
+	requestedUrl: URL,
+): Promise<{ document: Document; url: URL }> {
+	const { html, url } = await telemetry.time("fetch", () =>
+		download(requestedUrl),
+	);
 
 	const { document, window } = await telemetry.time("parse", () => {
 		const parsed = parseHTML(html);
@@ -145,7 +236,7 @@ async function fetchPage(url: URL): Promise<Document> {
 	}
 	telemetry.set({ invalid_urls: invalidUrls });
 
-	return document;
+	return { document, url };
 }
 
 function normalizeResourceUrls(
@@ -261,10 +352,10 @@ function convertMarkdownToPlainText(markdown: string): string {
 
 async function clipArticle(url: URL): Promise<ReadablePage> {
 	telemetry.set({ host: url.hostname });
-	const pageDocument = await fetchPage(url);
+	const { document: pageDocument, url: pageUrl } = await fetchPage(url);
 
 	const article = await telemetry.time("extract", () =>
-		Defuddle(pageDocument, url.toString()),
+		Defuddle(pageDocument, pageUrl.toString()),
 	);
 
 	if (!article) {
@@ -278,9 +369,14 @@ async function clipArticle(url: URL): Promise<ReadablePage> {
 	// TODO: reimplement header linking
 
 	const markdownBody = await telemetry.time("markdown", () =>
-		convertHtmlToMarkdown(article.content, url.toString()),
+		convertHtmlToMarkdown(article.content, pageUrl.toString()),
 	);
 	telemetry.set({ markdown_chars: markdownBody.length });
+	if (!markdownBody.trim()) {
+		throw new ExtractionError(
+			`No readable content found at "${url.toString()}"`,
+		);
+	}
 
 	// Fetch byline, meta author, property author, or site name
 	const author =
